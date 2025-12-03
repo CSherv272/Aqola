@@ -1,2 +1,1 @@
 Hello everybody!
-Test of branch with task name
