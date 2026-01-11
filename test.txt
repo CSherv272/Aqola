@@ -1,2 +1,0 @@
-Hello everybody!
-I'm just testing the commit message functionality
