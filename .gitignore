@@ -1,1 +1,154 @@
+# =========================
+# Python
+# =========================
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# mypy
+.mypy_cache/
+
+# =========================
+# Node / React
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Build output
+frontend/build/
+frontend/dist/
+
+# =========================
+# Environment & Secrets
+# =========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+
+# =========================
+# Docker
+# =========================
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# =========================
+# IDEs & Editors
+# =========================
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains (PyCharm, WebStorm)
+.idea/
+*.iml
+
+# Vim
+*.swp
+*.swo
+*.swn
+*~
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# =========================
+# Operating System
+# =========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# =========================
+# Data Files
+# =========================
+# Raw data (keep structure, ignore large files)
+resources/data/*.csv
+resources/data/*.xlsx
+resources/data/*.json
+resources/data/*.geojson
+!resources/data/.gitkeep
+
+# Processed/temporary data
+*.tmp
+*.temp
+*.bak
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# Database
+# =========================
+# Local database files (if any)
+*.sqlite
+*.db
+
+# PostgreSQL data directory (handled by Docker volume)
+pgdata/
+
+# =========================
+# Misc
+# =========================
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Coverage reports
+coverage/
+*.lcov
