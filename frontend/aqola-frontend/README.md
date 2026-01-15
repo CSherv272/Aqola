@@ -1,5 +1,11 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Leaflet links
+
+- Official Next/React Leaflet docs - https://react-leaflet.js.org/docs/start-installation/
+- Marker File Issue - https://stackoverflow.com/questions/49441600/react-leaflet-marker-files-not-found
+- window not defined issue - https://stackoverflow.com/questions/77978480/nextjs-with-react-leaflet-ssr-webpack-window-not-defined-icon-not-found
+
 ## Getting Started
 
 First, run the development server:

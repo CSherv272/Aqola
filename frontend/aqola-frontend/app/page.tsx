@@ -1,30 +1,20 @@
+// Source - https://stackoverflow.com/a
+// Posted by ffrosch, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-01-15, License - CC BY-SA 4.0
+
 "use client";
 
+import dynamic from "next/dynamic";
 
-// Leaflet CSS
-import "leaflet/dist/leaflet.css";
+const LazyMap = dynamic(() => import("./components/Map"), {
+  ssr: false,
+  loading: () => <p>Loading...</p>,
+});
 
-// Fix for default marker icons
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
-import "leaflet-defaulticon-compatibility";
-
-// React-Leaflet components
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-
-export default function Map() {
-  const position = [51.505, -0.09]
-
+export default function Home() {
   return (
-    <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <Marker position={[51.505, -0.09]}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker>
-    </MapContainer>
+    <main>
+      <LazyMap />
+    </main>
   );
 }
