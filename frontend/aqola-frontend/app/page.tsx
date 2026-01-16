@@ -13,8 +13,8 @@ const LazyMap = dynamic(() => import("./components/Map"), {
 
 export default function Home() {
   return (
-    <main>
+    <div>
       <LazyMap />
-    </main>
+    </div>
   );
 }
