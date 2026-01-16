@@ -5,7 +5,7 @@
 "use client";
 
 // IMPORTANT: the order matters!
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
+import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
 import "leaflet-defaulticon-compatibility";
 
@@ -19,7 +19,7 @@ export default function Map() {
         center={position}
         zoom={11}
         scrollWheelZoom={true}
-        style={{ height: "400px", width: "600px" }}
+        style={{ height: "1000px", width: "1000px" }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
