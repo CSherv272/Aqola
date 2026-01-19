@@ -6,20 +6,22 @@
 
 // IMPORTANT: the order matters!
 import "leaflet/dist/leaflet.css";
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
+// import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
+import "./leaflet-defaulticon-compatibility.webpack.css";
 import "leaflet-defaulticon-compatibility";
 
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
 export default function Map() {
-  const position : [number, number] = [51.505, -0.09]
+  const position : [number, number] = [51.1, 0.79]
 
   return (
       <MapContainer
         center={position}
-        zoom={11}
-        scrollWheelZoom={true}
-        style={{ height: "1000px", width: "1000px" }}
+        zoom={10}
+        scrollWheelZoom={false}
+        dragging={false}
+        style={{ height: "1000px", width: "100%" }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
