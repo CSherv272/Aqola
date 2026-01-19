@@ -6,6 +6,7 @@
 
 import dynamic from "next/dynamic";
 import Banner from "./components/aqola-banner";
+import { useEffect } from "react";
 
 const LazyMap = dynamic(() => import("./components/Map"), {
   ssr: false,
