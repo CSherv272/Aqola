@@ -5,6 +5,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Banner from "./components/aqola-banner";
 
 const LazyMap = dynamic(() => import("./components/Map"), {
   ssr: false,
@@ -14,6 +15,7 @@ const LazyMap = dynamic(() => import("./components/Map"), {
 export default function Home() {
   return (
     <div>
+      <Banner />
       <LazyMap />
     </div>
   );
