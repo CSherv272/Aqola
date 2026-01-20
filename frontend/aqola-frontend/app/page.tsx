@@ -6,7 +6,7 @@
 
 import dynamic from "next/dynamic";
 import Banner from "./components/aqola-banner";
-import { useEffect } from "react";
+import D3Test from "./components/simple-d3";
 
 const LazyMap = dynamic(() => import("./components/Map"), {
   ssr: false,
@@ -18,6 +18,7 @@ export default function Home() {
     <div>
       <Banner />
       <LazyMap />
+      <D3Test />
     </div>
   );
 }
