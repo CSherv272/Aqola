@@ -8,8 +8,8 @@ import pandas as pd
 
 ##subprocess.run( [sys.executable, "-m", "pip", "install", "-r", "reqs.txt"], check = True )
 
-
-CrimeFilePath = Path(r"C:\Users\mjp\OneDrive - University of Kent\Andrew Meyer's files - Project\Research\Raw Data Research\Crime\Kent_police_crime_data")
+CrimeFilePath = Path(input("Please enter the path to the CSVs >> "))
+# CrimeFilePath = Path(r"C:\Users\mjp\OneDrive - University of Kent\Andrew Meyer's files - Project\Research\Raw Data Research\Crime\Kent_police_crime_data")
 data = pd.DataFrame()
 for csv in CrimeFilePath.glob("*.csv"):
     tempData = pd.read_csv(csv)
