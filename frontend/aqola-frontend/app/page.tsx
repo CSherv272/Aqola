@@ -5,6 +5,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Banner from "./components/aqola-banner";
+import D3Test from "./components/simple-d3";
 
 const LazyMap = dynamic(() => import("./components/Map"), {
   ssr: false,
@@ -13,8 +15,10 @@ const LazyMap = dynamic(() => import("./components/Map"), {
 
 export default function Home() {
   return (
-    <main>
+    <div>
+      <Banner />
       <LazyMap />
-    </main>
+      <D3Test />
+    </div>
   );
 }
