@@ -31,7 +31,7 @@ def run_schema_validation():
         cur = conn.cursor()
 
         # Execute the SQL check file
-        schema_validation_sql_path = r'database/init/tests/schema_integrity_validation.sql'
+        schema_validation_sql_path = r'aqola/database/init/tests/schema_integrity_validation.sql'
         with open(schema_validation_sql_path) as f:
             cur.execute(f.read())
         
