@@ -7,27 +7,36 @@
 import dynamic from "next/dynamic";
 import Banner from "./components/aqola-banner";
 import D3Test from "./components/simple-d3";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const LazyMap = dynamic(() => import("./components/Map"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
 
-const [data, setData] = useState([])
-const getData = async() => {
-    const response = await fetch("http://localhost:8000/")
-    setData(await response.json())
-    console.log(data)
-}
-useState(getData())
+
 
 export default function Home() {
+  const [data, setData] = useState([])
+  const [showMap, setShowMap] = useState(true) // due to data changing from undefined to [] on render, this turns to false. So map is not visible to user initially
+  
+  const getData = async() => {
+    const response = await fetch("http://localhost:8000/")
+    setData(await response.json())
+  }
+
+  useEffect(() => {
+    console.log("your data", data)
+    setShowMap(!showMap)
+    
+  }, [data])
+
+
   return (
     <div>
-      <Banner />
+      <Banner trigger={getData} />
+      {showMap && <D3Test />}
       <LazyMap />
-      <D3Test />
     </div>
   );
 }

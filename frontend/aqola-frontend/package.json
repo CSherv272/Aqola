@@ -14,7 +14,8 @@
     "react-dom": "rc",
     "leaflet": "^1.9.4",
     "react-leaflet": "next",
-    "leaflet-defaulticon-compatibility": "^0.1.2"
+    "leaflet-defaulticon-compatibility": "^0.1.2",
+    "d3": "^7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -25,7 +26,6 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "d3": "^7"
+    "typescript": "^5"
   }
 }

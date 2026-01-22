@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "app/components/simple-d3.jsx"  ],
   "exclude": ["node_modules"]
 }
