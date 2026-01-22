@@ -1,4 +1,4 @@
--- QA audit to verify that all necessary tables are present according to  schema
+-- Query to verify that all necessary tables are present according to  schema
 SELECT table_name 
 FROM information_schema.tables 
 WHERE table_schema = 'public' 
@@ -10,7 +10,7 @@ AND table_name IN (
     'spatial_ref_sys'
 );
 
--- QA audit to check the correct columns and data types are present in each table
+-- Query to check the correct columns and data types are present in each table
 SELECT 
     table_name, 
     column_name, 
@@ -26,7 +26,7 @@ AND table_name IN (
     'crime_data')
 ORDER BY table_name;
 
--- QA audit to check the relational constraints (Primary and Foreign Keys)
+-- Query to check the relational constraints (Primary and Foreign Keys)
 SELECT 
     tc.table_name, 
     tc.constraint_name, 
@@ -39,4 +39,4 @@ JOIN information_schema.key_column_usage AS kcu
 WHERE tc.table_schema = 'public' 
 AND tc.table_name IN ('display_zones', 'statistical_areas', 'postcodes', 'crime_data')
 AND tc.constraint_type IN ('PRIMARY KEY', 'FOREIGN KEY')
-ORDER BY tc.table_name, tc.constraint_type;
+ORDER BY tc.table_name;

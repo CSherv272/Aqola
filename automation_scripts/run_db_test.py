@@ -14,7 +14,7 @@ def get_db_connection():
         user=os.getenv("POSTGRES_USER"),
         password=os.getenv("POSTGRES_PASSWORD")
     )
-
+    
 def test_connection():
     try:
         print(f"DEBUG: Connecting with user '{os.getenv('POSTGRES_USER')}' and password '{os.getenv('POSTGRES_PASSWORD')}'")
@@ -25,7 +25,7 @@ def test_connection():
         print(f"DEBUG: Trying to connect to {os.getenv('POSTGRES_DB')} as {os.getenv('POSTGRES_USER')}")
         print(f"CONNECTION FAILED: {e}")
         
-def run_schema_validation():
+def schema_integrity_validation():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -33,8 +33,10 @@ def run_schema_validation():
         # Execute the SQL check file
         schema_validation_sql_path = r'aqola/database/init/tests/schema_integrity_validation.sql'
         with open(schema_validation_sql_path) as f:
-            cur.execute(f.read())
-        
+            sql_content = f.read()
+            queries = [q.strip() for q in sql_content.split(';') if q.strip()]
+            
+        cur.execute(queries[0])
         found_tables = [row[0] for row in cur.fetchall()]
         expected_tables = ['display_zones', 'statistical_areas', 'postcodes', 'crime_data']
         
@@ -60,9 +62,34 @@ def run_schema_validation():
         print("\n---  ARE ALL DATA TYPES IN THE TABLES APPROPRIATE? ---")
         
         print("\n")
+        print("\n---  ARE ALL KEY CONSTRAINTS CORRECT? ---")
+        
+        cur.execute(queries[2])
+        constraints = cur.fetchall()
+    
+        #print(constraints)
+        
+        expected_keys = {
+            ('display_zones', 'PRIMARY KEY', 'id'),
+            ('statistical_areas', 'PRIMARY KEY', 'id'),
+            ('statistical_areas', 'FOREIGN KEY', 'display_zone_id'),
+            ('postcodes', 'PRIMARY KEY', 'id'),
+            ('postcodes', 'FOREIGN KEY', 'stat_area_id'),
+            ('crime_data', 'PRIMARY KEY', 'id'),
+            ('crime_data', 'FOREIGN KEY', 'lsoa_id')
+        }
+        
+        actual_keys = {(r[0], r[2], r[3]) for r in constraints}
+
+        for key in expected_keys:
+            if key in actual_keys:
+                print(f" PASSED: {key[1]} on {key[0]}({key[2]}). Matches ERD.")
+            else:
+                print(f" FAILED: Missing {key[1]} on {key[0]}({key[2]})! Does not match ERD. ")
+        
+        print("\n")
         print("---END OF SCHEMA VALIDATION REPORT---\n")
         
-
         cur.close()
         conn.close()
     except Exception as e:
@@ -71,4 +98,4 @@ def run_schema_validation():
 
 if __name__ == "__main__":
     test_connection()
-    run_schema_validation()
+    schema_integrity_validation()
