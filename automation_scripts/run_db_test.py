@@ -31,7 +31,7 @@ def run_schema_validation():
         cur = conn.cursor()
 
         # Execute the SQL check file
-        schema_validation_sql_path = r'database/init/tests/schema_validation.sql'
+        schema_validation_sql_path = r'database/init/tests/schema_integrity_validation.sql'
         with open(schema_validation_sql_path) as f:
             cur.execute(f.read())
         
@@ -39,6 +39,7 @@ def run_schema_validation():
         expected_tables = ['display_zones', 'statistical_areas', 'postcodes', 'crime_data']
         
         print("\n---  SCHEMA VALIDATION REPORT ---")
+        print("\n---  ARE ALL NECESSARY TABLES PRESENT? ---")
         for table in expected_tables:
             if table in found_tables:
                 print(f" PASSED: Table '{table}' found.")
@@ -50,12 +51,23 @@ def run_schema_validation():
             print(" PASSED: PostGIS extension confirmed.")
         else:
             print(" FAILED: PostGIS extension missing.")
-        print("------------------------------------\n")
+        
+        
+        print("\n")
+        print("\n---  ARE ALL NECESSARY COLUMNS IN THE TABLES PRESENT? ---")
+        
+        print("\n")
+        print("\n---  ARE ALL DATA TYPES IN THE TABLES APPROPRIATE? ---")
+        
+        print("\n")
+        print("---END OF SCHEMA VALIDATION REPORT---\n")
+        
 
         cur.close()
         conn.close()
     except Exception as e:
         print(f" SCHEMA AUDIT ERROR: {e}")
+        
 
 if __name__ == "__main__":
     test_connection()
