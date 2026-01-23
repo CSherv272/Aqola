@@ -12,7 +12,7 @@ import { hello } from "./lib/api";
 import { Html, Head } from "next/document";
 
 //import of the leaflet map from a map component
-const LeafletMap = dynamic(() => import("./components/map"), {
+const LeafletMap = dynamic(() => import("./components/Map"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
