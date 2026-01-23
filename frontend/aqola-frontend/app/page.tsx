@@ -9,6 +9,7 @@ import Banner from "./components/aqola-banner";
 import LineGraph from "./components/linegraph";
 import { useEffect, useState } from "react";
 import { hello } from "./lib/api";
+import { Html, Head } from "next/document";
 
 //import of the leaflet map from a map component
 const LeafletMap = dynamic(() => import("./components/map"), {
@@ -35,10 +36,17 @@ export default function Home() {
 
 
   return (
-    <div>
-      <Banner trigger={getData} /> {/*trigger is button press*/}
-      {showMap && <LineGraph />} {/*show and hide map*/}
-      <LeafletMap />
-    </div>
+    <html>
+      <head>
+        <link rel="icon" type="image/png" href="/icon.png" sizes="any" />
+      </head>
+      <body>
+        <div>
+          <Banner trigger={getData} /> {/*trigger is button press*/}
+          {showMap && <LineGraph />} {/*show and hide map*/}
+          <LeafletMap />
+        </div>
+      </body>
+    </html>
   );
 }
