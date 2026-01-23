@@ -1,1 +1,5 @@
 fastapi[standard]
+fastapi==0.128.0
+geoalchemy2==0.18.1
+pydantic_settings==2.12.0
+SQLAlchemy==2.0.46
