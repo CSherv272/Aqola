@@ -57,6 +57,66 @@ def schema_integrity_validation():
         
         print("\n")
         print("\n---  ARE ALL NECESSARY COLUMNS IN THE TABLES PRESENT? ---")
+        cur.execute(queries[1])
+        all_columns = cur.fetchall()
+        expected_columns = {
+            ('display_zones', 'id'),
+            ('display_zones', 'name'),
+            ('display_zones', 'zone_code'),
+            ('display_zones', 'population'),
+            ('display_zones', 'area_sq_km'),
+            ('display_zones', 'boundary'),
+            ('display_zones', 'centroid'),
+            ('display_zones', 'created_at'),
+            ('display_zones', 'updated_at'),
+            
+            ('statistical_areas', 'id'),
+            ('statistical_areas', 'display_zone_id'),
+            ('statistical_areas', 'area_code'),
+            ('statistical_areas', 'area_name'),
+            ('statistical_areas', 'area_type'),
+            ('statistical_areas', 'population'),
+            ('statistical_areas', 'area_sq_km'),
+            ('statistical_areas', 'boundary'),
+            ('statistical_areas', 'area_type'),
+            ('statistical_areas', 'centroid'),
+            ('statistical_areas', 'created_at'),
+            ('statistical_areas', 'updated_at'),
+            
+            ('postcodes', 'id'),
+            ('postcodes', 'postcode'),
+            ('postcodes', 'stat_area_id'),
+            ('postcodes', 'postcode_area'),
+            ('postcodes', 'postcode_district'),
+            ('postcodes', 'postcode_sector'),
+            ('postcodes', 'latitude'),
+            ('postcodes', 'longitude'),
+            ('postcodes', 'location'),
+            ('postcodes', 'created_at'),
+            
+            ('crime_data', 'id'),
+            ('crime_data', 'date'),
+            ('crime_data', 'longitude'),
+            ('crime_data', 'latitude'),
+            ('crime_data', 'lsoa_id'),
+            ('crime_data', 'crime_type')
+        }
+        
+        table_column_name_set = {(r[0], r[1]) for r in all_columns}
+        
+        tables_to_check = ['display_zones', 'statistical_areas', 'postcodes', 'crime_data']
+        
+        for table in tables_to_check:
+            # Filter expected columns for just this table
+            table_expected = {c for t, c in expected_columns if t == table}
+            table_actual = {c for t, c in table_column_name_set if t == table}
+            
+            missing = table_expected - table_actual
+            
+            if not missing:
+                print(f" PASSED: All {len(table_expected)} columns present in '{table}'.")
+            else:
+                print(f" FAILED: '{table}' is missing columns: {missing} ")
         
         print("\n")
         print("\n---  ARE ALL DATA TYPES IN THE TABLES APPROPRIATE? ---")
