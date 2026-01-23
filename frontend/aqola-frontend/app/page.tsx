@@ -7,6 +7,7 @@
 import dynamic from "next/dynamic";
 import Banner from "./components/aqola-banner";
 import D3Test from "./components/simple-d3";
+import api from "./lib/api";
 import { useEffect, useState } from "react";
 
 const LazyMap = dynamic(() => import("./components/Map"), {
@@ -17,10 +18,10 @@ const LazyMap = dynamic(() => import("./components/Map"), {
 export default function Home() {
   const [data, setData] = useState([])
   const [showMap, setShowMap] = useState(true) // due to data changing from undefined to [] on render, this turns to false. So map is not visible to user initially
-  
-  const getData = async() => {
-    const response = await fetch("http://localhost:8000/")
-    setData(await response.json())
+
+  const getData = async () => {
+    const response = await api.get("http://localhost:8000/")
+    setData(await response.data.message)
   }
 
   useEffect(() => {
