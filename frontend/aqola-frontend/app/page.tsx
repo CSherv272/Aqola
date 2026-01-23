@@ -6,34 +6,47 @@
 
 import dynamic from "next/dynamic";
 import Banner from "./components/aqola-banner";
-import D3Test from "./components/simple-d3";
+import LineGraph from "./components/linegraph";
 import { useEffect, useState } from "react";
+import { hello } from "./lib/api";
+import { Html, Head } from "next/document";
 
-const LazyMap = dynamic(() => import("./components/Map"), {
+//import of the leaflet map from a map component
+const LeafletMap = dynamic(() => import("./components/map"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
 
 export default function Home() {
   const [data, setData] = useState([])
-  const [showMap, setShowMap] = useState(true) // due to data changing from undefined to [] on render, this turns to false. So map is not visible to user initially
-  
-  const getData = async() => {
-    const response = await fetch("http://localhost:8000/")
-    setData(await response.json())
+  const [showMap, setShowMap] = useState(false)
+
+
+  // retrieves data through an api.ts function
+  const getData = async () => {
+    const response = await hello()
+    setData(response.message)
+    setShowMap(!showMap)
   }
 
+  // when data changes, update is printed to console
   useEffect(() => {
     console.log("your data", data)
-    setShowMap(!showMap)
   }, [data])
 
 
   return (
-    <div>
-      <Banner trigger={getData} />
-      {showMap && <D3Test />}
-      <LazyMap />
-    </div>
+    <html>
+      <head>
+        <link rel="icon" type="image/png" href="/icon.png" sizes="any" />
+      </head>
+      <body>
+        <div>
+          <Banner trigger={getData} /> {/*trigger is button press*/}
+          {showMap && <LineGraph />} {/*show and hide map*/}
+          <LeafletMap />
+        </div>
+      </body>
+    </html>
   );
 }
