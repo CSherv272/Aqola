@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-from api.config import settings
+from api.config import settings 
 
 # DB engine
 engine = create_engine(

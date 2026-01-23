@@ -14,14 +14,6 @@ const LazyMap = dynamic(() => import("./components/Map"), {
   loading: () => <p>Loading...</p>,
 });
 
-const [data, setData] = useState([]);
-const getData = async () => {
-  const response = await fetch("http://localhost:8000/");
-  setData(await response.json());
-  console.log(data);
-};
-useState(getData());
-
 export default function Home() {
   const [data, setData] = useState([])
   const [showMap, setShowMap] = useState(true) // due to data changing from undefined to [] on render, this turns to false. So map is not visible to user initially

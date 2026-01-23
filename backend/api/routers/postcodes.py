@@ -20,6 +20,7 @@ async def list_postcodes(db: Session = Depends(get_db)):
     return [
         PostcodeResponse(
             postcode=p.postcode,
+            stat_area_id=p.stat_area_id,
             postcode_area=p.postcode_area,
             postcode_district=p.postcode_district,
             postcode_sector=p.postcode_sector,

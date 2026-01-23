@@ -29,7 +29,7 @@ services:
       dockerfile: Dockerfile
     container_name: aqola-backend
     environment:
-      DATABASE_URL: postgres://aqola_user:${POSTGRES_PASSWORD:-mysecretpassword}@db:5432/aqola
+      DATABASE_URL: postgresql://aqola_user:${POSTGRES_PASSWORD:-mysecretpassword}@db:5432/aqola
       PORT: 8000
     ports:
       - "8000:9001"

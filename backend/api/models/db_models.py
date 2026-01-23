@@ -10,6 +10,7 @@ class Postcode(Base):
     __tablename__ = "postcodes"
     
     postcode = Column(String(10), unique=True, nullable=False, index=True, primary_key=True)
+    stat_area_id = Column(String(20), nullable=False, index=True)
     postcode_area = Column(String(4))
     postcode_district = Column(String(4))
     postcode_sector = Column(String(5))
