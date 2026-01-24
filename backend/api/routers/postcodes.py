@@ -29,3 +29,25 @@ async def list_postcodes(db: Session = Depends(get_db)):
         )
         for p in postcodes
     ]
+
+@router.get("/{postcode}", response_model=PostcodeResponse)
+async def get_postcode(postcode: str, db: Session = Depends(get_db)):
+    """Get postcode by postcode string"""
+    postcode_record = (
+        db.query(Postcode)
+        .filter(func.lower(Postcode.postcode) == func.lower(postcode))
+        .first()
+    )
+
+    if not postcode_record:
+        raise HTTPException(status_code=404, detail="Postcode not found")
+
+    return PostcodeResponse(
+        postcode=postcode_record.postcode,
+        stat_area_id=postcode_record.stat_area_id,
+        postcode_area=postcode_record.postcode_area,
+        postcode_district=postcode_record.postcode_district,
+        postcode_sector=postcode_record.postcode_sector,
+        latitude=postcode_record.latitude,
+        longitude=postcode_record.longitude,
+    )

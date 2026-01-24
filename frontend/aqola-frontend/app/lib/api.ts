@@ -9,6 +9,11 @@ export const hello = async () => {
   return response.data;
 };
 
+export const getPostcodeData = async (postcode: string) => {
+  const response = await api.get(`http://localhost:8000/postcodes/${postcode}`);
+  return response.data;
+};
+
 // export const hola = async () => {
 //     const response = await api.get("http://localhost:8000/")
 //     return response;
