@@ -24,7 +24,7 @@ AND table_name IN (
     'statistical_areas',
     'postcodes',
     'crime_data')
-ORDER BY table_name;
+ORDER BY table_name, column_name;
 
 -- Query to check the relational constraints (Primary and Foreign Keys)
 SELECT 

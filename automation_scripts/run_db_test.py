@@ -56,70 +56,50 @@ def schema_integrity_validation():
         
         
         print("\n")
-        print("\n---  ARE ALL NECESSARY COLUMNS IN THE TABLES PRESENT? ---")
+        print("\n---  ARE ALL NECESSARY COLUMNS AND DATA TYPES IN THE TABLES PRESENT? ---")
         cur.execute(queries[1])
         all_columns = cur.fetchall()
         expected_columns = {
-            ('display_zones', 'id'),
-            ('display_zones', 'name'),
-            ('display_zones', 'zone_code'),
-            ('display_zones', 'population'),
-            ('display_zones', 'area_sq_km'),
-            ('display_zones', 'boundary'),
-            ('display_zones', 'centroid'),
-            ('display_zones', 'created_at'),
-            ('display_zones', 'updated_at'),
+            ('display_zones', 'id', 'integer'), #SERIAL
+            ('display_zones', 'name', 'character varying'), #varchar
+            ('display_zones', 'zone_code','character varying'), #varchar
+            ('display_zones', 'population', 'integer'),
+            ('display_zones', 'area_sq_km', 'numeric'), #NUMERIC(10,2)
+            ('display_zones', 'boundary', 'USER-DEFINED'), # GEOMETRY(MultiPolygon, 4326)
+            ('display_zones', 'centroid', 'USER-DEFINED' ), #GEOMETRY(POINT, 4326)
             
-            ('statistical_areas', 'id'),
-            ('statistical_areas', 'display_zone_id'),
-            ('statistical_areas', 'area_code'),
-            ('statistical_areas', 'area_name'),
-            ('statistical_areas', 'area_type'),
-            ('statistical_areas', 'population'),
-            ('statistical_areas', 'area_sq_km'),
-            ('statistical_areas', 'boundary'),
-            ('statistical_areas', 'area_type'),
-            ('statistical_areas', 'centroid'),
-            ('statistical_areas', 'created_at'),
-            ('statistical_areas', 'updated_at'),
+            ('statistical_areas', 'lsoa_id', 'character varying'), #VARCHAR
+            ('statistical_areas', 'display_zone_id', 'integer' ), #SERIAL
+            ('statistical_areas', 'area_name', 'character varying'), #VARCHAR
+            ('statistical_areas', 'population', 'integer'),
+            ('statistical_areas', 'area_sq_km', 'numeric'), #DECIMAL
+            ('statistical_areas', 'boundary','USER-DEFINED' ),#(MULTIPOLYGON, 4326)
+            ('statistical_areas', 'centroid', 'USER-DEFINED'), #GEOMETRY(POINT, 4326)
             
-            ('postcodes', 'id'),
-            ('postcodes', 'postcode'),
-            ('postcodes', 'stat_area_id'),
-            ('postcodes', 'postcode_area'),
-            ('postcodes', 'postcode_district'),
-            ('postcodes', 'postcode_sector'),
-            ('postcodes', 'latitude'),
-            ('postcodes', 'longitude'),
-            ('postcodes', 'location'),
-            ('postcodes', 'created_at'),
+            ('postcodes', 'postcode','character varying'), #VARCHAR
+            ('postcodes', 'stat_area_id','character varying'), #VARCHAR
+            ('postcodes', 'postcode_area', 'character varying'), #VARCHAR
+            ('postcodes', 'postcode_district', 'character varying'), #VARCHAR
+            ('postcodes', 'postcode_sector', 'character varying'), #VARCHAR
+            ('postcodes', 'latitude', 'numeric'), #DECIMAL(9,6)
+            ('postcodes', 'longitude', 'numeric'), #DECIMAL(9,6)
+            ('postcodes', 'location', 'USER-DEFINED'), #GEOMETRY(POINT, 4326)
             
-            ('crime_data', 'id'),
-            ('crime_data', 'date'),
-            ('crime_data', 'longitude'),
-            ('crime_data', 'latitude'),
-            ('crime_data', 'lsoa_id'),
-            ('crime_data', 'crime_type')
+            ('crime_data', 'id', 'integer'), #SERIAL
+            ('crime_data', 'date', 'date'), #DATE
+            ('crime_data', 'longitude', 'numeric'), #DECIMAL(9,6)
+            ('crime_data', 'latitude', 'numeric'), #DECIMAL(9,6)
+            ('crime_data', 'lsoa_id', 'character varying'), #VARCHAR
+            ('crime_data', 'crime_type', 'character varying') #VARCHAR
         }
         
-        table_column_name_set = {(r[0], r[1]) for r in all_columns}
-        
-        tables_to_check = ['display_zones', 'statistical_areas', 'postcodes', 'crime_data']
-        
-        for table in tables_to_check:
-            # Filter expected columns for just this table
-            table_expected = {c for t, c in expected_columns if t == table}
-            table_actual = {c for t, c in table_column_name_set if t == table}
-            
-            missing = table_expected - table_actual
-            
-            if not missing:
-                print(f" PASSED: All {len(table_expected)} columns present in '{table}'.")
+        table_column_name_set = {(r[0], r[1], r[2]) for r in all_columns}
+    
+        for table, col, dtype in expected_columns:
+            if (table, col, dtype) in table_column_name_set:
+                print(f" PASSED: {table}.{col} is {dtype}")
             else:
-                print(f" FAILED: '{table}' is missing columns: {missing} ")
-        
-        print("\n")
-        print("\n---  ARE ALL DATA TYPES IN THE TABLES APPROPRIATE? ---")
+                print(f" FAILED: Type mismatch or missing column for {table}.{col} ")
         
         print("\n")
         print("\n---  ARE ALL KEY CONSTRAINTS CORRECT? ---")
@@ -131,9 +111,9 @@ def schema_integrity_validation():
         
         expected_keys = {
             ('display_zones', 'PRIMARY KEY', 'id'),
-            ('statistical_areas', 'PRIMARY KEY', 'id'),
+            ('statistical_areas', 'PRIMARY KEY', 'lsoa_id'),
             ('statistical_areas', 'FOREIGN KEY', 'display_zone_id'),
-            ('postcodes', 'PRIMARY KEY', 'id'),
+            ('postcodes', 'PRIMARY KEY', 'postcode'),
             ('postcodes', 'FOREIGN KEY', 'stat_area_id'),
             ('crime_data', 'PRIMARY KEY', 'id'),
             ('crime_data', 'FOREIGN KEY', 'lsoa_id')
@@ -143,9 +123,9 @@ def schema_integrity_validation():
 
         for key in expected_keys:
             if key in actual_keys:
-                print(f" PASSED: {key[1]} on {key[0]}({key[2]}). Matches ERD.")
+                print(f" PASSED: {key[1]} on {key[0]}({key[2]})")
             else:
-                print(f" FAILED: Missing {key[1]} on {key[0]}({key[2]})! Does not match ERD. ")
+                print(f" FAILED: Missing {key[1]} on {key[0]}({key[2]})! ")
         
         print("\n")
         print("---END OF SCHEMA VALIDATION REPORT---\n")
