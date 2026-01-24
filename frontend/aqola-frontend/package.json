@@ -9,13 +9,15 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.19",
+    "axios": "^1.13.2",
+    "d3": "^7",
+    "leaflet": "^1.9.4",
+    "leaflet-defaulticon-compatibility": "^0.1.2",
     "next": "16.1.1",
     "react": "rc",
     "react-dom": "rc",
-    "leaflet": "^1.9.4",
-    "react-leaflet": "next",
-    "leaflet-defaulticon-compatibility": "^0.1.2",
-    "d3": "^7"
+    "react-leaflet": "next"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
