@@ -10,12 +10,11 @@ AND table_name IN (
     'spatial_ref_sys'
 );
 
--- Query to check the correct columns and data types are present in each table
+-- Query to check the correct columns, data types are present in each table and NULL constraints enforced
 SELECT 
     table_name, 
     column_name, 
-    data_type, 
-    numeric_precision,
+    data_type,
     is_nullable
 FROM information_schema.columns
 WHERE table_schema = 'public'

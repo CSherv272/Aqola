@@ -44,15 +44,16 @@ def schema_integrity_validation():
         print("\n---  ARE ALL NECESSARY TABLES PRESENT? ---")
         for table in expected_tables:
             if table in found_tables:
-                print(f" PASSED: Table '{table}' found.")
+                print(f" Table '{table}' found. ✅ PASSED")
             else:
-                print(f" FAILED: Table '{table}' is missing from database.")
+                print(f" Table '{table}' is missing from database. ❌ FAILED")
         
+        print("\n---  IS THE POSTGIS EXTENSION PRESENT? ---")
         # Verify PostGIS is active
         if 'spatial_ref_sys' in found_tables:
-            print(" PASSED: PostGIS extension confirmed.")
+            print(" PostGIS extension confirmed. ✅ PASSED")
         else:
-            print(" FAILED: PostGIS extension missing.")
+            print(" PostGIS extension missing. ❌ FAILED")
         
         
         print("\n")
@@ -60,47 +61,54 @@ def schema_integrity_validation():
         cur.execute(queries[1])
         all_columns = cur.fetchall()
         expected_columns = {
-            ('display_zones', 'id', 'integer'), #SERIAL
-            ('display_zones', 'name', 'character varying'), #varchar
-            ('display_zones', 'zone_code','character varying'), #varchar
-            ('display_zones', 'population', 'integer'),
-            ('display_zones', 'area_sq_km', 'numeric'), #NUMERIC(10,2)
-            ('display_zones', 'boundary', 'USER-DEFINED'), # GEOMETRY(MultiPolygon, 4326)
-            ('display_zones', 'centroid', 'USER-DEFINED' ), #GEOMETRY(POINT, 4326)
-            
-            ('statistical_areas', 'lsoa_id', 'character varying'), #VARCHAR
-            ('statistical_areas', 'display_zone_id', 'integer' ), #SERIAL
-            ('statistical_areas', 'area_name', 'character varying'), #VARCHAR
-            ('statistical_areas', 'population', 'integer'),
-            ('statistical_areas', 'area_sq_km', 'numeric'), #DECIMAL
-            ('statistical_areas', 'boundary','USER-DEFINED' ),#(MULTIPOLYGON, 4326)
-            ('statistical_areas', 'centroid', 'USER-DEFINED'), #GEOMETRY(POINT, 4326)
-            
-            ('postcodes', 'postcode','character varying'), #VARCHAR
-            ('postcodes', 'stat_area_id','character varying'), #VARCHAR
-            ('postcodes', 'postcode_area', 'character varying'), #VARCHAR
-            ('postcodes', 'postcode_district', 'character varying'), #VARCHAR
-            ('postcodes', 'postcode_sector', 'character varying'), #VARCHAR
-            ('postcodes', 'latitude', 'numeric'), #DECIMAL(9,6)
-            ('postcodes', 'longitude', 'numeric'), #DECIMAL(9,6)
-            ('postcodes', 'location', 'USER-DEFINED'), #GEOMETRY(POINT, 4326)
-            
-            ('crime_data', 'id', 'integer'), #SERIAL
-            ('crime_data', 'date', 'date'), #DATE
-            ('crime_data', 'longitude', 'numeric'), #DECIMAL(9,6)
-            ('crime_data', 'latitude', 'numeric'), #DECIMAL(9,6)
-            ('crime_data', 'lsoa_id', 'character varying'), #VARCHAR
-            ('crime_data', 'crime_type', 'character varying') #VARCHAR
+            ('display_zones', 'id', 'integer', 'NO'),                # SERIAL
+            ('display_zones', 'name', 'character varying', 'NO'),    # VARCHAR(100)
+            ('display_zones', 'zone_code', 'character varying', 'NO'), # VARCHAR(20)
+            ('display_zones', 'population', 'integer', 'YES'),       # INT (Nullable)
+            ('display_zones', 'area_sq_km', 'numeric', 'YES'),       # DECIMAL(10,2) (Nullable)
+            ('display_zones', 'boundary', 'USER-DEFINED', 'NO'),      # GEOMETRY(MULTIPOLYGON, 4326)
+            ('display_zones', 'centroid', 'USER-DEFINED', 'NO'),      # GEOMETRY(POINT, 4326)
+
+            ('statistical_areas', 'lsoa_id', 'character varying', 'NO'),       # VARCHAR(20)
+            ('statistical_areas', 'display_zone_id', 'integer', 'NO'),        # INT (Foreign Key)
+            ('statistical_areas', 'area_name', 'character varying', 'NO'),    # VARCHAR(100)
+            ('statistical_areas', 'population', 'integer', 'YES'),            # INT (Nullable)
+            ('statistical_areas', 'area_sq_km', 'numeric', 'YES'),            # DECIMAL(10,4) (Nullable)
+            ('statistical_areas', 'boundary', 'USER-DEFINED', 'NO'),           # GEOMETRY(MULTIPOLYGON, 4326)
+            ('statistical_areas', 'centroid', 'USER-DEFINED', 'NO'),           # GEOMETRY(POINT, 4326)
+
+            ('postcodes', 'postcode', 'character varying', 'NO'),             # VARCHAR(10)
+            ('postcodes', 'stat_area_id', 'character varying', 'NO'),         # VARCHAR(20) (Foreign Key)
+            ('postcodes', 'postcode_area', 'character varying', 'NO'),        # VARCHAR(4)
+            ('postcodes', 'postcode_district', 'character varying', 'NO'),    # VARCHAR(4)
+            ('postcodes', 'postcode_sector', 'character varying', 'NO'),      # VARCHAR(5)
+            ('postcodes', 'latitude', 'numeric', 'NO'),                       # DECIMAL(9,6)
+            ('postcodes', 'longitude', 'numeric', 'NO'),                      # DECIMAL(9,6)
+            ('postcodes', 'location', 'USER-DEFINED', 'NO'),                  # GEOMETRY(POINT, 4326)
+
+            ('crime_data', 'id', 'integer', 'NO'),                            # SERIAL
+            ('crime_data', 'lsoa_id', 'character varying', 'NO'),             # VARCHAR(20) (Foreign Key)
+            ('crime_data', 'date', 'date', 'NO'),                             # DATE
+            ('crime_data', 'latitude', 'numeric', 'NO'),                      # DECIMAL(9,6)
+            ('crime_data', 'longitude', 'numeric', 'NO'),                     # DECIMAL(9,6)
+            ('crime_data', 'crime_type', 'character varying', 'NO')
         }
         
-        table_column_name_set = {(r[0], r[1], r[2]) for r in all_columns}
-    
-        for table, col, dtype in expected_columns:
-            if (table, col, dtype) in table_column_name_set:
-                print(f" PASSED: {table}.{col} is {dtype}")
-            else:
-                print(f" FAILED: Type mismatch or missing column for {table}.{col} ")
+        filtered_columns = {(r[0], r[1], r[2], r[3]) for r in all_columns}
         
+        print(f"{'TABLE.COLUMN':<35} | {'DATA TYPE':<20} | {'NULLABLE':<10}")
+        print("-" * 70)
+
+        # Sort them so they group by table automatically
+        for table, col, dtype, null_status in sorted(expected_columns):
+            target = f"{table}.{col}"
+            if (table, col, dtype, null_status) in filtered_columns:
+                print(f"{target:<35} | {dtype:<20} | {null_status:<10} ✅ PASSED")
+            else:
+                print(f"{target:<35} | {dtype:<20} | {null_status:<10} ❌ FAILED")
+
+        print("-" * 70)
+                
         print("\n")
         print("\n---  ARE ALL KEY CONSTRAINTS CORRECT? ---")
         
@@ -121,11 +129,14 @@ def schema_integrity_validation():
         
         actual_keys = {(r[0], r[2], r[3]) for r in constraints}
 
-        for key in expected_keys:
-            if key in actual_keys:
-                print(f" PASSED: {key[1]} on {key[0]}({key[2]})")
+        print("-" * 60)
+
+        # expected_keys contains (table, type, column)
+        for table, k_type, col in sorted(expected_keys):
+            if (table, k_type, col) in actual_keys:
+                print(f"{table:<20} | {k_type:<15} | {col:<20} ✅ PASSED")
             else:
-                print(f" FAILED: Missing {key[1]} on {key[0]}({key[2]})! ")
+                print(f"{table:<20} | {k_type:<15} | ERROR: {col:<13} ❌ FAILED")
         
         print("\n")
         print("---END OF SCHEMA VALIDATION REPORT---\n")
