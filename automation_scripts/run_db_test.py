@@ -57,7 +57,7 @@ def schema_integrity_validation():
         
         
         print("\n")
-        print("\n---  ARE ALL NECESSARY COLUMNS AND DATA TYPES IN THE TABLES PRESENT? ---")
+        print("\n---  ARE ALL NECESSARY COLUMNS/ DATA TYPES/ NULL CONSTRAINTS IN THE TABLES PRESENT? ---")
         cur.execute(queries[1])
         all_columns = cur.fetchall()
         expected_columns = {
