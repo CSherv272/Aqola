@@ -1,4 +1,3 @@
-
 /*NOTE: This query performs vaidation beyond standard schema constraints. While
 NOT NULL constraints exist in the schema, they do not catch logically incorrect nulls/values.
 
@@ -84,10 +83,10 @@ WITH completeness_failures AS (
     SELECT 'crime_data', 'crime_type', 'Malformed (Trailing/Leading Space)', id::text
     FROM crime_data WHERE crime_type != TRIM(crime_type)
     UNION ALL
-    SELECT 'crime_data', 'latitude', 'Out of Bounds (Non-UK)', id::text
+    SELECT 'crime_data', 'latitude', 'Out of Kent Bounds', id::text
     FROM crime_data WHERE latitude NOT BETWEEN 50.88 AND 51.52
     UNION ALL
-    SELECT 'crime_data', 'longitude', 'Out of Bounds (Non-UK)', id::text
+    SELECT 'crime_data', 'longitude', 'Out of Kent Bounds', id::text
     FROM crime_data WHERE longitude NOT BETWEEN 0.01 AND 1.47
 )
 SELECT tbl, col, issue, COUNT(*) AS issue_count, ARRAY_AGG(row_id) AS failing_ids

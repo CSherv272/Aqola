@@ -40,24 +40,24 @@ def schema_integrity_validation():
         found_tables = [row[0] for row in cur.fetchall()]
         expected_tables = ['display_zones', 'statistical_areas', 'postcodes', 'crime_data']
         
-        print("\n---  SCHEMA VALIDATION REPORT ---")
         print("\n---  ARE ALL NECESSARY TABLES PRESENT? ---")
         for table in expected_tables:
             if table in found_tables:
-                print(f" Table '{table}' found. ✅ PASSED")
+                print(f" Table '{table}' found. ✅")
             else:
-                print(f" Table '{table}' is missing from database. ❌ FAILED")
+                print(f" Table '{table}' is missing from database. ❌")
         
         print("\n---  IS THE POSTGIS EXTENSION PRESENT? ---")
         # Verify PostGIS is active
         if 'spatial_ref_sys' in found_tables:
-            print(" PostGIS extension confirmed. ✅ PASSED")
+            print(" PostGIS extension confirmed. ✅")
         else:
-            print(" PostGIS extension missing. ❌ FAILED")
+            print(" PostGIS extension missing. ❌")
         
         
         print("\n")
         print("\n---  ARE ALL NECESSARY COLUMNS/ DATA TYPES/ NULL CONSTRAINTS IN THE TABLES PRESENT? ---")
+        print("-" * 70)
         cur.execute(queries[1])
         all_columns = cur.fetchall()
         expected_columns = {
@@ -103,9 +103,9 @@ def schema_integrity_validation():
         for table, col, dtype, null_status in sorted(expected_columns):
             target = f"{table}.{col}"
             if (table, col, dtype, null_status) in filtered_columns:
-                print(f"{target:<35} | {dtype:<20} | {null_status:<10} ✅ PASSED")
+                print(f"{target:<35} | {dtype:<20} | {null_status:<10} ✅")
             else:
-                print(f"{target:<35} | {dtype:<20} | {null_status:<10} ❌ FAILED")
+                print(f"{target:<35} | {dtype:<20} | {null_status:<10} ❌")
 
         print("-" * 70)
                 
@@ -134,19 +134,65 @@ def schema_integrity_validation():
         # expected_keys contains (table, type, column)
         for table, k_type, col in sorted(expected_keys):
             if (table, k_type, col) in actual_keys:
-                print(f"{table:<20} | {k_type:<15} | {col:<20} ✅ PASSED")
+                print(f"{table:<20} | {k_type:<15} | {col:<20} ✅")
             else:
-                print(f"{table:<20} | {k_type:<15} | ERROR: {col:<13} ❌ FAILED")
+                print(f"{table:<20} | {k_type:<15} | ERROR: {col:<13} ❌")
         
+        print("-" * 60)
         print("\n")
-        print("---END OF SCHEMA VALIDATION REPORT---\n")
         
         cur.close()
         conn.close()
     except Exception as e:
         print(f" SCHEMA AUDIT ERROR: {e}")
         
+    
+def data_quality_validation():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
 
-if __name__ == "__main__":
+        # Execute the SQL check file
+        schema_validation_sql_path = r'aqola/database/init/tests/data_quality_validation.sql'
+        with open(schema_validation_sql_path) as f:
+            sql_content = f.read()
+            queries = [q.strip() for q in sql_content.split(';') if q.strip()]
+            
+        cur.execute(queries[0])
+        results = cur.fetchall()
+
+        print("\n---  DOES DATA QUALITY MATCH COMPLETENESS? ---")
+        print("-" * 95)
+
+        if not results:
+            print(f"All 4 Critical Tables (Zones, Areas, Postcodes, Crimes) verified. ✅")
+            print(f"Bounds Check: Kent Geography [50.9N to 51.5N, 0.0E to 1.47E] is valid. ✅")
+            print(f"Logic Check: No Logical Nulls, Malformed Strings, or Duplicates found. ✅")
+        else:
+            print(f"{'TABLE':<18} | {'COLUMN':<15} | {'SPECIFIC ISSUE':<35} | {'COUNT'} ")
+            print("-" * 95)
+
+            for tbl, col, issue, count, ids in results:
+                # Formatting the ID sample for readability
+                sample_ids = f"IDs: {str(ids[:3]).replace('[','{').replace(']','}')}"
+                if count > 3: sample_ids += "..."
+                
+                print(f"{tbl:<18} | {col:<15} | {issue:<35} | {count:<5} | {sample_ids}  ❌")
+
+        print("-"*95 + "\n")
+        
+            
+    except Exception as e:
+        print(f" SCHEMA AUDIT ERROR: {e}")
+    
+    
+def db_test():
+    print("\n---  DATABASE TESTING REPORT  ---")
     test_connection()
     schema_integrity_validation()
+    data_quality_validation()
+    print("---END OF DATABASE TESTING REPORT---\n")
+
+        
+if __name__ == "__main__":
+    db_test()
