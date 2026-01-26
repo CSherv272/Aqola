@@ -10,6 +10,7 @@ This means
     - longitude bounds: West(0.01  degrees) to East(1.47 degrees)
 - no negative values where appropriate
 - ST_IsEmpty is used to check if the spatial area geometries are empty
+- tables themselves are not empty
 */
 
 WITH completeness_failures AS (
@@ -37,6 +38,9 @@ WITH completeness_failures AS (
     UNION ALL
     SELECT 'display_zones', 'zone_code', 'Duplicate Key', zone_code
     FROM display_zones GROUP BY zone_code HAVING COUNT(*) > 1
+    UNION ALL
+    SELECT 'display_zones', 'ALL', 'TABLE IS EMPTY', '0'
+    WHERE (SELECT COUNT(*) FROM display_zones) = 0
 
     UNION ALL
 
@@ -58,6 +62,9 @@ WITH completeness_failures AS (
     UNION ALL
     SELECT 'statistical_areas', 'lsoa_id', 'Duplicate Key', lsoa_id
     FROM statistical_areas GROUP BY lsoa_id HAVING COUNT(*) > 1
+    UNION ALL
+    SELECT 'statistical_areas', 'ALL', 'TABLE IS EMPTY', '0'
+    WHERE (SELECT COUNT(*) FROM statistical_areas) = 0
 
     UNION ALL
 
@@ -73,6 +80,9 @@ WITH completeness_failures AS (
     UNION ALL
     SELECT 'postcodes', 'postcode', 'Duplicate Key', postcode
     FROM postcodes GROUP BY postcode HAVING COUNT(*) > 1
+    UNION ALL
+    SELECT 'postcodes', 'ALL', 'TABLE IS EMPTY', '0'
+    WHERE (SELECT COUNT(*) FROM postcodes) = 0
 
     UNION ALL
 
@@ -88,6 +98,10 @@ WITH completeness_failures AS (
     UNION ALL
     SELECT 'crime_data', 'longitude', 'Out of Kent Bounds', id::text
     FROM crime_data WHERE longitude NOT BETWEEN 0.01 AND 1.47
+    UNION ALL
+    SELECT 'crime_data', 'ALL', 'TABLE IS EMPTY', '0'
+    WHERE (SELECT COUNT(*) FROM crime_data) = 0
+
 )
 SELECT tbl, col, issue, COUNT(*) AS issue_count, ARRAY_AGG(row_id) AS failing_ids
 FROM completeness_failures
