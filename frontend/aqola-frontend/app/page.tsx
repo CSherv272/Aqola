@@ -6,19 +6,47 @@
 
 import dynamic from "next/dynamic";
 import Banner from "./components/aqola-banner";
-import D3Test from "./components/simple-d3";
+import LineGraph from "./components/linegraph";
+import { useEffect, useState } from "react";
+import { hello } from "./lib/api";
+import { Html, Head } from "next/document";
 
-const LazyMap = dynamic(() => import("./components/Map"), {
+//import of the leaflet map from a map component
+const LeafletMap = dynamic(() => import("./components/Map"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
 
 export default function Home() {
+  const [data, setData] = useState([])
+  const [showGraph, setShowGraph] = useState(false)
+
+
+  // retrieves data through an api.ts function
+  const getData = async () => {
+    const response = await hello()
+    setData(response.message)
+    setShowGraph(!showGraph)
+  }
+
+  // when data changes, update is printed to console
+  useEffect(() => {
+    console.log("your data", data)
+  }, [data])
+
+
   return (
-    <div>
-      <Banner />
-      <LazyMap />
-      <D3Test />
-    </div>
+    <html>
+      <head>
+        <link rel="icon" type="image/png" href="/icon.png" sizes="any" />
+      </head>
+      <body>
+        <div>
+          <Banner trigger={getData} /> {/*trigger is button press*/}
+          {showGraph && <LineGraph />} {/*show and hide map*/}
+          <LeafletMap />
+        </div>
+      </body>
+    </html>
   );
 }

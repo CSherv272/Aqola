@@ -15,8 +15,8 @@ export default function Map() {
     <MapContainer
       center={position}
       zoom={10}
-      scrollWheelZoom={true}
-      dragging={true}
+      scrollWheelZoom={false}
+      dragging={false}
       style={{ height: "1000px", width: "100%" }}
     >
       <TileLayer
