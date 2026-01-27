@@ -12,4 +12,4 @@
 # Setup
 
 - ensure you have .env file in backend/api with the following variables:
-  - DATABASE_URL=postgresql://aqola_user:{password}@db:5431/aqola
+  - DATABASE_URL=postgresql://aqola_user:{password}@db:5432/aqola
