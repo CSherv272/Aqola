@@ -19,7 +19,7 @@ const LeafletMap = dynamic(() => import("./components/Map"), {
 
 export default function Home() {
   const [data, setData] = useState([])
-  const [showMap, setShowMap] = useState(false)
+  const [showGraph, setShowGraph] = useState(false)
   const [postcode, setPostcode] = useState([])
 
   const getPostcode = async () => {
@@ -32,7 +32,7 @@ export default function Home() {
   const getData = async () => {
     const response = await hello()
     setData(response.message)
-    setShowMap(!showMap)
+    setShowGraph(!showGraph)
   }
 
   // when data changes, update is printed to console
@@ -58,7 +58,7 @@ export default function Home() {
       <body>
         <div>
           <Banner trigger={getData} /> {/*trigger is button press*/}
-          {showMap && <LineGraph />} {/*show and hide map*/}
+          {showGraph && <LineGraph />} {/*show and hide map*/}
           <LeafletMap />
         </div>
       </body>
