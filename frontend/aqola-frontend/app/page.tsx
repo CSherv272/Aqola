@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 import Banner from "./components/aqola-banner";
 import LineGraph from "./components/linegraph";
 import { useEffect, useState } from "react";
-import { hello } from "./lib/api";
+import { hello, getPostcodeData } from "./lib/api";
 import { Html, Head } from "next/document";
 
 //import of the leaflet map from a map component
@@ -20,6 +20,12 @@ const LeafletMap = dynamic(() => import("./components/Map"), {
 export default function Home() {
   const [data, setData] = useState([])
   const [showGraph, setShowGraph] = useState(false)
+  const [postcode, setPostcode] = useState([])
+
+  const getPostcode = async () => {
+    const response = await getPostcodeData("CT2 7QS")
+    setPostcode(response)
+  }
 
 
   // retrieves data through an api.ts function
@@ -33,6 +39,15 @@ export default function Home() {
   useEffect(() => {
     console.log("your data", data)
   }, [data])
+
+  useEffect(() => {
+    const postcode_data = getPostcode();
+  }, [])
+
+  useEffect(() => {
+    console.log("your postcode data", postcode)
+  }, [postcode])
+
 
 
   return (

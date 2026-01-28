@@ -23,7 +23,7 @@ docker-compose up -d
 
 - Frontend: "http://localhost:3000"
 - Backend: "http://localhost:8000"
-- Database: PostgreSQL running on port 5431
+- Database: PostgreSQL running on port 5432
 
 ## Connect to the database cli from the container
 
