@@ -15,6 +15,7 @@ def get_db_connection():
     return psycopg2.connect(
         host="localhost",
         port="5432",
+        port="5432",
         database=os.getenv("POSTGRES_DB"),
         user=os.getenv("POSTGRES_USER"),
         password=os.getenv("POSTGRES_PASSWORD")
@@ -36,7 +37,7 @@ def schema_integrity_validation():
         cur = conn.cursor()
 
         # Execute the SQL check file
-        schema_validation_sql_path = schema_validation_path
+        schema_validation_sql_path = r'aqola/database/init/schema_integrity_validation.sql'
         with open(schema_validation_sql_path) as f:
             sql_content = f.read()
             queries = [q.strip() for q in sql_content.split(';') if q.strip()]
@@ -158,7 +159,7 @@ def data_quality_validation():
         cur = conn.cursor()
 
         # Execute the SQL check file
-        schema_validation_sql_path = data_quality_validation_path
+        schema_validation_sql_path = r'aqola/database/init/data_quality_validation.sql'
         with open(schema_validation_sql_path) as f:
             sql_content = f.read()
             queries = [q.strip() for q in sql_content.split(';') if q.strip()]
