@@ -32,7 +32,9 @@
   - Data access
   - Mechanisms you’ve used
   - Plans and versions of the plan
-Technical Report
+
+# Technical Report
+
 - One written document represents the conception of the project
   - Why
   - What

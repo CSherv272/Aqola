@@ -22,6 +22,37 @@ services:
     networks:
       - aqola-network
 
+  # Backend
+  backend:
+    build:
+      context: ./backend/api/
+      dockerfile: Dockerfile
+    container_name: aqola-backend
+    environment:
+      DATABASE_URL: postgres://aqola_user:${POSTGRES_PASSWORD:-mysecretpassword}@db:5432/aqola
+      PORT: 8000
+    ports:
+      - "8000:9001"
+    depends_on:
+      db:
+        condition: service_healthy
+
+    networks:
+      - aqola-network
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend/aqola-frontend/
+      dockerfile: Dockerfile
+    container_name: aqola-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - aqola-network
+
 volumes:
   postgres_data:
 
