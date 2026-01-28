@@ -26,7 +26,7 @@ If the Python runner fails to connect, follow these steps to resolve environment
 
 ### 1. Port Collision (Connection Refused/Abort)
 
-A local PostgreSQL instance or a "ghost" process may be hijacking port **5431**.
+A local PostgreSQL instance or a "ghost" process may be hijacking port **5432**.
 
 - **Identify the conflict:** Run `netstat -ano | findstr :5431` to find the **PID** (the number on the far right).
 - **Kill the process:** Use the PID to terminate the listener:
