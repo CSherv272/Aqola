@@ -37,7 +37,7 @@ def schema_integrity_validation():
         cur = conn.cursor()
 
         # Execute the SQL check file
-        schema_validation_sql_path = r'aqola/database/init/schema_integrity_validation.sql'
+        schema_validation_sql_path = schema_validation_path
         with open(schema_validation_sql_path) as f:
             sql_content = f.read()
             queries = [q.strip() for q in sql_content.split(';') if q.strip()]
@@ -159,7 +159,7 @@ def data_quality_validation():
         cur = conn.cursor()
 
         # Execute the SQL check file
-        schema_validation_sql_path = r'aqola/database/init/data_quality_validation.sql'
+        schema_validation_sql_path = data_quality_validation_path
         with open(schema_validation_sql_path) as f:
             sql_content = f.read()
             queries = [q.strip() for q in sql_content.split(';') if q.strip()]
