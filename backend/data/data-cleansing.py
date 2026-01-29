@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 
-##subprocess.run( [sys.executable, "-m", "pip", "install", "-r", "reqs.txt"], check = True )
+##subprocess.run( [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], check = True )
 
 CrimeFilePath = Path(input("Please enter the path to the CSVs >> "))
 # CrimeFilePath = Path(r"C:\Users\mjp\OneDrive - University of Kent\Andrew Meyer's files - Project\Research\Raw Data Research\Crime\Kent_police_crime_data")

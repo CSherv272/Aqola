@@ -1,7 +1,6 @@
 from pathlib import Path
 import pandas as pd
 import geopandas as gpd
-# import numpy as np
 
 # list of postcodes in Kent from: https://www.postcode-info.co.uk/kent-postcodes-376.html
 kentPostcodes = ["BR6", "BR8",
@@ -17,47 +16,44 @@ kentPostcodes = ["BR6", "BR8",
 # get all CSVs in file path
 def getFiles():
     filePath = Path(input("Please enter the path to the CSVs >> "))
-    data = pd.DataFrame()
+    data = gpd.GeoDataFrame()
     for csv in filePath.glob("*.csv"):
         tempData = pd.read_csv(csv, usecols=[0, 41, 42, 50])
         data = pd.concat([data, tempData], ignore_index=True)
-        #print(csv.name)
     return data
 
 # remove duplicate rows
 def removeDupes(data):
     return data.drop_duplicates()
 
+# strips any spaces from a given column
+def spaceStripColumn(data, column):
+    data[column] = data[column].apply(lambda x: x.replace(" ", ""))
+    return data
+
 # split postcodes into their areas, districts, and sectors 
 def splitPostcodes(data):
     # based on data from: https://ideal-postcodes.co.uk/guides/uk-postcode-format
     postcodes = data['pcd']
-    # if longer postcode, take an extra digit
+    
     pcd_a = [] #e.g. CT
     pcd_d = [] # e.g. CT2/RH13
     pcd_s = [] # e.g. CT27/RH138
+    
     for pcd in postcodes:
-        spaceGone = pcd.replace(" ", "")
-        pcd_a.append(spaceGone[:2]) # CT27QS - CT 
-        if len(spaceGone) == 7: # RH138PA
-            pcd_d.append(spaceGone[:4]) # RH13
-            pcd_s.append(spaceGone[:5]) # RH138
-        else:
-            pcd_d.append(spaceGone[:3]) # CT2
-            pcd_s.append(spaceGone[:4]) # CT27
-    # print(f"pcd_a: {pcd_a}\npcd_d: {pcd_d}\npcd_s: {pcd_s}")
+        pcd_a.append(pcd[:2]) # CT27QS - CT 
+
+        # dealing with the two types of postcode
+        if len(pcd) == 7: # AA123BB
+            pcd_d.append(pcd[:4]) # AA12
+            pcd_s.append(pcd[:5]) # AA123
+        else: # AA12BB
+            pcd_d.append(pcd[:3]) # AA1
+            pcd_s.append(pcd[:4]) # AA12
     data["pcd_a"] = pcd_a
     data["pcd_d"] = pcd_d
     data["pcd_s"] = pcd_s
     return data
-
-# convert pd dataframe to geo dataframe - needs work
-def toGeoDF(data):
-    centroid = gpd.points_from_xy(data["long"], data["lat"])
-    boundaries = gpd.GeoDataFrame()
-    gdf = gpd.GeoDataFrame(data, geometry=boundaries, crs="EPSG:4326")
-    gdf["centroid"] = centroid
-    return gdf
 
 # filter out all postcodes not in kent
 def kentPostcodeFilter(data):
@@ -65,29 +61,67 @@ def kentPostcodeFilter(data):
     return data.loc[inKent, :]
 
 # reorder columns to match database
-def formatPostcodeData(data):
-    return data.loc[:, ["pcd", "lsoa", "pcd_a", "pcd_d", "pcd_s", "lat", "long", "geomet"]]
+def reorganiseColumns(data):
+    return data.loc[:, ["pcd", "lsoa21", "pcd_a", "pcd_d", "pcd_s", "lat", "long", "geometry", "centroid"]]
 
+# generates a Point datatype holding the lat long centriod of the postcode
+def generateCentroids(data):
+    centroid = gpd.points_from_xy(data["long"], data["lat"])
+    data["centroid"] = centroid
+    return data
+
+# using postcodes in kent, extract the polygon data from the geojson files
+def extractPolygonData(data):
+    geojsonPath = input("Please enter the path to the GeoJSON data >> ")
+    newData = []
+
+    for pcdDist in data["pcd_d"].unique():
+        current_file = gpd.read_file(geojsonPath + "/" + pcdDist + ".geojson")
+        districtPcd = data[data["pcd_d"] == pcdDist] # all postcodes in that district
+        for pcd in districtPcd["pcd"]:
+            pcdData = current_file[current_file["mapit_code"] == pcd]
+            newData.append(pcdData)
+
+    return gpd.GeoDataFrame(pd.concat(newData, ignore_index=True))
+
+# takes twewo DFs and inner joins them
+def innerJoinDataframes(data, pcdData):
+    return pd.merge(data, pcdData, left_on="pcd", right_on="mapit_code", how="inner")
+
+# drops columns by a list of indexes (i)
+def dropColumnsByIndex(data, i):
+    return data.drop(data.columns[i], axis=1)
+
+# export dataframe to a csv (data = the dataframe, path = file path, excluding filename)
+def exportToCsv(data, path):
+    data.to_csv(Path(path, "pcd_data.csv"), index=False)
+    print("exported to " + path)
 
 def main():
     data = getFiles()
-    data.info()
 
+    # remove irrelevant data
     data = data.dropna()
     data = removeDupes(data)
+
+    # postcode processes
+    data = spaceStripColumn(data, "pcd")
     data = splitPostcodes(data)
     data = kentPostcodeFilter(data)
-    # formatPostcodeData(data, ["postcode", "latitude", "longitude", ""])
-    # data = toGeoDF(data)
-    data.info()
 
-    print(data.info())
-    print(data.sample(n=30))
+    # centroid/polygon generation
+    data = generateCentroids(data)
+    pcdData = extractPolygonData(data)
 
-    # Quick testing
-    # data = pd.DataFrame({"pcd": ["CT27QS", "RH138PA", "AA 26AB", "BH2 3GP"]})
-    # data = splitPostcodes(data)
-    # print(data.head(10))
+    # final formatting
+    data = innerJoinDataframes(data, pcdData)
+    data = dropColumnsByIndex(data, [8, 9])
+    # data = data.dropna() # these could be introduced from the join in combine datasets
+    data = reorganiseColumns(data)
+
+
+    exportToCsv(data, "G:/Files/")
+
 
 if __name__ == "__main__":
     main()
