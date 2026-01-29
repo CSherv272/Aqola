@@ -1,0 +1,140 @@
+import pytest
+import os
+
+# --- 1. SETUP PATHS ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SCHEMA_SQL_PATH = os.path.join(BASE_DIR, '..', 'database', 'init', 'schema_integrity_validation.sql')
+DATA_QUALITY_SQL_PATH = os.path.join(BASE_DIR, '..', 'database', 'init', 'data_quality_validation.sql')
+
+# --- 2. DEFINE EXPECTED SCHEMA SPECS ---
+EXPECTED_TABLES = ['display_zones', 'statistical_areas', 'postcodes', 'crime_data']
+
+# Format: (table, column, type, nullable)
+EXPECTED_COLUMNS = {
+    ('display_zones', 'id', 'integer', 'NO'),                # SERIAL
+    ('display_zones', 'name', 'character varying', 'NO'),    # VARCHAR(100)
+    ('display_zones', 'zone_code', 'character varying', 'NO'), # VARCHAR(20)
+    ('display_zones', 'population', 'integer', 'YES'),       # INT (Nullable)
+    ('display_zones', 'area_sq_km', 'numeric', 'YES'),       # DECIMAL(10,2) (Nullable)
+    ('display_zones', 'boundary', 'USER-DEFINED', 'NO'),      # GEOMETRY(MULTIPOLYGON, 4326)
+    ('display_zones', 'centroid', 'USER-DEFINED', 'NO'),      # GEOMETRY(POINT, 4326)
+
+    ('statistical_areas', 'lsoa_id', 'character varying', 'NO'),       # VARCHAR(20)
+    ('statistical_areas', 'display_zone_id', 'integer', 'NO'),        # INT (Foreign Key)
+    ('statistical_areas', 'area_name', 'character varying', 'NO'),    # VARCHAR(100)
+    ('statistical_areas', 'population', 'integer', 'YES'),            # INT (Nullable)
+    ('statistical_areas', 'area_sq_km', 'numeric', 'YES'),            # DECIMAL(10,4) (Nullable)
+    ('statistical_areas', 'boundary', 'USER-DEFINED', 'NO'),           # GEOMETRY(MULTIPOLYGON, 4326)
+    ('statistical_areas', 'centroid', 'USER-DEFINED', 'NO'),           # GEOMETRY(POINT, 4326)
+
+    ('postcodes', 'postcode', 'character varying', 'NO'),             # VARCHAR(10)
+    ('postcodes', 'stat_area_id', 'character varying', 'NO'),         # VARCHAR(20) (Foreign Key)
+    ('postcodes', 'postcode_area', 'character varying', 'NO'),        # VARCHAR(4)
+    ('postcodes', 'postcode_district', 'character varying', 'NO'),    # VARCHAR(4)
+    ('postcodes', 'postcode_sector', 'character varying', 'NO'),      # VARCHAR(5)
+    ('postcodes', 'latitude', 'numeric', 'NO'),                       # DECIMAL(9,6)
+    ('postcodes', 'longitude', 'numeric', 'NO'),                      # DECIMAL(9,6)
+    ('postcodes', 'location', 'USER-DEFINED', 'NO'),                  # GEOMETRY(POINT, 4326)
+
+    ('crime_data', 'id', 'integer', 'NO'),                            # SERIAL
+    ('crime_data', 'lsoa_id', 'character varying', 'NO'),             # VARCHAR(20) (Foreign Key)
+    ('crime_data', 'date', 'date', 'NO'),                             # DATE
+    ('crime_data', 'latitude', 'numeric', 'NO'),                      # DECIMAL(9,6)
+    ('crime_data', 'longitude', 'numeric', 'NO'),                     # DECIMAL(9,6)
+    ('crime_data', 'crime_type', 'character varying', 'NO')
+    }
+
+# Format: (table, type, column)
+EXPECTED_KEYS = {
+    ('display_zones', 'PRIMARY KEY', 'id'),
+    ('statistical_areas', 'PRIMARY KEY', 'lsoa_id'),
+    ('statistical_areas', 'FOREIGN KEY', 'display_zone_id'),
+    ('postcodes', 'PRIMARY KEY', 'postcode'),
+    ('postcodes', 'FOREIGN KEY', 'stat_area_id'),
+    ('crime_data', 'PRIMARY KEY', 'id'),
+    ('crime_data', 'FOREIGN KEY', 'lsoa_id')
+}
+
+# --- 3. TEST CLASSES ---
+
+class TestSchemaIntegrity:
+    """
+    Validates the 3NF Structural integrity:
+    - Connectivity
+    - Table Existence
+    - Column Definitions
+    - Keys & Constraints
+    """
+
+    @pytest.fixture(scope="class")
+    # Helper function to read the SQL files.
+    def schema_queries(self):
+        with open(SCHEMA_SQL_PATH) as f:
+            content = f.read()
+        return [q.strip() for q in content.split(';') if q.strip()]
+
+    # Smoke test to ensure DB is reachable.
+    def test_db_connection(self, db_conn):
+        assert db_conn.closed == 0, "Connection should be open"
+        with db_conn.cursor() as cur:
+            cur.execute("SELECT 1;")
+            assert cur.fetchone()[0] == 1
+
+    # Checks if all critical tables and PostGIS extension are present.
+    def test_tables_and_postgis_exist(self, db_conn, schema_queries):
+        with db_conn.cursor() as cur:
+            cur.execute(schema_queries[0])
+            found_tables = [row[0] for row in cur.fetchall()]
+            
+            for table in EXPECTED_TABLES:
+                assert table in found_tables, f"Missing critical table: {table}"
+            
+            assert 'spatial_ref_sys' in found_tables, "PostGIS extension is missing"
+
+    def test_columns_match_specs(self, db_conn, schema_queries):
+        # Verifies that all columns match the expected data types and nullability.
+        with db_conn.cursor() as cur:
+            cur.execute(schema_queries[1])
+            # columns from DB: (table, col, type, nullable)
+            actual_columns = {(r[0], r[1], r[2], r[3]) for r in cur.fetchall()}
+
+            missing = EXPECTED_COLUMNS - actual_columns
+            
+            assert not missing, f"Missing or incorrect columns found:\n{missing}"
+
+    def test_keys_and_constraints(self, db_conn, schema_queries):
+        # Verifies Primary and Foreign Keys are correctly established.
+        with db_conn.cursor() as cur:
+            cur.execute(schema_queries[2])
+            #Fetch actual keys: (table, type, column)
+            actual_keys = {(r[0], r[2], r[3]) for r in cur.fetchall()}
+
+            missing = EXPECTED_KEYS - actual_keys
+            
+            assert not missing, f"Missing constraints:\n{missing}"
+
+
+class TestDataQuality:
+    """
+    Validates Data Content:
+    - Kent Geofencing
+    - Null Checks
+    - Logical Consistency
+    """
+
+    def test_kent_data_quality(self, db_conn):
+        # Runs the data quality SQL script. Fails if ANY rows are returned.
+        with db_conn.cursor() as cur:
+            with open(DATA_QUALITY_SQL_PATH) as f:
+                # Execute the entire script
+                cur.execute(f.read())
+            
+                issues = cur.fetchall()
+
+                # Build a readable error message if issues exist
+                if issues:
+                    error_msg = "\n".join(
+                        [f"Table: {r[0]} | Col: {r[1]} | Error: {r[2]} | Count: {r[3]}" for r in issues]
+                    )
+                    # pytest.fail() is used instead of assert as it is processing a specified report about the issue
+                    pytest.fail(f"Data Quality Violations Found:\n{error_msg}")
