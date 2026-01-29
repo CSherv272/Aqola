@@ -16,9 +16,9 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 pip install psycopg2-binary python-dotenv
 
-# Ensure your .env file contains the correct DB_PORT=5431 and credentials. Then execute the runner:
+# Ensure your .env file contains the correct DB_PORT=5432 and credentials. Make sure docker is running based on docker-compose-doc.md instructions. Then execute the runner:
 
-python automation_scripts/run_db_test.py
+python test_scripts/run_db_test.py
 
 # TROUBLESHOOTING
 
@@ -50,4 +50,4 @@ docker-compose up -d
 ### 3. Credential Desync (Authentication Failed)
 
 The database requires time to initialize PostGIS extensions and internal schemas
-Always run docker ps and ensure the status is (healthy) before executing the Python script. If it says (starting), the connection will be rejected.
+Always run docker ps and ensure the status is (healthy) before executing the Python script. If it says (starting), the connection will be rejected
