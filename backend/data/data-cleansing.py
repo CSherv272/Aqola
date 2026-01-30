@@ -160,6 +160,37 @@ def main():
 
 
 
+    data.to_sql(
+        "crime_data",
+        engine,
+        if_exists="replace",
+        index = False
+    )
+
+def main():
+    fileList = os.listdir(FilePath)
+    fileSet = {f.lower() for f in fileList}
+
+    
+
+    tables = inspector.get_table_names()
+    print(tables)
+    print(fileSet)
+
+    for i in tables:    
+        if i.lower() in fileSet:
+            tempData = pd.DataFrame()
+            tempData = getData(i)
+            print(i)
+            print(tempData)
+            cleanNull(tempData)
+            tempData = orderCollumns(tempData, i)
+            tempData.to_sql(
+                i, engine, if_exists="replace"
+            )
+    # stmnt ='SELECT * FROM aqola'
+    # print(conn.execute(stmnt))
+    print (pd.read_sql('SELECT * FROM crime_data', engine))
 
 
     # dataFolders = os.listdir(FilePath)
