@@ -4,17 +4,60 @@ import subprocess
 import sys
 from pathlib import Path
 import pandas as pd
+import os
+import logging
+logger = logging.getLogger(__name__)
 
 
-##subprocess.run( [sys.executable, "-m", "pip", "install", "-r", "reqs.txt"], check = True )
+from sqlalchemy import create_engine, inspect
 
-CrimeFilePath = Path(input("Please enter the path to the CSVs >> "))
-# CrimeFilePath = Path(r"C:\Users\mjp\OneDrive - University of Kent\Andrew Meyer's files - Project\Research\Raw Data Research\Crime\Kent_police_crime_data")
-data = pd.DataFrame()
-for csv in CrimeFilePath.glob("*.csv"):
-    tempData = pd.read_csv(csv)
-    data = pd.concat([data, tempData], ignore_index=True)
-    #print(csv.name)
+FilePath = Path(r"C:\Users\mjp\OneDrive - University of Kent\Andrew Meyer's files - Project\Research\Raw Data Research\data")
+engine = create_engine ( "postgresql://aqola_user:mysecretpassword@localhost:5431/aqola")
+with engine.connect() as conn:
+    print("DB Connected")
+inspector = inspect(engine)
+
+
+def getData(name):
+    data = pd.DataFrame()
+    #for csv in FilePath.append(name).glob("*.csv"):
+    tempPath = Path
+    tempPath = FilePath / name
+    for csv in tempPath.glob("*.csv"):
+        tempData = pd.read_csv(csv)
+        #print(csv)
+        data = pd.concat([data, tempData], ignore_index=True)
+    return data
+
+def orderCollumns(df, table):
+    dbColumnSet = set({c["name"].lower() for c in inspector.get_columns(table)})
+
+    autoMap = {c: c.lower() for c in df.columns if c.lower() in dbColumnSet}
+    manualMap = getTableDict(table)
+    
+    #apply automap and manualmap, with manual taking prio
+    columnMap = {**autoMap, **manualMap}
+
+    missing = set(columnMap.values()) - dbColumnSet
+    if missing :
+        logger.info("columns not added: %s" , missing)
+
+    validKeys = [c for c in columnMap if c in df.columns]
+    print(validKeys)
+    return df[validKeys].rename(columns = columnMap)
+
+
+def getTableDict(name):
+    match name : 
+        case "crime_data" :
+            return {"crime type": "type",
+            "lsoa code": "lsoa_id",
+            "month": "date"}
+        case _:
+            return {}
+        
+                
+
 
 def columnChoice(data):
     print("Total column headers are: ")
@@ -23,8 +66,8 @@ def columnChoice(data):
     for i, col in enumerate(data.columns):
         print(f"{i}: {col}")
 
-    colIndex = input ("Enter column numbers to keep (comma sepparated): ")
-    #colIndex = "1, 4, 5, 6, 7, 9"
+    #colIndex = input ("Enter column numbers to keep (comma sepparated): ")
+    colIndex = "1, 4, 5, 7, 9"
     colIndex =  [int(i.strip()) for i in colIndex.split(",")]
     colKeep = data.columns[colIndex]
     data = data[colKeep]
@@ -60,12 +103,46 @@ def export_to_csv(df, filename):
     else:
         print("Data not exported")
 
-
-data = columnChoice(data)
-data = cleanNull(data)
-nameFileExport(data)
-
-
+def old():
+    data = columnChoice(data)
+    data = cleanNull(data)
+    nameFileExport(data)
 
 
+
+    data.to_sql(
+        "crime_data",
+        engine,
+        if_exists="replace",
+        index = False
+    )
+
+def main():
+    fileList = os.listdir(FilePath)
+    fileSet = {f.lower() for f in fileList}
+
+    
+
+    tables = inspector.get_table_names()
+    print(tables)
+    print(fileSet)
+
+    for i in tables:    
+        if i.lower() in fileSet:
+            tempData = pd.DataFrame()
+            tempData = getData(i)
+            print(i)
+            print(tempData)
+            cleanNull(tempData)
+            tempData = orderCollumns(tempData, i)
+            tempData.to_sql(
+                i, engine, if_exists="replace"
+            )
+    # stmnt ='SELECT * FROM aqola'
+    # print(conn.execute(stmnt))
+    print (pd.read_sql('SELECT * FROM crime_data', engine))
+
+
+if __name__ == "__main__":
+    main()
 
