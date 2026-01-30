@@ -51,8 +51,6 @@ def orderCollumns(df, table):
 
     validKeys = [c for c in columnMap if c in df.columns]
     print("valid keys used are:", validKeys)    
-    print("valid keys used are:", validKeys)
-    input()
     return df[validKeys].rename(columns = columnMap)
 
 
@@ -190,7 +188,7 @@ def main():
             print(tempData)
             cleanNull(tempData)
             tempData = orderCollumns(tempData, i)
-            if tempData != ():
+            if tempData.shape[0] == 0:
                 tempData.to_sql(
                     i, engine, if_exists="replace"
                 )
