@@ -22,6 +22,7 @@ KENT_LAD_CODES = [
     'E07000116',
 ]
 
+
 def create_db_connection():
     connection_string = (
         f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@"
@@ -54,14 +55,14 @@ def read_and_transform_lsoa_data(file_path: Path) -> gpd.GeoDataFrame:
     return gdf
 
 
-def prepare_data_for_db(gdf):
+def prepare_data_for_db(gdf, pop_df_path: Path = None):
     """Prepare GeoDataFrame for database insertion."""
     
     print ("Preparing data for database insert.")
 
     lsoas = []
 
-    pop_df = pd.read_csv(r"C:\Users\Callum\Downloads\LSOA_population.csv")
+    pop_df = pd.read_csv(pop_df_path)
 
     for idx, row in gdf.iterrows():
         lsoa_id = row.get('LSOA21CD', None)
@@ -85,8 +86,10 @@ def prepare_data_for_db(gdf):
         }
 
         lsoas.append(lsoa)
+    
+    lsoa_count = len(lsoas)
 
-    return lsoas
+    return lsoas, lsoa_count
 
 def make_csv_from_json(lsoas, output_path: Path):
     """Utility function to create a CSV from LSOA data for inspection."""
@@ -136,7 +139,7 @@ def insert_lsoas_to_db(engine, lsoas):
 
     print("LSOAs inserted successfully.")
 
-def validate_import(engine):
+def validate_import(engine, lsoa_count):
     """Validate the data imported"""
     print("Validating imported data...")
 
@@ -147,6 +150,10 @@ def validate_import(engine):
         result = session.execute(text("SELECT COUNT(*) FROM lsoas;"))
         count = result.scalar()
         print(f"Total LSOAs in database: {count}")
+        assert count == lsoa_count, f"Expected {lsoa_count} LSOAs, found {count} in database."
+
+    except Exception as e:
+        print(f"Error validating import: {e}")
 
     finally:
         session.close()
@@ -156,14 +163,21 @@ def main():
     
     shapefile_path = None
 
-    if len(sys.argv) < 2:
-        shapefile_path = Path(r"C:\Users\Callum\Downloads\LSOAs_shapefile")
-        # print("Usage: python lsoa.py <path_to_lsoa_shapefile>")
-        # sys.exit(1)
+    if len(sys.argv) < 3:
+        print("Usage: python lsoa.py <path_to_lsoa_shapefile> <path_to_population_csv>")
+        sys.exit(1)
+
+    else:
+        shapefile_path = Path(sys.argv[1])
+        pop_df_path = Path(sys.argv[2])
 
     # shapefile_path = Path(sys.argv[1])
     if not shapefile_path.exists():
         print(f"Shapefile not found at: {shapefile_path}")
+        sys.exit(1)
+
+    if not pop_df_path.exists():
+        print(f"Population CSV not found at: {pop_df_path}")
         sys.exit(1)
 
     try:
@@ -177,7 +191,7 @@ def main():
         session = Session()
         print("Database connection established successfully.")
 
-        lsoas = prepare_data_for_db(gdf)
+        lsoas, count = prepare_data_for_db(gdf, pop_df_path)
 
         # print("Writing LSOA data to CSV for inspection...")
 
@@ -188,9 +202,8 @@ def main():
 
         insert_lsoas_to_db(engine, lsoas)
 
-        # validate_import(engine)
+        validate_import(engine, count)
 
-    
     except Exception as e:
         print(f"Error -> : {e}")
         sys.exit(1)
