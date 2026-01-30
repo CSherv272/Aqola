@@ -81,8 +81,8 @@ def prepare_data_for_db(gdf, pop_df_path: Path = None):
             'area_name': row.get('LSOA21NM', None),
             'population': int(population.replace("," , "")) if population is not None else None,
             'area_sq_km': area_sq_km,
+            'boundary': WKTElement(row.geometry.wkt, srid=4326),
             'centroid': WKTElement(centroid.wkt, srid=4326),
-            'geometry': WKTElement(row.geometry.wkt, srid=4326)
         }
 
         lsoas.append(lsoa)
@@ -111,7 +111,7 @@ def insert_lsoas_to_db(engine, lsoas):
             (lsoa_id, area_name, population, area_sq_km, boundary, centroid)
             VALUES 
             (:lsoa_id, :area_name, :population, :area_sq_km,
-              ST_GeomFromText(:geometry, 4326), ST_GeomFromText(:centroid, 4326))
+              ST_GeomFromText(:boundary, 4326), ST_GeomFromText(:centroid, 4326))
             ON CONFLICT (lsoa_id)
             DO UPDATE SET
                 area_name = EXCLUDED.area_name,
@@ -122,7 +122,7 @@ def insert_lsoas_to_db(engine, lsoas):
         """)
 
         for lsoa in lsoas:
-            lsoa['geometry'] = str(lsoa['geometry'].data)
+            lsoa['boundary'] = str(lsoa['boundary'].data)
             lsoa['centroid'] = str(lsoa['centroid'].data)
 
         session.execute(insert_sql, lsoas)
@@ -195,12 +195,15 @@ def main():
 
         # print("Writing LSOA data to CSV for inspection...")
 
-        # make_csv_from_json(lsoas, Path(r"C:\Users\Callum\Downloads\lsoas_kent.csv"))
+        print("Where would you like to save the LSOA CSV?")
+
+        output_path = input("Enter the full path to the output CSV file (e.g., C:\\Users\\Callum\\Downloads\\lsoas_kent.csv): ")
+        make_csv_from_json(lsoas, Path(output_path, "lsoas_kent.csv"))
 
 
         print(f"Prepared {len(lsoas)} LSOAs for database insertion.")
 
-        insert_lsoas_to_db(engine, lsoas)
+        # insert_lsoas_to_db(engine, lsoas)
 
         validate_import(engine, count)
 
