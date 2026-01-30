@@ -1,5 +1,3 @@
-
-
 import subprocess
 import sys
 from pathlib import Path
@@ -13,7 +11,7 @@ logger = logging.getLogger(__name__)
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy import create_engine, inspect, text
 
-FilePath = Path(r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data")
+# FilePath = Path(r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data")
 engine = create_engine ( "postgresql://aqola_user:mysecretpassword@localhost:5432/aqola")
 with engine.connect() as conn:
     print("DB Connected")
@@ -240,4 +238,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
