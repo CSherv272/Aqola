@@ -23,10 +23,12 @@ def getData(name):
     #for csv in FilePath.append(name).glob("*.csv"):
     tempPath = Path
     tempPath = FilePath / name
+    tempData = []
     for csv in tempPath.glob("*.csv"):
-        tempData = pd.read_csv(csv)
+        tempData.append(pd.read_csv(csv))
         #print(csv)
-        data = pd.concat([data, tempData], ignore_index=True)
+    
+    data = pd.concat(tempData, ignore_index=True)
     return data
 
 def orderCollumns(df, table):
@@ -53,9 +55,9 @@ def getTableDict(name):
     match name : 
         case "crime_data" :
             print("inside case")
-            return {"type": "crime_type",
-            "lsoa_id": "lsoa code",
-            "date": "Month"}
+            return {"crime_type": "Crime type",
+                    "lsoa_id": "lsoa code",
+                    "date": "Month"}
         case _:
             return {}
         
