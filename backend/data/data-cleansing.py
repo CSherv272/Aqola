@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 from sqlalchemy import create_engine, inspect
 
 FilePath = Path(r"C:\Users\mjp\OneDrive - University of Kent\Andrew Meyer's files - Project\Research\Raw Data Research\data")
-engine = create_engine ( "postgresql://aqola_user:mysecretpassword@localhost:5431/aqola")
+engine = create_engine ( "postgresql://aqola_user:mysecretpassword@localhost:5432/aqola")
 with engine.connect() as conn:
     print("DB Connected")
 inspector = inspect(engine)
@@ -45,14 +45,14 @@ def orderCollumns(df, table):
         print("columns not added: %s" , missing)
 
     validKeys = [c for c in columnMap if c in df.columns]
-    print("valid keys used are:", validKeys)
-    input()
+    print("valid keys used are:", validKeys)    
     return df[validKeys].rename(columns = columnMap)
 
 
 def getTableDict(name):
     match name : 
         case "crime_data" :
+            print("inside case")
             return {"type": "crime_type",
             "lsoa_id": "lsoa code",
             "date": "Month"}
@@ -138,7 +138,7 @@ def main():
             print(tempData)
             cleanNull(tempData)
             tempData = orderCollumns(tempData, i)
-            if tempData != ():
+            if tempData.shape[0] == 0:
                 tempData.to_sql(
                     i, engine, if_exists="replace"
                 )
