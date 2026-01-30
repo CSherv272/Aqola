@@ -58,9 +58,9 @@ def getTableDict(name):
     match name : 
         case "crime_data" :
             print("inside case")
-            return {"type": "crime_type",
-            "lsoa_id": "lsoa code",
-            "date": "Month"}
+            return {"crime_type": "Crime type",
+                    "lsoa_id": "lsoa code",
+                    "date": "Month"}
         case _:
             return {}
         
