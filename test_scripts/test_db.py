@@ -7,36 +7,29 @@ SCHEMA_SQL_PATH = os.path.join(BASE_DIR, '..', 'database', 'init', 'schema_integ
 DATA_QUALITY_SQL_PATH = os.path.join(BASE_DIR, '..', 'database', 'init', 'data_quality_validation.sql')
 
 # --- 2. DEFINE EXPECTED SCHEMA SPECS ---
-EXPECTED_TABLES = ['display_zones', 'statistical_areas', 'postcodes', 'crime_data']
+EXPECTED_TABLES = ['lsoas', 'postcodes', 'crime_data']
 
 # Format: (table, column, type, nullable)
 EXPECTED_COLUMNS = {
-    ('display_zones', 'id', 'integer', 'NO'),                # SERIAL
-    ('display_zones', 'name', 'character varying', 'NO'),    # VARCHAR(100)
-    ('display_zones', 'zone_code', 'character varying', 'NO'), # VARCHAR(20)
-    ('display_zones', 'population', 'integer', 'YES'),       # INT (Nullable)
-    ('display_zones', 'area_sq_km', 'numeric', 'YES'),       # DECIMAL(10,2) (Nullable)
-    ('display_zones', 'boundary', 'USER-DEFINED', 'NO'),      # GEOMETRY(MULTIPOLYGON, 4326)
-    ('display_zones', 'centroid', 'USER-DEFINED', 'NO'),      # GEOMETRY(POINT, 4326)
 
-    ('statistical_areas', 'lsoa_id', 'character varying', 'NO'),       # VARCHAR(20)
-    ('statistical_areas', 'display_zone_id', 'integer', 'NO'),        # INT (Foreign Key)
-    ('statistical_areas', 'area_name', 'character varying', 'NO'),    # VARCHAR(100)
-    ('statistical_areas', 'population', 'integer', 'YES'),            # INT (Nullable)
-    ('statistical_areas', 'area_sq_km', 'numeric', 'YES'),            # DECIMAL(10,4) (Nullable)
-    ('statistical_areas', 'boundary', 'USER-DEFINED', 'NO'),           # GEOMETRY(MULTIPOLYGON, 4326)
-    ('statistical_areas', 'centroid', 'USER-DEFINED', 'NO'),           # GEOMETRY(POINT, 4326)
+    ('lsoas', 'lsoa_id', 'character varying', 'NO'),       # VARCHAR(20)
+    ('lsoas', 'area_name', 'character varying', 'NO'),     # VARCHAR(100)
+    ('lsoas', 'population', 'integer', 'YES'),             # INT (Nullable)
+    ('lsoas', 'area_sq_km', 'numeric', 'YES'),             # DECIMAL(10,4) (Nullable)
+    ('lsoas', 'boundary', 'USER-DEFINED', 'NO'),           # GEOMETRY(MULTIPOLYGON, 4326)
+    ('lsoas', 'centroid', 'USER-DEFINED', 'NO'),           # GEOMETRY(POINT, 4326)
 
     ('postcodes', 'postcode', 'character varying', 'NO'),             # VARCHAR(10)
-    ('postcodes', 'stat_area_id', 'character varying', 'NO'),         # VARCHAR(20) (Foreign Key)
+    ('postcodes', 'lsoa_id', 'character varying', 'NO'),              # VARCHAR(20) (Foreign Key)
     ('postcodes', 'postcode_area', 'character varying', 'NO'),        # VARCHAR(4)
     ('postcodes', 'postcode_district', 'character varying', 'NO'),    # VARCHAR(4)
     ('postcodes', 'postcode_sector', 'character varying', 'NO'),      # VARCHAR(5)
     ('postcodes', 'latitude', 'numeric', 'NO'),                       # DECIMAL(9,6)
     ('postcodes', 'longitude', 'numeric', 'NO'),                      # DECIMAL(9,6)
-    ('postcodes', 'location', 'USER-DEFINED', 'NO'),                  # GEOMETRY(POINT, 4326)
+    ('postcodes', 'centroid', 'USER-DEFINED', 'NO'),                  # GEOMETRY(POINT, 4326)
+    ('postcodes', 'boundary', 'USER-DEFINED', 'NO'),                  # GEOMETRY(MULTIPOLYGON, 4326)
 
-    ('crime_data', 'id', 'integer', 'NO'),                            # SERIAL
+    ('crime_data', 'crime_id', 'integer', 'NO'),                            # SERIAL
     ('crime_data', 'lsoa_id', 'character varying', 'NO'),             # VARCHAR(20) (Foreign Key)
     ('crime_data', 'date', 'date', 'NO'),                             # DATE
     ('crime_data', 'latitude', 'numeric', 'NO'),                      # DECIMAL(9,6)
@@ -46,12 +39,10 @@ EXPECTED_COLUMNS = {
 
 # Format: (table, type, column)
 EXPECTED_KEYS = {
-    ('display_zones', 'PRIMARY KEY', 'id'),
-    ('statistical_areas', 'PRIMARY KEY', 'lsoa_id'),
-    ('statistical_areas', 'FOREIGN KEY', 'display_zone_id'),
+    ('lsoas', 'PRIMARY KEY', 'lsoa_id'),
     ('postcodes', 'PRIMARY KEY', 'postcode'),
-    ('postcodes', 'FOREIGN KEY', 'stat_area_id'),
-    ('crime_data', 'PRIMARY KEY', 'id'),
+    ('postcodes', 'FOREIGN KEY', 'lsoa_id'),
+    ('crime_data', 'PRIMARY KEY', 'crime_id'),
     ('crime_data', 'FOREIGN KEY', 'lsoa_id')
 }
 

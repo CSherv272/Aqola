@@ -55,4 +55,4 @@ VALUES
 
 INSERT INTO crime_data (lsoa_id, date, latitude, longitude, crime_type)
 VALUES
-    ('E01024101', '2024-05-15', 51.2815, -0.5710, 'Burglary');  
+    ('E01024101', '2024-05-15', 51.2815, 1.0710, 'Burglary');  
