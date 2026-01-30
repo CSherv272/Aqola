@@ -15,10 +15,10 @@ kentPostcodes = ["BR6", "BR8",
 
 # get all CSVs in file path
 def getFiles(filePath):
-    data = gpd.GeoDataFrame()
-    for csv in filePath.glob("*.csv"):
-        tempData = pd.read_csv(csv, usecols=[0, 41, 42, 50])
-        data = pd.concat([data, tempData], ignore_index=True)
+    data = pd.read_csv(Path(filePath) / "all_postcodes.csv", usecols=[0, 41, 42, 50])
+    # for csv in filePath.glob("*.csv"):
+    #     tempData = pd.read_csv(csv, usecols=[0, 41, 42, 50])
+    #     data = pd.concat([data, tempData], ignore_index=True)
     return data
 
 # remove duplicate rows
@@ -90,13 +90,16 @@ def innerJoinDataframes(data, pcdData):
 def dropColumnsByIndex(data, i):
     return data.drop(data.columns[i], axis=1)
 
+def renameCol(data, oldCol, newCol):
+    return data.rename(columns={oldCol : newCol})
+
 # export dataframe to a csv (data = the dataframe, path = file path, excluding filename)
 def exportToCsv(data, path):
     data.to_csv(Path(path, "pcd_data.csv"), index=False)
     print("exported to " + path)
 
 def main():
-    path = input("Please enter the path to the GeoJSON data >> ")
+    path = input("Please enter the path to the data >> ")
     data = getFiles(path)
 
     # remove irrelevant data
@@ -110,16 +113,17 @@ def main():
 
     # centroid/polygon generation
     data = generateCentroids(data)
-    pcdData = extractPolygonData(data)
+    pcdData = extractPolygonData(data, path)
 
     # final formatting
     data = innerJoinDataframes(data, pcdData)
     data = dropColumnsByIndex(data, [8, 9])
     # data = data.dropna() # these could be introduced from the join in combine datasets
     data = reorganiseColumns(data)
+    data = renameCol(data, "geometry", "boundary")
 
-
-    exportToCsv(data, "G:/Files/")
+    # exportLoc = input("Please enter the export location >> ")
+    exportToCsv(data, path)
 
 
 if __name__ == "__main__":
