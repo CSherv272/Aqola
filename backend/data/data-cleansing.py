@@ -5,15 +5,15 @@ import sys
 from pathlib import Path
 import pandas as pd
 import geopandas as gpd
-import geopandas as gpd
 import os
 import logging
 logger = logging.getLogger(__name__)
 
 
 from sqlalchemy import create_engine, inspect, text
+from sqlalchemy import create_engine, inspect, text
 
-FilePath = Path(r"C:\Users\mjp\OneDrive - University of Kent\Andrew Meyer's files - Project\Research\Raw Data Research\data")
+FilePath = Path(r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data")
 engine = create_engine ( "postgresql://aqola_user:mysecretpassword@localhost:5432/aqola")
 with engine.connect() as conn:
     print("DB Connected")
@@ -150,31 +150,90 @@ def ingestTable(filePath, tableName):
             print(f"error: " + str(e))
 
 def main():
-    fileList = os.listdir(FilePath)
-    fileSet = {f.lower() for f in fileList}
+    # postcodesFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\postcodes"
+    lsoaFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\lsoas\lsoas_kent.csv"
+    # crimeFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\crime_data"
+
+    # initialiseDB()
+    # ingestTable(postcodesFilePath, "postcodes")
+    ingestTable(lsoaFilePath, "lsoas")
+    # ingestTable(crimeFilePath, "crime_data")
+
+
+
+
+
+    # dataFolders = os.listdir(FilePath)
+    # dataFoldersLower = {f.lower() for f in dataFolders}    
+    
+    # database initialisation
+    
+    # inspector = inspect(engine)
+
+    # tables = inspector.get_table_names()
+    # print("tables " + str(tables)) #empty
+
+    # postcodesColumns = {
+    #     "pcd" : "postcode",
+    #     "lsoa21" : "lsoa_id",
+    #     "pcd_a" : "postcode_area",
+    #     "pcd_d" : "postcode_district",
+    #     "pcd_s" : "postcode_sector",
+    #     "lat" : "latitude",
+    #     "long" : "longitude",
+    #     "geometry" : "boundary",
+    #     "centroid" : "centroid"
+    # }
+    # postcodesFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\postcodes"
+
+    # lsoaColumns = {
+    #     "lsoa_id": "lsoa_id",
+    #     "area_name": "area_name",
+    #     "population": "population",
+    #     "area_sq_km": "area_sq_km",
+    #     "centroid": "centroid",
+    #     "geometry": "geometry"
+    # }
+    # lsoaFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\lsoas\lsoas_kent.csv"
+
+    # crimeDataColumns = {
+    #     "Crime ID": "crime_id",
+    #     "LSOA code" : "lsoa_id",
+    #     "Month" : "date",
+    #     "Latitude" : "latitude",
+    #     "Longitude" : "longitude",
+    #     "Crime Type" : "crime_type"
+    # }
+    # crimeFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\crime_data"
 
     
 
-    tables = inspector.get_table_names()
-    print(tables)
-    print(fileSet)
+    # for table in tables:    
+    #     print("in loop")
+    #     if table.lower() in dataFoldersLower:
+    #         tempData = getData(table)
+    #         tempData = cleanNull(tempData)
+    #         print("table:", table)
 
-    for i in tables:    
-        if i.lower() in fileSet:
-            tempData = pd.DataFrame()
-            tempData = getData(i)
-            print(i)
-            print(tempData)
-            cleanNull(tempData)
-            tempData = orderCollumns(tempData, i)
-            if tempData.shape[0] == 0:
-                tempData.to_sql(
-                    i, engine, if_exists="replace"
-                )
+    #         if not tempData.empty:
+    #             print(tempData.sample(10))
+
+    #             tempData.to_sql(
+    #                 table,
+    #                 engine,
+    #                 if_exists="replace",   # or replace if you really mean it
+    #                 index=False
+    #             )
+
+    #             with engine.connect() as conn:
+    #                 result = conn.execute(text(f"SELECT COUNT(*) FROM {table};"))
+    #                 print("rows in db:", result.scalar())
+    #         else:
+    #             print(f"The table: {table} has no data found for it")
+
             
     # stmnt ='SELECT * FROM aqola'
     # print(conn.execute(stmnt))
-    print (pd.read_sql('SELECT * FROM crime_data', engine))
 
 
 if __name__ == "__main__":
