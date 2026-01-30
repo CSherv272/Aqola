@@ -15,11 +15,13 @@ kentPostcodes = ["BR6", "BR8",
 
 # get all CSVs in file path
 def getFiles(filePath):
-    data = gpd.GeoDataFrame()
-    for csv in filePath.glob("*.csv"):
-        tempData = pd.read_csv(csv, usecols=[0, 41, 42, 50])
-        data = pd.concat([data, tempData], ignore_index=True)
+    data = gpd.read_file(filePath + r"\all_postcodes.csv")
+    # for csv in filePath.glob("*.csv"):
+    #     tempData = pd.read_csv(csv, usecols=[0, 41, 42, 50])
+    #     data = pd.concat([data, tempData], ignore_index=True)
+    
     return data
+
 
 # remove duplicate rows
 def removeDupes(data):
@@ -72,8 +74,8 @@ def generateCentroids(data):
 # using postcodes in kent, extract the polygon data from the geojson files
 def extractPolygonData(data, geojsonPath):
     newData = []
-
     for pcdDist in data["pcd_d"].unique():
+        print("new pc")
         current_file = gpd.read_file(geojsonPath + "/" + pcdDist + ".geojson")
         districtPcd = data[data["pcd_d"] == pcdDist] # all postcodes in that district
         for pcd in districtPcd["pcd"]:
@@ -95,31 +97,39 @@ def exportToCsv(data, path):
     data.to_csv(Path(path, "pcd_data.csv"), index=False)
     print("exported to " + path)
 
+def renameColumn(data, colName, newName):
+    return data.rename(columns={colName : newName})
+
+
+
 def main():
-    path = input("Please enter the path to the GeoJSON data >> ")
+    path = input("Please enter the path to the data >> ")
     data = getFiles(path)
 
     # remove irrelevant data
     data = data.dropna()
     data = removeDupes(data)
 
+    print("removed dupes")
     # postcode processes
     data = spaceStripColumn(data, "pcd")
     data = splitPostcodes(data)
     data = kentPostcodeFilter(data)
+    print("split postcodes")
 
     # centroid/polygon generation
     data = generateCentroids(data)
-    pcdData = extractPolygonData(data)
+    pcdData = extractPolygonData(data, path)
 
     # final formatting
     data = innerJoinDataframes(data, pcdData)
     data = dropColumnsByIndex(data, [8, 9])
     # data = data.dropna() # these could be introduced from the join in combine datasets
     data = reorganiseColumns(data)
+    data = renameColumn(data, "geometry", "boundary")
 
-
-    exportToCsv(data, "G:/Files/")
+    exportLocation = input("please put in where you want to export your csv >> ")
+    exportToCsv(data, exportLocation)
 
 
 if __name__ == "__main__":
