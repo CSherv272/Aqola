@@ -39,8 +39,6 @@ def orderCollumns(df, table):
     manualMap = getTableDict(table)
     if manualMap == {}:
         return()
-    if manualMap == {}:
-        return()
     
     #apply automap and manualmap, with manual taking prio
     columnMap = {**autoMap, **manualMap}
@@ -48,20 +46,19 @@ def orderCollumns(df, table):
     missing = set(columnMap.values()) - dbColumnSet
     if missing :
         print("columns not added: %s" , missing)
-        print("columns not added: %s" , missing)
 
     validKeys = [c for c in columnMap if c in df.columns]
-    print("valid keys used are:", validKeys)    
+    print("valid keys used are:", validKeys)
+    input()
     return df[validKeys].rename(columns = columnMap)
 
 
 def getTableDict(name):
     match name : 
         case "crime_data" :
-            print("inside case")
-            return {"crime_type": "Crime type",
-                    "lsoa_id": "lsoa code",
-                    "date": "Month"}
+            return {"type": "crime_type",
+            "lsoa_id": "lsoa code",
+            "date": "Month"}
         case _:
             return {}
         
