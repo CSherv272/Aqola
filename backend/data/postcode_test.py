@@ -5,16 +5,17 @@ from pathlib import Path
 
 @pytest.fixture(scope="session")
 def import_csv():
-    gdf = gpd.read_file("G:/Files/pcd_data.csv")
+    filePath = input("Please enter file path to the produced csv >> ")
+    gdf = gpd.read_file(filePath)
     return gdf
 
-def check_nan_nulls(importCsv):
+def test_check_nan_nulls(importCsv):
     assert(gpd.isnan(importCsv))
 
-def check_dupes(importCsv):
+def test_check_dupes(importCsv):
     assert(gpd.duplicated(importCsv))
 
-def check_postcode_filtering_for_kent(importCsv):
+def test_postcode_filtering_for_kent(importCsv):
     allPostcodes = pd.read_csv(Path("C:/Users/Andrew Meyer/OneDrive - University of Kent/Files/Computer Science/Year 3 (25-26)/Project/Research/Raw Data Research/data/postcodes/all_postcodes.csv"))
     kentPostcodes = ["BR6", "BR8",
                     "CT1", "CT10", "CT11", "CT12", "CT13", "CT14", "CT15", "CT16", "CT17", "CT18", "CT19",
@@ -26,4 +27,4 @@ def check_postcode_filtering_for_kent(importCsv):
                     "TN2", "TN23", "TN24", "TN25", "TN26", "TN27", "TN28", "TN29", "TN3", "TN30", "TN4", "TN8", "TN9"]
     
     kentPcds = allPostcodes.filter(like=[kentPostcodes], axis=0)
-    assert(kentPcds["pcd"].isin(importCsv["pcd"]))
+    assert kentPcds["pcd"].isin(importCsv["pcd"])

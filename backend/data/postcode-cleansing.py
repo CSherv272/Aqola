@@ -14,8 +14,7 @@ kentPostcodes = ["BR6", "BR8",
 
 
 # get all CSVs in file path
-def getFiles():
-    filePath = Path(input("Please enter the path to the CSVs >> "))
+def getFiles(filePath):
     data = gpd.GeoDataFrame()
     for csv in filePath.glob("*.csv"):
         tempData = pd.read_csv(csv, usecols=[0, 41, 42, 50])
@@ -71,8 +70,7 @@ def generateCentroids(data):
     return data
 
 # using postcodes in kent, extract the polygon data from the geojson files
-def extractPolygonData(data):
-    geojsonPath = input("Please enter the path to the GeoJSON data >> ")
+def extractPolygonData(data, geojsonPath):
     newData = []
 
     for pcdDist in data["pcd_d"].unique():
@@ -98,7 +96,8 @@ def exportToCsv(data, path):
     print("exported to " + path)
 
 def main():
-    data = getFiles()
+    path = input("Please enter the path to the GeoJSON data >> ")
+    data = getFiles(path)
 
     # remove irrelevant data
     data = data.dropna()
