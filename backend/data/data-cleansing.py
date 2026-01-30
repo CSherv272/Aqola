@@ -39,6 +39,8 @@ def orderCollumns(df, table):
     manualMap = getTableDict(table)
     if manualMap == {}:
         return()
+    if manualMap == {}:
+        return()
     
     #apply automap and manualmap, with manual taking prio
     columnMap = {**autoMap, **manualMap}
@@ -55,10 +57,9 @@ def orderCollumns(df, table):
 def getTableDict(name):
     match name : 
         case "crime_data" :
-            print("inside case")
-            return {"crime_type": "Crime type",
-                    "lsoa_id": "lsoa code",
-                    "date": "Month"}
+            return {"type": "crime_type",
+            "lsoa_id": "lsoa code",
+            "date": "Month"}
         case _:
             return {}
         
