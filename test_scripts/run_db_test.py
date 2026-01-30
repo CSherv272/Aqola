@@ -30,7 +30,7 @@ def test_connection():
         print(f"DEBUG: Trying to connect to {os.getenv('POSTGRES_DB')} as {os.getenv('POSTGRES_USER')}")
         print(f"CONNECTION FAILED: {e}")
         
-def schema_integrity_validation():
+def test_schema_integrity_validation():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -43,7 +43,7 @@ def schema_integrity_validation():
             
         cur.execute(queries[0])
         found_tables = [row[0] for row in cur.fetchall()]
-        expected_tables = ['display_zones', 'statistical_areas', 'postcodes', 'crime_data']
+        expected_tables = [ 'lsoas', 'postcodes', 'crime_data']
         
         print("\n---  ARE ALL NECESSARY TABLES PRESENT? ---")
         for table in expected_tables:
@@ -66,32 +66,25 @@ def schema_integrity_validation():
         cur.execute(queries[1])
         all_columns = cur.fetchall()
         expected_columns = {
-            ('display_zones', 'id', 'integer', 'NO'),                # SERIAL
-            ('display_zones', 'name', 'character varying', 'NO'),    # VARCHAR(100)
-            ('display_zones', 'zone_code', 'character varying', 'NO'), # VARCHAR(20)
-            ('display_zones', 'population', 'integer', 'YES'),       # INT (Nullable)
-            ('display_zones', 'area_sq_km', 'numeric', 'YES'),       # DECIMAL(10,2) (Nullable)
-            ('display_zones', 'boundary', 'USER-DEFINED', 'NO'),      # GEOMETRY(MULTIPOLYGON, 4326)
-            ('display_zones', 'centroid', 'USER-DEFINED', 'NO'),      # GEOMETRY(POINT, 4326)
 
-            ('statistical_areas', 'lsoa_id', 'character varying', 'NO'),       # VARCHAR(20)
-            ('statistical_areas', 'display_zone_id', 'integer', 'NO'),        # INT (Foreign Key)
-            ('statistical_areas', 'area_name', 'character varying', 'NO'),    # VARCHAR(100)
-            ('statistical_areas', 'population', 'integer', 'YES'),            # INT (Nullable)
-            ('statistical_areas', 'area_sq_km', 'numeric', 'YES'),            # DECIMAL(10,4) (Nullable)
-            ('statistical_areas', 'boundary', 'USER-DEFINED', 'NO'),           # GEOMETRY(MULTIPOLYGON, 4326)
-            ('statistical_areas', 'centroid', 'USER-DEFINED', 'NO'),           # GEOMETRY(POINT, 4326)
+            ('lsoas', 'lsoa_id', 'character varying', 'NO'),       # VARCHAR(20)
+            ('lsoas', 'area_name', 'character varying', 'NO'),    # VARCHAR(100)
+            ('lsoas', 'population', 'integer', 'YES'),            # INT (Nullable)
+            ('lsoas', 'area_sq_km', 'numeric', 'YES'),            # DECIMAL(10,4) (Nullable)
+            ('lsoas', 'boundary', 'USER-DEFINED', 'NO'),           # GEOMETRY(MULTIPOLYGON, 4326)
+            ('lsoas', 'centroid', 'USER-DEFINED', 'NO'),           # GEOMETRY(POINT, 4326)
 
             ('postcodes', 'postcode', 'character varying', 'NO'),             # VARCHAR(10)
-            ('postcodes', 'stat_area_id', 'character varying', 'NO'),         # VARCHAR(20) (Foreign Key)
+            ('postcodes', 'lsoa_id', 'character varying', 'NO'),         # VARCHAR(20) (Foreign Key)
             ('postcodes', 'postcode_area', 'character varying', 'NO'),        # VARCHAR(4)
             ('postcodes', 'postcode_district', 'character varying', 'NO'),    # VARCHAR(4)
             ('postcodes', 'postcode_sector', 'character varying', 'NO'),      # VARCHAR(5)
             ('postcodes', 'latitude', 'numeric', 'NO'),                       # DECIMAL(9,6)
             ('postcodes', 'longitude', 'numeric', 'NO'),                      # DECIMAL(9,6)
-            ('postcodes', 'location', 'USER-DEFINED', 'NO'),                  # GEOMETRY(POINT, 4326)
+            ('postcodes', 'centroid', 'USER-DEFINED', 'NO'),                  # GEOMETRY(POINT, 4326)
+            ('postcodes', 'boundary', 'USER-DEFINED', 'NO'),                  # GEOMETRY(MULTIPOLYGON, 4326)
 
-            ('crime_data', 'id', 'integer', 'NO'),                            # SERIAL
+            ('crime_data', 'crime_id', 'integer', 'NO'),                            # SERIAL
             ('crime_data', 'lsoa_id', 'character varying', 'NO'),             # VARCHAR(20) (Foreign Key)
             ('crime_data', 'date', 'date', 'NO'),                             # DATE
             ('crime_data', 'latitude', 'numeric', 'NO'),                      # DECIMAL(9,6)
@@ -123,12 +116,10 @@ def schema_integrity_validation():
         #print(constraints)
         
         expected_keys = {
-            ('display_zones', 'PRIMARY KEY', 'id'),
-            ('statistical_areas', 'PRIMARY KEY', 'lsoa_id'),
-            ('statistical_areas', 'FOREIGN KEY', 'display_zone_id'),
+            ('lsoas', 'PRIMARY KEY', 'lsoa_id'),
             ('postcodes', 'PRIMARY KEY', 'postcode'),
-            ('postcodes', 'FOREIGN KEY', 'stat_area_id'),
-            ('crime_data', 'PRIMARY KEY', 'id'),
+            ('postcodes', 'FOREIGN KEY', 'lsoa_id'),
+            ('crime_data', 'PRIMARY KEY', 'crime_id'),
             ('crime_data', 'FOREIGN KEY', 'lsoa_id')
         }
         
@@ -152,7 +143,7 @@ def schema_integrity_validation():
         print(f" SCHEMA AUDIT ERROR: {e}")
         
     
-def data_quality_validation():
+def test_data_quality_validation():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -191,13 +182,13 @@ def data_quality_validation():
         print(f" SCHEMA AUDIT ERROR: {e}")
     
     
-def db_test():
+def test_db():
     print("\n---  DATABASE TESTING REPORT  ---")
     test_connection()
-    schema_integrity_validation()
-    data_quality_validation()
+    test_schema_integrity_validation()
+    test_data_quality_validation()
     print("---END OF DATABASE TESTING REPORT---\n")
 
         
 if __name__ == "__main__":
-    db_test()
+    test_db()
