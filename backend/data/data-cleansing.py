@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 from sqlalchemy import create_engine, inspect, text
 
-FilePath = Path(r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data")
+FilePath = Path(r"C:\Users\mjp\OneDrive - University of Kent\Andrew Meyer's files - Project\Research\Raw Data Research\data")
 engine = create_engine ( "postgresql://aqola_user:mysecretpassword@localhost:5432/aqola")
 with engine.connect() as conn:
     print("DB Connected")
@@ -48,14 +48,14 @@ def orderCollumns(df, table):
         print("columns not added: %s" , missing)
 
     validKeys = [c for c in columnMap if c in df.columns]
-    print("valid keys used are:", validKeys)
-    input()
+    print("valid keys used are:", validKeys)    
     return df[validKeys].rename(columns = columnMap)
 
 
 def getTableDict(name):
     match name : 
         case "crime_data" :
+            print("inside case")
             return {"type": "crime_type",
             "lsoa_id": "lsoa code",
             "date": "Month"}
@@ -150,104 +150,31 @@ def ingestTable(filePath, tableName):
             print(f"error: " + str(e))
 
 def main():
-    # postcodesFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\postcodes"
-    lsoaFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\lsoas\lsoas_kent.csv"
-    # crimeFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\crime_data"
+    fileList = os.listdir(FilePath)
+    fileSet = {f.lower() for f in fileList}
 
-    # initialiseDB()
-    # ingestTable(postcodesFilePath, "postcodes")
-    ingestTable(lsoaFilePath, "lsoas")
-    # ingestTable(crimeFilePath, "crime_data")
+    
 
+    tables = inspector.get_table_names()
+    print(tables)
+    print(fileSet)
 
-
-    data.to_sql(
-        "crime_data",
-        engine,
-        if_exists="replace",
-        index = False
-    )
-
-def initialiseDB():
-    #G:\Files\Local Git\aqola\database\init\initialise.sql
-    with engine.connect() as conn:
-        with open(Path(r"G:\Files\Local Git\aqola\database\init\initialise.sql")) as sqlFile:
-            query = text(sqlFile.read())
-            conn.execute(query)
-            conn.commit()
-
-# assumes all data is correctly formatted
-def ingestTable(filePath, tableName):
-    inspector = inspect(engine)
-
-    if tableName not in inspector.get_table_names():
-        print(f"table doesn't exist {tableName}")
-    else:
-        try:
-            data = gpd.read_file(filePath)
-            data.to_sql(
-                tableName,
-                engine,
-                if_exists="append",   # or replace if you really mean it
-                index=False
-            )
-        except Exception as e:
-            print(f"error: " + str(e))
-
-def main():
-    # postcodesFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\postcodes"
-    lsoaFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\lsoas\lsoas_kent.csv"
-    # crimeFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\crime_data"
-
-    # initialiseDB()
-    # ingestTable(postcodesFilePath, "postcodes")
-    ingestTable(lsoaFilePath, "lsoas")
-    # ingestTable(crimeFilePath, "crime_data")
-
-
-
-    data.to_sql(
-        "crime_data",
-        engine,
-        if_exists="replace",
-        index = False
-    )
-
-def initialiseDB():
-    #G:\Files\Local Git\aqola\database\init\initialise.sql
-    with engine.connect() as conn:
-        with open(Path(r"G:\Files\Local Git\aqola\database\init\initialise.sql")) as sqlFile:
-            query = text(sqlFile.read())
-            conn.execute(query)
-            conn.commit()
-
-# assumes all data is correctly formatted
-def ingestTable(filePath, tableName):
-    inspector = inspect(engine)
-
-    if tableName not in inspector.get_table_names():
-        print(f"table doesn't exist {tableName}")
-    else:
-        try:
-            data = gpd.read_file(filePath)
-            data.to_sql(
-                tableName,
-                engine,
-                if_exists="append",   # or replace if you really mean it
-                index=False
-            )
-        except Exception as e:
-            print(f"error: " + str(e))
-
-def main():
-    # postcodesFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\postcodes"
-    lsoaFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\lsoas\lsoas_kent.csv"
-    # crimeFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\crime_data"
-
-    # initialiseDB()
-    # ingestTable(postcodesFilePath, "postcodes")
-    ingestTable(lsoaFilePath, "lsoas")
-    # ingestTable(crimeFilePath, "crime_data")
+    for i in tables:    
+        if i.lower() in fileSet:
+            tempData = pd.DataFrame()
+            tempData = getData(i)
+            print(i)
+            print(tempData)
+            cleanNull(tempData)
+            tempData = orderCollumns(tempData, i)
+            if tempData.shape[0] == 0:
+                tempData.to_sql(
+                    i, engine, if_exists="replace"
+                )
+            
+    # stmnt ='SELECT * FROM aqola'
+    # print(conn.execute(stmnt))
+    print (pd.read_sql('SELECT * FROM crime_data', engine))
 
 
 if __name__ == "__main__":
