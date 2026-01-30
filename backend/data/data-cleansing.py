@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 import pandas as pd
 import geopandas as gpd
-import geopandas as gpd
 import os
 import logging
 logger = logging.getLogger(__name__)
@@ -39,15 +38,12 @@ def orderCollumns(df, table):
     manualMap = getTableDict(table)
     if manualMap == {}:
         return()
-    if manualMap == {}:
-        return()
     
     #apply automap and manualmap, with manual taking prio
     columnMap = {**autoMap, **manualMap}
 
     missing = set(columnMap.values()) - dbColumnSet
     if missing :
-        print("columns not added: %s" , missing)
         print("columns not added: %s" , missing)
 
     validKeys = [c for c in columnMap if c in df.columns]
