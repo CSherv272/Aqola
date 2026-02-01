@@ -1,3 +1,9 @@
-psycopg2-binary
-python-dotenv
-pytest
+fastapi[standard]
+geoalchemy2==0.18.1
+pydantic==2.12.5
+pydantic_settings==2.12.0
+SQLAlchemy==2.0.46
+psycopg2-binary>=2.9.10
+httpx==0.24.1
+python-dotenv>=1.0.0
+pytest>=8.0.0
