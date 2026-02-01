@@ -16,7 +16,7 @@ This means
 WITH completeness_failures AS (
 
     --LSOAs
-    SELECT 'lsoas', 'lsoa_id', 'Logical Null (Empty/Spaces)', lsoa_id::text
+    SELECT 'lsoas' AS tbl, 'lsoa_id' AS col, 'Logical Null (Empty/Spaces)' AS issue, lsoa_id::text AS row_id
     FROM lsoas WHERE lsoa_id ~ '^\s*$'
     UNION ALL
     SELECT 'lsoas', 'lsoa_id', 'Malformed (Trailing/Leading Space)', lsoa_id::text
