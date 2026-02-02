@@ -63,7 +63,7 @@ def read_and_transform_lsoa_data(file_path: Path) -> gpd.GeoDataFrame:
 def prepare_data_for_db(gdf, pop_df_path: Path = None):
     """Prepare GeoDataFrame for database insertion."""
     
-    print ("Preparing data for database insert.")
+    # print ("Preparing data for database insert.")
 
     lsoas = []
 
@@ -207,7 +207,7 @@ def find_file_paths():
     
     return input, output
 
-def lsoa_cleansing():
+def lsoa_process():
     """Execute database connection."""
     
     INPUT_PATH, OUTPUT_PATH = find_file_paths()
@@ -252,5 +252,5 @@ def lsoa_cleansing():
         sys.exit(1)
 
 
-if __name__ == "__main__":
-    lsoa_cleansing()
+# if __name__ == "__main__":
+#     lsoa_cleansing()

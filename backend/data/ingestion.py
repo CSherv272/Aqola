@@ -10,10 +10,10 @@ with engine.connect() as conn:
     print("DB Connected")
 
 
-def initialise_db(sqlPath):
+def initialise_db():
     #G:\Files\Local Git\aqola\database\init\initialise.sql
     with engine.connect() as conn:
-        with open(sqlPath) as sqlFile:
+        with open("./database/init/initialise.sql") as sqlFile:
             query = text(sqlFile.read())
             conn.execute(query)
             conn.commit()
