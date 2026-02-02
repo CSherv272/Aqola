@@ -168,7 +168,7 @@ def find_output_file_path(env_var: str):
     # We will have varying priorities of where we can find these file paths
 
     # 1st priority: ENV file
-    env_path = Path(env_var + "/lsoas/", "lsoa_data.csv")
+    env_path = Path(env_var + "/lsoas/", "lsoas.csv")
     if env_path is not None:
         return env_path
 
@@ -207,7 +207,7 @@ def find_file_paths():
     
     return input, output
 
-def main():
+def lsoa_cleansing():
     """Execute database connection."""
     
     INPUT_PATH, OUTPUT_PATH = find_file_paths()
