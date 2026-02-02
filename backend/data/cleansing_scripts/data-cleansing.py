@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 from sqlalchemy import create_engine, inspect, text
-from sqlalchemy import create_engine, inspect, text
 
 FilePath = Path(r"C:\Users\mjp\OneDrive - University of Kent\Andrew Meyer's files - Project\Research\Raw Data Research\data")
 #FilePath = Path(r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data")
@@ -36,8 +35,6 @@ def orderCollumns(df, table):
 
     #autoMap = {c: c.lower() for c in df.columns if c.lower() in dbColumnSet}
     manualMap = getTableDict(table)
-    if manualMap == {}:
-        return()
     if manualMap == {}:
         return()
     
