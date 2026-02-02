@@ -2,7 +2,7 @@ import subprocess
 import sys
 from pathlib import Path
 import pandas as pd
-import geopandas as gpd
+#import geopandas as gpd
 import os
 import logging
 logger = logging.getLogger(__name__)
@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 
 from sqlalchemy import create_engine, inspect, text
 
-# FilePath = Path(r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data")
+FilePath = Path(r"C:\Users\mjp\OneDrive - University of Kent\Andrew Meyer's files - Project\Research\Raw Data Research\data")
+#FilePath = Path(r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data")
 engine = create_engine ( "postgresql://aqola_user:mysecretpassword@localhost:5432/aqola")
 with engine.connect() as conn:
     print("DB Connected")
@@ -30,32 +31,43 @@ def getData(name):
     return data
 
 def orderCollumns(df, table):
-    dbColumnSet = set({c["name"].lower() for c in inspector.get_columns(table)})
+    #dbColumnSet = set({c["name"].lower() for c in inspector.get_columns(table)})
 
-    autoMap = {c: c.lower() for c in df.columns if c.lower() in dbColumnSet}
+    #autoMap = {c: c.lower() for c in df.columns if c.lower() in dbColumnSet}
     manualMap = getTableDict(table)
     if manualMap == {}:
         return()
     
     #apply automap and manualmap, with manual taking prio
-    columnMap = {**autoMap, **manualMap}
+    # columnMap = {**autoMap, **manualMap}
 
-    missing = set(columnMap.values()) - dbColumnSet
-    if missing :
-        print("columns not added: %s" , missing)
+    # missing = set(columnMap.values()) - dbColumnSet
+    # if missing :
+    #     print("columns not added: %s" , missing)
 
-    validKeys = [c for c in columnMap if c in df.columns]
-    print("valid keys used are:", validKeys)    
-    return df[validKeys].rename(columns = columnMap)
+    df = df.rename(columns = manualMap)
+
+
+    validKeys = [c for c in manualMap.values() if c in df.columns]
+    print("valid keys used are:", validKeys)
+    df = df[validKeys]
+
+    print("df columns are", df.columns.values)    
+    return df  #[validKeys].rename(columns = columnMap)
+
 
 
 def getTableDict(name):
     match name : 
         case "crime_data" :
             print("inside case")
-            return {"crime_type": "Crime type",
-                    "lsoa_id": "lsoa code",
-                    "date": "Month"}
+            return {
+                #"Crime ID": "crime_id",
+                "LSOA code" : "lsoa_id",
+                "Month" : "date",
+                "Latitude" : "latitude",
+                "Longitude" : "longitude",
+                "Crime type" : "crime_type"}
         case _:
             return {}
         
@@ -148,15 +160,25 @@ def ingestTable(filePath, tableName):
 
 def main():
     # postcodesFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\postcodes"
-    lsoaFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\lsoas\lsoas_kent.csv"
+    # lsoaFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\lsoas\lsoas_kent.csv"
     # crimeFilePath = r"C:\Users\Andrew Meyer\OneDrive - University of Kent\Files\Computer Science\Year 3 (25-26)\Project\Research\Raw Data Research\data\crime_data"
 
     # initialiseDB()
     # ingestTable(postcodesFilePath, "postcodes")
-    ingestTable(lsoaFilePath, "lsoas")
+    # ingestTable(lsoaFilePath, "lsoas")
     # ingestTable(crimeFilePath, "crime_data")
 
-
+    data = getData("crime_data")
+    data = orderCollumns(data, "crime_data")
+    data = cleanNull(data)
+    data.to_sql(
+        "crime_data",
+        engine,
+        if_exists="replace",
+        index=False
+    )
+    tempData = pd.read_sql('SELECT * FROM crime_data', engine)
+    print(tempData)
 
 
 
