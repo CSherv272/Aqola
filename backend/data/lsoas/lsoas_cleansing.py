@@ -253,4 +253,4 @@ def lsoa_cleansing():
 
 
 if __name__ == "__main__":
-    main()
+    lsoa_cleansing()
