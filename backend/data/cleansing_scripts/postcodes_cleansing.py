@@ -89,8 +89,19 @@ def inner_join_dataframes(data, pcdData):
 def drop_columns_by_index(data, i):
     return data.drop(data.columns[i], axis=1)
 
-def rename_columns(data, oldCol, newCol):
-    return data.rename(columns={oldCol : newCol})
+def rename_columns(data):
+    columns = {
+        "pcd" : "postcode",
+        "lsoa21" : "lsoa_id",
+        "pcd_a" : "postcode_area",
+        "pcd_d" : "postcode_district",
+        "pcd_s" : "postcode_sector",
+        "lat" : "latitude",
+        "long" : "longitude",
+        "geometry" : "boundary"
+    }
+
+    return data.rename(columns=columns)
 
 # export dataframe to a csv (data = the dataframe, path = file path, excluding filename)
 def export_to_csv(data, path):
@@ -126,11 +137,9 @@ def postcodes_process():
     # final formatting
     data = inner_join_dataframes(data, pcdData)
     data = drop_columns_by_index(data, [8, 9])
-    # data = data.dropna() # these could be introduced from the join in combine datasets
     data = reorganise_columns(data)
-    data = rename_columns(data, "geometry", "boundary")
+    data = rename_columns(data)
 
-    # exportLoc = input("Please enter the export location >> ")
     export_to_csv(data, path)
 
 

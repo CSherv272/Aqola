@@ -35,3 +35,9 @@ def ingest_table(filePath, tableName):
             )
         except Exception as e:
             print(f"error: " + str(e))
+
+def get_rows(numRows, table):
+    with engine.connect() as conn:
+        query = text("SELECT * FROM :table LIMIT :n")
+        result = conn.execute(query, {"table": table, "n": numRows})
+        return result.fetchall()

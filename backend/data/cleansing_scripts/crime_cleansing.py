@@ -19,9 +19,6 @@ def getData():
     
     return data
 
-def rename_columns(data, oldCol, newCol):
-    return data.rename(columns={oldCol : newCol})
-
 def column_selection(data):
     colIndex = [1, 4, 5, 7, 9]
     colKeep = data.columns[colIndex]
