@@ -1,6 +1,7 @@
 from pathlib import Path
 import pandas as pd
 import geopandas as gpd
+import os.path
 
 # list of postcodes in Kent from: https://www.postcode-info.co.uk/kent-postcodes-376.html
 kentPostcodes = ["BR6", "BR8",
@@ -15,13 +16,11 @@ kentPostcodes = ["BR6", "BR8",
 
 # get all CSVs in file path
 def getFiles(filePath):
-    data = gpd.read_file(filePath + r"\all_postcodes.csv")
+    data = pd.read_csv(Path(filePath) / "all_postcodes.csv", usecols=[0, 41, 42, 50])
     # for csv in filePath.glob("*.csv"):
     #     tempData = pd.read_csv(csv, usecols=[0, 41, 42, 50])
     #     data = pd.concat([data, tempData], ignore_index=True)
-    
     return data
-
 
 # remove duplicate rows
 def removeDupes(data):
@@ -74,8 +73,8 @@ def generateCentroids(data):
 # using postcodes in kent, extract the polygon data from the geojson files
 def extractPolygonData(data, geojsonPath):
     newData = []
+
     for pcdDist in data["pcd_d"].unique():
-        print("new pc")
         current_file = gpd.read_file(geojsonPath + "/" + pcdDist + ".geojson")
         districtPcd = data[data["pcd_d"] == pcdDist] # all postcodes in that district
         for pcd in districtPcd["pcd"]:
@@ -92,15 +91,21 @@ def innerJoinDataframes(data, pcdData):
 def dropColumnsByIndex(data, i):
     return data.drop(data.columns[i], axis=1)
 
+def renameCol(data, oldCol, newCol):
+    return data.rename(columns={oldCol : newCol})
+
 # export dataframe to a csv (data = the dataframe, path = file path, excluding filename)
 def exportToCsv(data, path):
-    data.to_csv(Path(path, "pcd_data.csv"), index=False)
-    print("exported to " + path)
-
-def renameColumn(data, colName, newName):
-    return data.rename(columns={colName : newName})
-
-
+    if os.path.isfile(Path(path) / "pcd_data.csv"):
+        overwrite = input("would you like to overwrite the current file? >> ").lower()
+        if overwrite == "y" or overwrite == "yes":
+            data.to_csv(Path(path, "pcd_data.csv"), index=False)
+            print("overwritten file at: " + path)
+        else:
+            print("file not overwritten")
+    else:
+        data.to_csv(Path(path, "pcd_data.csv"), index=False)
+        print("exported to " + path)
 
 def main():
     path = input("Please enter the path to the data >> ")
@@ -110,12 +115,10 @@ def main():
     data = data.dropna()
     data = removeDupes(data)
 
-    print("removed dupes")
     # postcode processes
     data = spaceStripColumn(data, "pcd")
     data = splitPostcodes(data)
     data = kentPostcodeFilter(data)
-    print("split postcodes")
 
     # centroid/polygon generation
     data = generateCentroids(data)
@@ -126,10 +129,10 @@ def main():
     data = dropColumnsByIndex(data, [8, 9])
     # data = data.dropna() # these could be introduced from the join in combine datasets
     data = reorganiseColumns(data)
-    data = renameColumn(data, "geometry", "boundary")
+    data = renameCol(data, "geometry", "boundary")
 
-    exportLocation = input("please put in where you want to export your csv >> ")
-    exportToCsv(data, exportLocation)
+    # exportLoc = input("Please enter the export location >> ")
+    exportToCsv(data, path)
 
 
 if __name__ == "__main__":
