@@ -10,16 +10,16 @@ class Postcode(Base):
     __tablename__ = "postcodes"
     
     postcode = Column(String(10), unique=True, nullable=False, index=True, primary_key=True)
-    stat_area_id = Column(String(20), nullable=False, index=True)
+    lsoa_id = Column(String(20), nullable=False, index=True)
     postcode_area = Column(String(4))
     postcode_district = Column(String(4))
     postcode_sector = Column(String(5))
     latitude = Column(Float)
     longitude = Column(Float)
-    location = Column(Geometry('POINT', srid=4326))
+    centroid = Column(Geometry('POINT', srid=4326))
     
     # # Foreign keys
-    # stat_area_id = Column(String(20), ForeignKey('statistical_areas.id'))
+    # lsoa_id = Column(String(20), ForeignKey('lsoas.id'))
     
     # # Relationships
     # zone = relationship("DisplayZone", back_populates="postcodes")

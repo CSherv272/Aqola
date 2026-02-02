@@ -153,3 +153,7 @@ pgdata/
 # Coverage reports
 coverage/
 *.lcov
+
+# For data scripts in case of missing env vars
+.output/
+.input/
