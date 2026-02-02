@@ -10,7 +10,7 @@ with engine.connect() as conn:
     print("DB Connected")
 
 
-def initialiseDB(sqlPath):
+def initialise_db(sqlPath):
     #G:\Files\Local Git\aqola\database\init\initialise.sql
     with engine.connect() as conn:
         with open(sqlPath) as sqlFile:
@@ -19,7 +19,7 @@ def initialiseDB(sqlPath):
             conn.commit()
 
 # assumes all data is correctly formatted
-def ingestTable(filePath, tableName):
+def ingest_table(filePath, tableName):
     inspector = inspect(engine)
 
     if tableName not in inspector.get_table_names():

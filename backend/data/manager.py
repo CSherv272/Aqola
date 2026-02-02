@@ -1,35 +1,78 @@
-from pathlib import Path
+# from pathlib import Path
 from dotenv import load_dotenv
 import os
+import glob
+from cleansing_scripts.postcodes_cleansing import postcodes_process
+from ingestion import initialise_db, ingest_table
 
-def export_to_csv(df, filename):
-    path = "./resources/data/"
-    overwrite = "y"
-
-    # CSV file extension check
-    if ".csv" not in filename:
-        filename = filename + ".csv"
-
-    # Check CSV doesn't already exist
-    existing = list(Path(path).glob("*.csv"))
-    if Path(path + filename) in existing:
-        print("file already exists")
-        overwrite = input("Do you wish to overwrite it (y/n) >>  ").lower()
-
-    if overwrite == "y":
-        df.to_csv(Path(path + filename))
-        print(f"Data exported as {filename}")
-    else:
-        print("Data not exported")
-
-def loadPath():
+def load_path():
     load_dotenv()
-    devPath = os.getenv("DATA_PATH_DEV")
+    return os.getenv("DATA_PATH_DEV")
+
+def check_missing_CSVs(dataPath):
+    folders = os.listdir(dataPath) # only works if there are just folders for the database in there
+    missingCSVs = []
+    for folder in folders:
+        # print(folder)
+        CSVs = glob.glob(dataPath + "/" + folder + "/*.csv")
+        if CSVs == []:
+            missingCSVs.append(folder)
+
+    return missingCSVs
+
+def run_csv_creation(missingCsvFolders):
+    if "lsoas" in missingCsvFolders:
+        print("Creating LSOA CSV")
+        #lsoaProcess()
+    if "postcodes" in missingCsvFolders:
+        print("Creating Postcodes CSV")
+        postcodes_process()
+    if "crime_data" in missingCsvFolders:
+        print("Creating Crime Data CSV")
+        #crimeProcess()
+    if "school_data" in missingCsvFolders:
+        print("Creating School Data CSV")
+        #schoolProcess()
+    if "flood_data" in missingCsvFolders:
+        print("Creating Flood Data CSV")
+        #floodProcess()
+
+def ingest_check(dataPath):
+    folders = os.listdir(dataPath) # only works if there are just folders for the database in there
+    presentCSVs = []
+
+    for folder in folders:
+        # print(folder)
+        presentCSVs.append(glob.glob(dataPath + "/" + folder + "/*.csv"))
     
+    # all data depends on lsoa table
+    if "lsoas.csv" not in  presentCSVs:
+        raise Exception("Cannot ingest data without LSOA table. All other tables are dependant on LSOAs")
+    # all data depends on postcodes - except lsoas
+    # len statement excludes lsoa ONLY ingestion case
+    elif "postcodes.csv" not in presentCSVs and len(presentCSVs) > 1: 
+        raise Exception("Cannot ingest data without postcodes table. All other tables are dependant on LSOAs")
+    else:
+        run_ingest(presentCSVs, dataPath)
+
+def run_ingest(ingestCSVs, dataPath):
+    initialise_db()
+    
+    ingest_table(dataPath + "lsoas.csv", "lsoas")
+    ingest_table(dataPath + "postcodes.csv", "postcodes")
+
+    for csv in ingestCSVs:
+        ingest_table(dataPath + csv, csv.replace(".csv", ""))
+
 
 def main():
-    path = loadPath()
-    print(path)
+    dataPath = load_path()
+    # print(path)
+    missingCsvFolders = check_missing_CSVs(dataPath)
+    print("Missing CSVs: " + str(missingCsvFolders))
+    run_csv_creation(missingCsvFolders)
+
+
 
 if __name__ == "__main__":
     main()
