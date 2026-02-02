@@ -1,10 +1,15 @@
 import sys
+import os
+from dotenv import load_dotenv
 from pathlib import Path
+
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from geoalchemy2 import Geometry, WKTElement
+
+load_dotenv()
 
 DB_CONFIG = {
     'host': 'localhost',
@@ -131,7 +136,7 @@ def insert_lsoas_to_db(engine, lsoas):
 
     except Exception as e:
         print(f"Error preparing insert statement: {e}")
-        session.close()
+        session.rollback()
         return
     
     finally:
@@ -158,18 +163,56 @@ def validate_import(engine, lsoa_count):
     finally:
         session.close()
 
+def find_output_file_path(env_var: str):
+    """Find the output path to place the processed CSV"""
+    # We will have varying priorities of where we can find these file paths
+
+    # 1st priority: ENV file
+    env_path = Path(env_var + "/lsoas/", "lsoa_data.csv")
+    if env_path is not None:
+        return env_path
+
+    print("output env variable not found, using backup")
+    # Fallback
+    fallback = Path(__file__).parent / ".output"
+    fallback.mkdir(exist_ok=True)
+    return fallback / "lsoa_data.csv"
+
+def find_input_file_path(env_var: str):
+    """Find the input path to create the processed CSV"""
+
+    # 1st priority: ENV file
+    env_path = Path(env_var + "/lsoas/raw/")
+    if env_path is not None and env_path.exists():
+        return env_path
+    
+    print("input env variable not found, using backup")
+    # Fallback
+    fallback = Path(__file__).parent / ".input"
+    if fallback.exists():
+        return env_path
+    else:
+        print("Error! no input")
+
+
+
+def find_file_paths():
+
+    # Looks for DATA_PATH_DEV in the .env file
+    env_var = os.environ.get("DATA_PATH_DEV")
+
+    #
+    output = find_output_file_path(env_var)
+    input = find_input_file_path(env_var)
+    
+    return input, output
+
 def main():
     """Execute database connection."""
     
-    shapefile_path = None
-
-    if len(sys.argv) < 3:
-        print("Usage: python lsoa.py <path_to_lsoa_shapefile> <path_to_population_csv>")
-        sys.exit(1)
-
-    else:
-        shapefile_path = Path(sys.argv[1])
-        pop_df_path = Path(sys.argv[2])
+    INPUT_PATH, OUTPUT_PATH = find_file_paths()
+    shapefile_path = INPUT_PATH / "LSOAs_shapefile"
+    pop_df_path = INPUT_PATH / "LSOA_population.csv"
 
     # shapefile_path = Path(sys.argv[1])
     if not shapefile_path.exists():
@@ -195,17 +238,14 @@ def main():
 
         # print("Writing LSOA data to CSV for inspection...")
 
-        print("Where would you like to save the LSOA CSV?")
 
-        output_path = input("Enter the full path to the output CSV file (e.g., C:\\Users\\Callum\\Downloads\\lsoas_kent.csv): ")
-        make_csv_from_json(lsoas, Path(output_path, "lsoas_kent.csv"))
-
+        make_csv_from_json(lsoas, OUTPUT_PATH)
 
         print(f"Prepared {len(lsoas)} LSOAs for database insertion.")
 
         # insert_lsoas_to_db(engine, lsoas)
 
-        validate_import(engine, count)
+        # validate_import(engine, count)
 
     except Exception as e:
         print(f"Error -> : {e}")
