@@ -1,43 +1,47 @@
-from pathlib import Path
-import pandas as pd
-import geopandas as gpd
-import logging
 from sqlalchemy import create_engine, inspect, text
+import pandas as pd
+from shapely import wkt
+import psycopg2
 
-logger = logging.getLogger(__name__)
-engine = create_engine ( "postgresql://aqola_user:mysecretpassword@localhost:5432/aqola")
-with engine.connect() as conn:
-    print("DB Connected")
-
+engine = create_engine("postgresql://aqola_user:mysecretpassword@localhost:5432/aqola")
 
 def initialise_db():
-    #G:\Files\Local Git\aqola\database\init\initialise.sql
     with engine.connect() as conn:
         with open("./database/init/initialise.sql") as sqlFile:
             query = text(sqlFile.read())
             conn.execute(query)
             conn.commit()
 
-# assumes all data is correctly formatted
 def ingest_table(filePath, tableName):
     inspector = inspect(engine)
-
     if tableName not in inspector.get_table_names():
-        print(f"table doesn't exist {tableName}")
+        print(f"Table doesn't exist: {tableName}")
     else:
         try:
-            data = gpd.read_file(filePath)
+            data = pd.read_csv(filePath)
+            # convert geometry if present as WKT
+            if 'geometry' in data.columns:
+                data['geometry'] = data['geometry'].apply(wkt.loads)
+
             data.to_sql(
                 tableName,
                 engine,
-                if_exists="append",   # or replace if you really mean it
+                if_exists="append",
                 index=False
             )
         except Exception as e:
-            print(f"error: " + str(e))
+            print(f"Error ingesting {tableName}: {e}")
 
 def get_rows(numRows, table):
-    with engine.connect() as conn:
-        query = text("SELECT * FROM :table LIMIT :n")
-        result = conn.execute(query, {"table": table, "n": numRows})
-        return result.fetchall()
+    conn = psycopg2.connect(
+        database = "aqola",
+        user = "aqola_user",
+        password="mysecretpassword",
+        host="localhost",
+        port = "5432"
+    )
+    cursor = conn.cursor()
+    query = f"SELECT * FROM {table} LIMIT {numRows};"
+    cursor.execute(query)
+    print(cursor.fetchall())
+    conn.close()

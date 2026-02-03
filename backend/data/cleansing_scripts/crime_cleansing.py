@@ -27,15 +27,22 @@ def column_selection(data):
 
 def export_to_csv(data, path):
     if os.path.isfile(Path(path) / "crime_data\crime_data.csv"):
-        overwrite = input("would you like to overwrite the current file? >> ").lower()
+        overwrite = input("Overwrite current crime_data.csv? >> ").lower()
         if overwrite == "y" or overwrite == "yes":
             data.to_csv(Path(path, "crime_data\crime_data.csv"), index=False)
             print("overwritten file at: " + path + "crime_data")
+            print("=========================================================")
         else:
-            print("file not overwritten")
+            print("Crime_data.csv not overwritten")
+            print("=========================================================")
     else:
         data.to_csv(Path(path, "crime_data\crime_data.csv"), index=False)
         print("exported to " + path + "crime_data")
+        print("=========================================================")
+
+def format_dates(data):
+    data["date"] = data["date"].astype(str) + "-01"
+    return data
 
 def rename_columns(data):
     columns = {
@@ -62,6 +69,9 @@ def crime_cleansing():
     data = reorganise_columns(data)
     # print(data.sample(10))
     data = data.dropna()
+    data = format_dates(data)
 
     #export
     export_to_csv(data, str(os.getenv("DATA_PATH_DEV")))
+
+# crime_cleansing()
