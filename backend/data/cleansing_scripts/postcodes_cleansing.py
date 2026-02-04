@@ -89,6 +89,7 @@ def inner_join_dataframes(data, pcdData):
 def drop_columns_by_index(data, i):
     return data.drop(data.columns[i], axis=1)
 
+# renames columns from raw postcode data labels, to match the database
 def rename_columns(data):
     columns = {
         "pcd" : "postcode",
@@ -115,6 +116,7 @@ def export_to_csv(data, path):
     else:
         data.to_csv(Path(path, "postcodes\postcodes.csv"), index=False)
         print("exported to " + path + "postcodes\raw")
+
 
 def postcodes_process():
     load_dotenv()

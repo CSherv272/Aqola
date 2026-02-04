@@ -5,6 +5,7 @@ import psycopg2
 
 engine = create_engine("postgresql://aqola_user:mysecretpassword@localhost:5432/aqola")
 
+# drop all current tables and recreate them empty
 def initialise_db():
     with engine.connect() as conn:
         with open("./database/init/initialise.sql") as sqlFile:
@@ -12,6 +13,7 @@ def initialise_db():
             conn.execute(query)
             conn.commit()
 
+# pushes a csv into a given table
 def ingest_table(filePath, tableName):
     inspector = inspect(engine)
     if tableName not in inspector.get_table_names():
@@ -32,6 +34,7 @@ def ingest_table(filePath, tableName):
         except Exception as e:
             print(f"Error ingesting {tableName}: {e}")
 
+# get a number of rows from a given table
 def get_rows(numRows, table):
     conn = psycopg2.connect(
         database = "aqola",
@@ -43,5 +46,6 @@ def get_rows(numRows, table):
     cursor = conn.cursor()
     query = f"SELECT * FROM {table} LIMIT {numRows};"
     cursor.execute(query)
+    print("=====================================================")
     print(cursor.fetchall())
     conn.close()
