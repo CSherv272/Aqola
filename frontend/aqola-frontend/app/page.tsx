@@ -5,17 +5,32 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Banner from "./components/aqola-banner";
-import LineGraph from "./components/linegraph";
-import { useEffect, useState } from "react";
+// import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
-import { Html, Head } from "next/document";
+import { useState, useEffect } from "react";
 
-//import of the leaflet map from a map component
+// import LineGraph from "./components/linegraph";
+// import LeafletMap from "./components/Map";
+// import Banner from "./components/aqola-banner";
+
+//dynamically import banner from banner component
+const Banner = dynamic(() => import("./components/aqola-banner"), {
+  ssr: false,
+  loading: () => <p>Loading...</p>,
+});
+
+//dynamically import of the leaflet map from a map component
 const LeafletMap = dynamic(() => import("./components/Map"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
+
+
+const LineGraph = dynamic(() => import("./components/linegraph"), {
+  ssr: false,
+  loading: () => <p>Loading...</p>,
+});
+
 
 export default function Home() {
   const [data, setData] = useState([])
@@ -50,23 +65,16 @@ export default function Home() {
 
   let passData = {
     line1: {
-      x: [1, 2, 3, 4],
+      x: [5, 6, 9, 20],
       y: [10, 30, 40, 70]
     }
   };
 
   return (
-    <html>
-      <head>
-        <link rel="icon" type="image/png" href="/icon.png" sizes="any" />
-      </head>
-      <body>
-        <div>
-          <Banner trigger={getData} /> {/*trigger is button press*/}
-          {showGraph && <LineGraph data={passData} />} {/*show and hide map*/}
-          <LeafletMap />
-        </div>
-      </body>
-    </html>
+    <div>
+      <Banner trigger={getData} /> {/*trigger is button press*/}
+      {showGraph && <LineGraph data={passData} />} {/*show and hide map*/}
+      <LeafletMap />
+    </div>
   );
 }
