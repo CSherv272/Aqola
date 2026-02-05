@@ -38,6 +38,20 @@ CREATE TABLE IF NOT EXISTS crime_data (
     crime_type VARCHAR(100) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS school_data (
+    urn INT PRIMARY KEY,
+    lsoa_id VARCHAR(20) NOT NULL REFERENCES lsoas(lsoa_id) ON DELETE CASCADE,
+    school_name VARCHAR(100) NOT NULL,
+    postcode VARCHAR(10) NOT NULL REFERENCES postcodes(postcode) ON DELETE CASCADE,
+    is_primary BOOLEAN NOT NULL,
+    is_secondary BOOLEAN NOT NULL,
+    is_post16 BOOLEAN NOT NULL,
+    gender VARCHAR(6) NOT NULL,
+    year_range VARCHAR(10) NOT NULL,
+    ofsted_ranking INT,
+    centroid GEOMETRY(POINT, 4326) NOT NULL
+);
+
 
 -- INSERT INTO lsoas (lsoa_id, area_name, population, area_sq_km, boundary, centroid)
 -- VALUES
