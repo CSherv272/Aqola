@@ -70,7 +70,6 @@ CREATE TABLE IF NOT EXISTS school_data (
 );
 
 
-
 -- INSERT INTO lsoas (lsoa_id, area_name, population, area_sq_km, boundary, centroid)
 -- VALUES
 --     ('E01024101', 'Canterbury 013C', 1500, 0.85,
