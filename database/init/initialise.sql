@@ -2,10 +2,8 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 
 DROP TABLE IF EXISTS postcodes;
 DROP TABLE IF EXISTS crime_data;
-DROP TABLE IF EXISTS statistical_areas;
 DROP TABLE IF EXISTS lsoas;
-DROP TABLE IF EXISTS display_zones;
-
+DROP TABLE IF EXISTS flood_data;
 
 
 CREATE TABLE IF NOT EXISTS lsoas (
@@ -36,6 +34,16 @@ CREATE TABLE IF NOT EXISTS crime_data (
     latitude DECIMAL(9,6) NOT NULL,
     longitude DECIMAL(9,6) NOT NULL,
     crime_type VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS flood_data (
+    flood_id SERIAL PRIMARY KEY,
+    postcode VARCHAR(10) NOT NULL REFERENCES postcodes(postcode) ON DELETE CASCADE,
+    frs_band VARCHAR(20),
+    frs_count_high INT,
+    frs_count_medium INT,
+    frs_count_low INT,
+    frs_count_very_low INT
 );
 
 
