@@ -2,9 +2,8 @@
 SELECT table_name 
 FROM information_schema.tables 
 WHERE table_schema = 'public' 
-AND table_name IN (
-    'display_zones', 
-    'statistical_areas', 
+AND table_name IN ( 
+    'lsoas', 
     'postcodes', 
     'crime_data', 
     'spatial_ref_sys'
@@ -19,8 +18,7 @@ SELECT
 FROM information_schema.columns
 WHERE table_schema = 'public'
 AND table_name IN (
-    'display_zones',
-    'statistical_areas',
+    'lsoas',
     'postcodes',
     'crime_data')
 ORDER BY table_name, column_name;
@@ -36,6 +34,6 @@ JOIN information_schema.key_column_usage AS kcu
     ON tc.constraint_name = kcu.constraint_name 
     AND tc.table_schema = kcu.table_schema
 WHERE tc.table_schema = 'public' 
-AND tc.table_name IN ('display_zones', 'statistical_areas', 'postcodes', 'crime_data')
+AND tc.table_name IN ('lsoas', 'postcodes', 'crime_data')
 AND tc.constraint_type IN ('PRIMARY KEY', 'FOREIGN KEY')
 ORDER BY tc.table_name;

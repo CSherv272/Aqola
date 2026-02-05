@@ -15,6 +15,7 @@ def get_crime_data():
     return data
 
 # removes all uneeded columns, returns a dataframe
+# keeps columns : Month, Longitude, Latitude, LSOA code, Crime Type
 def column_selection(data):
     colIndex = [1, 4, 5, 7, 9]
     colKeep = data.columns[colIndex]
@@ -24,19 +25,8 @@ def column_selection(data):
 
 # exports dataframe to a CSV, if there is already a file it asks if developer wants to overwrite
 def export_to_csv(data, path):
-    if os.path.isfile(Path(path) / "crime_data\crime_data.csv"):
-        overwrite = input("Overwrite current crime_data.csv? >> ").lower()
-        if overwrite == "y" or overwrite == "yes":
-            data.to_csv(Path(path, "crime_data\crime_data.csv"), index=False)
-            print("overwritten file at: " + path + "crime_data")
-            print("=========================================================")
-        else:
-            print("Crime_data.csv not overwritten")
-            print("=========================================================")
-    else:
-        data.to_csv(Path(path, "crime_data\crime_data.csv"), index=False)
-        print("exported to " + path + "crime_data")
-        print("=========================================================")
+    data.to_csv(Path(path, "crime_data\crime_data.csv"), index=False)
+
 
 # adds "-01" to make the dates a valid format (YYYY-MM-dd)
 def format_dates(data):

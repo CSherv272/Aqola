@@ -59,9 +59,6 @@ def read_and_transform_lsoa_data(file_path: Path) -> gpd.GeoDataFrame:
 
     return gdf
 
-def get_lad_codes():
-    return 
-
 def set_lad_codes(newCodes):
     kent_lad_codes.extend(newCodes)
 
@@ -213,11 +210,11 @@ def find_file_paths():
     
     return input, output
 
-def lsoa_process(additionalLsaoCodes: list[str] | None = None):
+def lsoa_process(additionalLadCodes: list[str] | None = None):
     # set LAD codes based on postcode requirements
-    if additionalLsaoCodes is None:
-        additionalLsaoCodes = []
-    set_lad_codes(additionalLsaoCodes) # know this works
+    if additionalLadCodes is None:
+        additionalLadCodes = []
+    set_lad_codes(additionalLadCodes) # know this works
     
     """Execute database connection."""
     
