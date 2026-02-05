@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { useRef, useEffect } from "react";
 
 export default function LinePlot({
-    data = [10, 20, 30, 40, 80],
+    data,
     width = 640,
     height = 400,
     marginTop = 20,
@@ -10,6 +10,13 @@ export default function LinePlot({
     marginBottom = 30,
     marginLeft = 40
 }) {
+    // Json passed in with x and y values for line graph
+    let xVals = data.line1.x
+    let yVals = data.line1.y
+
+    console.log(xVals)
+    console.log(yVals)
+    
     const gx = useRef();
     const gy = useRef();
 
