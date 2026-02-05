@@ -1,3 +1,5 @@
+"use client";
+
 export default function Banner({ trigger }: { trigger: () => void }) {
 
     // const test = () => {
