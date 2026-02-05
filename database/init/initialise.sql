@@ -39,20 +39,20 @@ CREATE TABLE IF NOT EXISTS crime_data (
 );
 
 
-INSERT INTO lsoas (lsoa_id, area_name, population, area_sq_km, boundary, centroid)
-VALUES
-    ('E01024101', 'Canterbury 013C', 1500, 0.85,
-    ST_GeomFromText('MULTIPOLYGON(((-0.573 51.280, -0.570 51.280, -0.570 51.282, -0.573 51.282, -0.573 51.280)))', 4326),
-    ST_GeomFromText('POINT(-0.5715 51.281)', 4326)
-    );
+-- INSERT INTO lsoas (lsoa_id, area_name, population, area_sq_km, boundary, centroid)
+-- VALUES
+--     ('E01024101', 'Canterbury 013C', 1500, 0.85,
+--     ST_GeomFromText('MULTIPOLYGON(((-0.573 51.280, -0.570 51.280, -0.570 51.282, -0.573 51.282, -0.573 51.280)))', 4326),
+--     ST_GeomFromText('POINT(-0.5715 51.281)', 4326)
+--     );
 
-INSERT INTO postcodes (lsoa_id, postcode, postcode_area, postcode_district, postcode_sector, latitude, longitude, centroid, boundary)
-VALUES
-    ('E01024101', 'CT2 7QS', 'CT', 'CT2', 'CT2 7', 51.294936, 1.0888,
-    ST_GeomFromText('POINT(51.294936 1.0888)', 4326),
-    ST_GeomFromText('MULTIPOLYGON(((-0.573 51.280, -0.570 51.280, -0.570 51.282, -0.573 51.282, -0.573 51.280)))', 4326)
-    );
+-- INSERT INTO postcodes (lsoa_id, postcode, postcode_area, postcode_district, postcode_sector, latitude, longitude, centroid, boundary)
+-- VALUES
+--     ('E01024101', 'CT2 7QS', 'CT', 'CT2', 'CT2 7', 51.294936, 1.0888,
+--     ST_GeomFromText('POINT(51.294936 1.0888)', 4326),
+--     ST_GeomFromText('MULTIPOLYGON(((-0.573 51.280, -0.570 51.280, -0.570 51.282, -0.573 51.282, -0.573 51.280)))', 4326)
+--     );
 
-INSERT INTO crime_data (lsoa_id, date, latitude, longitude, crime_type)
-VALUES
-    ('E01024101', '2024-05-15', 51.2815, 1.0710, 'Burglary');  
+-- INSERT INTO crime_data (lsoa_id, date, latitude, longitude, crime_type)
+-- VALUES
+--     ('E01024101', '2024-05-15', 51.2815, 1.0710, 'Burglary');  

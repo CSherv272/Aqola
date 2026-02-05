@@ -20,7 +20,7 @@ DB_CONFIG = {
 }
 
 TARGET_CRS = "EPSG:4326"   # WGS84 (lat/long)
-KENT_LAD_CODES = [
+kent_lad_codes = [
     'E07000105', 'E07000106', 'E07000107', 'E07000108',
     'E07000112', 'E07000109', 'E07000110', 'E06000035',
     'E07000111', 'E07000113', 'E07000114', 'E07000115',
@@ -49,21 +49,23 @@ def read_and_transform_lsoa_data(file_path: Path) -> gpd.GeoDataFrame:
 
     gdf = gpd.read_file(file_path)
 
-    print("Found {len(gdf)} LSOA areas")
-    print("Original CRS:", gdf.crs)
-    print(f"Columns: {gdf.columns.tolist()}")
+    # print("Found {len(gdf)} LSOA areas")
+    # print("Original CRS:", gdf.crs)
+    # print(f"Columns: {gdf.columns.tolist()}")
 
     if gdf.crs != TARGET_CRS:
         gdf = gdf.to_crs(TARGET_CRS)
-        print("Transformed CRS to:", TARGET_CRS)
+        # print("Transformed CRS to:", TARGET_CRS)
 
     return gdf
 
+def set_lad_codes(newCodes):
+    kent_lad_codes.extend(newCodes)
 
 def prepare_data_for_db(gdf, pop_df_path: Path = None):
     """Prepare GeoDataFrame for database insertion."""
     
-    print ("Preparing data for database insert.")
+    # print ("Preparing data for database insert.")
 
     lsoas = []
 
@@ -72,7 +74,8 @@ def prepare_data_for_db(gdf, pop_df_path: Path = None):
     for idx, row in gdf.iterrows():
         lsoa_id = row.get('LSOA21CD', None)
         lad_code = pop_df.loc[pop_df["LSOA 2021 Code"] == lsoa_id, "LAD 2023 Code"].values[0] if lsoa_id in pop_df["LSOA 2021 Code"].values else None
-        if lad_code not in KENT_LAD_CODES:
+        # add the missing LSOAs - LAD codes
+        if lad_code not in kent_lad_codes:
             continue
 
         centroid = row.geometry.centroid
@@ -207,7 +210,12 @@ def find_file_paths():
     
     return input, output
 
-def lsoa_cleansing():
+def lsoa_process(additionalLadCodes: list[str] | None = None):
+    # set LAD codes based on postcode requirements
+    if additionalLadCodes is None:
+        additionalLadCodes = []
+    set_lad_codes(additionalLadCodes) # know this works
+    
     """Execute database connection."""
     
     INPUT_PATH, OUTPUT_PATH = find_file_paths()
@@ -229,10 +237,10 @@ def lsoa_cleansing():
             shapefile_path
         )
 
-        engine = create_db_connection()
-        Session = sessionmaker(bind=engine)
-        session = Session()
-        print("Database connection established successfully.")
+        # engine = create_db_connection()
+        # Session = sessionmaker(bind=engine)
+        # session = Session()
+        # print("Database connection established successfully.")
 
         lsoas, count = prepare_data_for_db(gdf, pop_df_path)
 
@@ -252,5 +260,5 @@ def lsoa_cleansing():
         sys.exit(1)
 
 
-if __name__ == "__main__":
-    lsoa_cleansing()
+# if __name__ == "__main__":
+#     lsoa_cleansing()
