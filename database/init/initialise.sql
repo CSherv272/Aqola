@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS crime_data;   -- References lsoas
 DROP TABLE IF EXISTS flood_data;   -- References postcodes
 DROP TABLE IF EXISTS postcodes;    -- References lsoas
 
+
 -- Drop parent tables last
 DROP TABLE IF EXISTS lsoas;
 
