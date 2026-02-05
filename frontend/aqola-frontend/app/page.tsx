@@ -48,7 +48,12 @@ export default function Home() {
     console.log("your postcode data", postcode)
   }, [postcode])
 
-
+  let passData = {
+    line1: {
+      x: [1, 2, 3, 4],
+      y: [10, 30, 40, 70]
+    }
+  };
 
   return (
     <html>
@@ -58,7 +63,7 @@ export default function Home() {
       <body>
         <div>
           <Banner trigger={getData} /> {/*trigger is button press*/}
-          {showGraph && <LineGraph />} {/*show and hide map*/}
+          {showGraph && <LineGraph data={passData} />} {/*show and hide map*/}
           <LeafletMap />
         </div>
       </body>
