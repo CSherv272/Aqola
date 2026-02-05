@@ -1,4 +1,5 @@
-fastapi==0.128.0
+# fastapi==0.128.0
+fastapi[standard]
 geoalchemy2==0.18.1
 geopandas==1.1.2
 pandas>=2.3.0
