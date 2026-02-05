@@ -3,7 +3,6 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 -- Drop child tables first (those that reference others)
 DROP TABLE IF EXISTS school_data;  -- References both postcodes and lsoas
 DROP TABLE IF EXISTS crime_data;   -- References lsoas
-DROP TABLE IF EXISTS flood_data;   -- References postcodes
 DROP TABLE IF EXISTS postcodes;    -- References lsoas
 
 
