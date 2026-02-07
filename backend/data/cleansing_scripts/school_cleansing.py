@@ -46,7 +46,7 @@ def get_ofsted_data(ofsted_dir):
     
     return pd.concat(ofsted_list, ignore_index=True) if ofsted_list else pd.DataFrame()
 
-def rename_and_clean_columns(df_schools, df_ofsted):
+def rename_columns(df_schools, df_ofsted):
     # Renames columns for both dataframes and standardizes URNs.
     
     schools_renamed = df_schools.rename(columns={
@@ -68,7 +68,7 @@ def rename_and_clean_columns(df_schools, df_ofsted):
 
     return schools_renamed, ofsted_renamed
 
-def merge_and_finalize(df_schools, df_ofsted):
+def merge_and_finalise(df_schools, df_ofsted):
     # Merges data and handles specific DB placeholder logic.
     final_df = df_schools.merge(df_ofsted, on=["urn", "year_range"], how="left")
     
@@ -101,7 +101,7 @@ def merge_and_finalize(df_schools, df_ofsted):
     return final_df.reindex(columns=final_columns)
 
 
-def export_school_data(data, output_folder):
+def export_to_csv(data, output_folder):
     # Exports finalised school data to output folder
     output_path = output_folder / "finalised_school_data.csv"
     data.to_csv(output_path, index=False)
@@ -124,10 +124,10 @@ def school_process():
         print("Error: No school data found.")
         return
 
-    schools_clean, ofsted_clean = rename_and_clean_columns(raw_schools, raw_ofsted)
-    final_data = merge_and_finalize(schools_clean, ofsted_clean)
+    schools_clean, ofsted_clean = rename_columns(raw_schools, raw_ofsted)
+    final_data = merge_and_finalise(schools_clean, ofsted_clean)
 
-    export_school_data(final_data, base_dir)
+    export_to_csv(final_data, base_dir)
 
 if __name__ == "__main__":
     school_process()
