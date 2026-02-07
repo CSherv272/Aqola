@@ -57,7 +57,9 @@ CREATE TABLE IF NOT EXISTS school_data (
     gender VARCHAR(6) NOT NULL,
     year_range VARCHAR(10) NOT NULL,
     ofsted_ranking INT,
-    centroid GEOMETRY(POINT, 4326) NOT NULL
+    centroid GEOMETRY(POINT, 4326) NOT NULL,
+    latitude DECIMAL(9,6) NOT NULL,
+    longitude DECIMAL(9,6) NOT NULL
 );
 
 
