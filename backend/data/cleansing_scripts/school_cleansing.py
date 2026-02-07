@@ -73,8 +73,18 @@ def merge_and_finalise(df_schools, df_ofsted):
     final_df = df_schools.merge(df_ofsted, on=["urn", "year_range"], how="left")
     
     # Impute rankings
-    final_df["ofsted_ranking"] = final_df["ofsted_ranking"].replace("Not Judged", 0)
+    # Explicitly mark "Not Judged" as 0
+    final_df.loc[final_df["ofsted_ranking"] == "Not judged", "ofsted_ranking"] = 0
+
+    # Convert to numeric - things that were blank stay NaN
     final_df["ofsted_ranking"] = pd.to_numeric(final_df["ofsted_ranking"], errors='coerce')
+    
+    # Carry the last known ranking forward for each school
+    # (Only fills if the current year is NaN)
+    final_df['ofsted_ranking'] = final_df.groupby('urn')['ofsted_ranking'].ffill()
+
+    # Use -1 for schools missing from Ofsted ranking
+    final_df["ofsted_ranking"] = final_df["ofsted_ranking"].fillna(-1).astype(int)
     
     # NOTE: Need to be extracted through postcode link
     final_df["lsoa_id"] = None
@@ -98,6 +108,11 @@ def merge_and_finalise(df_schools, df_ofsted):
         "latitude",
         "longitude"
     ]
+    
+    missing_by_year = final_df[final_df["ofsted_ranking"] == -1].groupby("year_range").size()
+    print("Count of missing Ofsted data by year:")
+    print(missing_by_year)
+    
     return final_df.reindex(columns=final_columns)
 
 
