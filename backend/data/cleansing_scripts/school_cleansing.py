@@ -79,6 +79,8 @@ def merge_and_finalize(df_schools, df_ofsted):
     # NOTE: Need to be extracted through postcode link
     final_df["lsoa_id"] = None
     final_df["centroid"] = None
+    final_df["latitude"] = None
+    final_df["longitude"] = None
     
     # Reorganize to match DB schema
     final_columns = [
@@ -92,7 +94,9 @@ def merge_and_finalize(df_schools, df_ofsted):
         "gender",
         "year_range",
         "ofsted_ranking",
-        "centroid"
+        "centroid",
+        "latitude",
+        "longitude"
     ]
     return final_df.reindex(columns=final_columns)
 
