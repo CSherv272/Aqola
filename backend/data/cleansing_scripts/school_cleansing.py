@@ -46,9 +46,21 @@ def get_ofsted_data(ofsted_dir):
     
     return pd.concat(ofsted_list, ignore_index=True) if ofsted_list else pd.DataFrame()
 
-def rename_columns(df_schools, df_ofsted):
-    # Renames columns for both dataframes and standardizes URNs.
+def get_spatial_data(postcodes_csv_path):
+    #Loads the postcode lookup table and selects relevant spatial columns.
+    if not postcodes_csv_path.exists():
+        return pd.DataFrame()
     
+    print(f"Loading Spatial Data: {postcodes_csv_path.name}")
+    cols_to_use = ['postcode', 'lsoa_id', 'latitude', 'longitude', 'centroid']
+    df_spatial = pd.read_csv(postcodes_csv_path, usecols=cols_to_use)
+    
+    # Normalise postcodes for merging
+    df_spatial['postcode_clean'] = df_spatial['postcode'].str.replace(r'\s+', '', regex=True).str.upper()
+    return df_spatial
+
+def rename_columns(df_schools, df_ofsted):
+    # Renames columns for both dataframes and standardises URNs.
     schools_renamed = df_schools.rename(columns={
         "URN": "urn",
         "SCHNAME": "school_name",
@@ -68,7 +80,9 @@ def rename_columns(df_schools, df_ofsted):
 
     return schools_renamed, ofsted_renamed
 
-def merge_and_finalise(df_schools, df_ofsted):
+
+
+def merge_and_finalise(df_schools, df_ofsted, df_spatial):
     # Merges data and handles specific DB placeholder logic.
     final_df = df_schools.merge(df_ofsted, on=["urn", "year_range"], how="left")
     
@@ -86,23 +100,32 @@ def merge_and_finalise(df_schools, df_ofsted):
     # Use -1 for schools missing from Ofsted ranking
     final_df["ofsted_ranking"] = final_df["ofsted_ranking"].fillna(-1).astype(int)
     
-    # NOTE: Need to be extracted through postcode link
-    final_df["lsoa_id"] = None
-    final_df["centroid"] = None
-    final_df["latitude"] = None
-    final_df["longitude"] = None
+    if not df_spatial.empty:
+        # Normalise school postcodes to match the lookup file
+        final_df['postcode_clean'] = final_df['postcode'].str.replace(r'\s+', '', regex=True).str.upper()
+        
+        # Prepare lookup (dropping original postcode to avoid name clash)
+        spatial_lookup = df_spatial.drop(columns=['postcode'])
+        
+        # Merge on the cleaned keys
+        final_df = final_df.merge(spatial_lookup, on="postcode_clean", how="left")
+        
+        # Cleanup temp key
+        final_df = final_df.drop(columns=['postcode_clean'])
+    else:
+        for col in ["lsoa_id", "latitude", "longitude", "centroid"]:
+            final_df[col] = None
     
-    # Reorganize to match DB schema
     final_columns = [
         "urn",
         "lsoa_id",
         "school_name",
-        "postcode", 
-        "is_primary",
+        "postcode",
+        "is_primary", 
         "is_secondary",
-        "is_post16", 
+        "is_post16",
         "gender",
-        "year_range",
+        "year_range", 
         "ofsted_ranking",
         "centroid",
         "latitude",
@@ -132,16 +155,25 @@ def school_process():
     
     schools_info_dir = base_dir / "school_data" / "raw" / "Kent_Schools_data"
     ofsted_dir = base_dir / "school_data"/ "raw" / "Ofsted_rankings"
+    postcodes_csv_path = base_dir / "postcodes" / "postcodes.csv"
 
     raw_schools = get_school_info_data(schools_info_dir)
     raw_ofsted = get_ofsted_data(ofsted_dir)
+    raw_spatial_data = get_spatial_data(postcodes_csv_path)
+    
+    if postcodes_csv_path.exists():
+        print(f"Loading Postcode Lookup: {postcodes_csv_path.name}")
+        df_spatial = raw_spatial_data
+    else:
+        print(f"Warning: {postcodes_csv_path} not found. Spatial data will be empty.")
+        df_spatial = pd.DataFrame()
 
     if raw_schools.empty:
         print("Error: No school data found.")
         return
 
     schools_clean, ofsted_clean = rename_columns(raw_schools, raw_ofsted)
-    final_data = merge_and_finalise(schools_clean, ofsted_clean)
+    final_data = merge_and_finalise(schools_clean, ofsted_clean, df_spatial)
 
     export_to_csv(final_data, school_output_dir)
 
