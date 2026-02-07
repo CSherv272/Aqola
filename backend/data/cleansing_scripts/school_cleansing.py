@@ -118,7 +118,7 @@ def merge_and_finalise(df_schools, df_ofsted):
 
 def export_to_csv(data, output_folder):
     # Exports finalised school data to output folder
-    output_path = output_folder / "finalised_school_data.csv"
+    output_path = output_folder / "school_data.csv"
     data.to_csv(output_path, index=False)
     print(f"SUCCESS: {output_path}")
     print(f"Total Rows: {len(data)}")
