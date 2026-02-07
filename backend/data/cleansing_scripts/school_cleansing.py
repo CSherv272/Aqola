@@ -128,11 +128,12 @@ def export_to_csv(data, output_folder):
 def school_process():
     load_dotenv()
     base_dir = Path(os.getenv("DATA_PATH_DEV"))
+    school_output_dir = base_dir/ "school_data"
     
-    schools_dir = base_dir / "raw" / "Kent_Schools_data"
-    ofsted_dir = base_dir / "raw" / "Ofsted_rankings"
+    schools_info_dir = base_dir / "school_data" / "raw" / "Kent_Schools_data"
+    ofsted_dir = base_dir / "school_data"/ "raw" / "Ofsted_rankings"
 
-    raw_schools = get_school_info_data(schools_dir)
+    raw_schools = get_school_info_data(schools_info_dir)
     raw_ofsted = get_ofsted_data(ofsted_dir)
 
     if raw_schools.empty:
@@ -142,7 +143,7 @@ def school_process():
     schools_clean, ofsted_clean = rename_columns(raw_schools, raw_ofsted)
     final_data = merge_and_finalise(schools_clean, ofsted_clean)
 
-    export_to_csv(final_data, base_dir)
+    export_to_csv(final_data, school_output_dir)
 
 if __name__ == "__main__":
     school_process()
