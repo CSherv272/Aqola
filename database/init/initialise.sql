@@ -39,9 +39,9 @@ CREATE TABLE IF NOT EXISTS crime_data (
 );
 
 CREATE TABLE IF NOT EXISTS school_data (
-    urn INT PRIMARY KEY,
+    urn VARCHAR(20) NOT NULL,
     lsoa_id VARCHAR(20) NOT NULL REFERENCES lsoas(lsoa_id) ON DELETE CASCADE,
-    school_name VARCHAR(100) NOT NULL,
+    school_name VARCHAR(255) NOT NULL,
     postcode VARCHAR(10) NOT NULL REFERENCES postcodes(postcode) ON DELETE CASCADE,
     is_primary BOOLEAN NOT NULL,
     is_secondary BOOLEAN NOT NULL,
@@ -49,9 +49,11 @@ CREATE TABLE IF NOT EXISTS school_data (
     gender VARCHAR(6) NOT NULL,
     year_range VARCHAR(10) NOT NULL,
     ofsted_ranking INT,
-    centroid GEOMETRY(POINT, 4326) NOT NULL,
-    latitude DECIMAL(9,6) NOT NULL,
-    longitude DECIMAL(9,6) NOT NULL
+    centroid GEOMETRY(POINT, 4326),
+    latitude DECIMAL(9,6),
+    longitude DECIMAL(9,6),
+
+    PRIMARY KEY (urn, year_range)
 );
 
 
