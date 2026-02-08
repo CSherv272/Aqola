@@ -26,7 +26,8 @@ kentPostcodes = ["BR6", "BR8",
   "ME1", "ME10", "ME11", "ME12", "ME13", "ME14", "ME15", "ME16", "ME17", "ME18", "ME19",
   "ME2", "ME20", "ME3", "ME4", "ME5", "ME6", "ME7", "ME8", "ME9",
   "TN1", "TN10", "TN11", "TN12", "TN13", "TN14", "TN15", "TN16", "TN17", "TN18",
-  "TN2", "TN23", "TN24", "TN25", "TN26", "TN27", "TN28", "TN29", "TN3", "TN30", "TN4", "TN8", "TN9"]
+  "TN2", "TN23", "TN24", "TN25", "TN26", "TN27", "TN28", "TN29", "TN3", "TN30", "TN4", "TN8", "TN9"
+  ]
 
 def create_db_connection():
     connection_string = (
@@ -74,87 +75,85 @@ def find_file_paths():
 
     output = find_output_file_path(env_var)
     input = find_input_file_path(env_var)
+    postcode_df_path = Path(env_var + "/postcodes/postcodes.csv")
     
-    return input, output
+    return input, output, postcode_df_path
 
-def find_existing_postcodes(engine, postcode: str):
-
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    postcodes = []
+def find_existing_postcodes(postcode: str, postcode_df):
     try:
-        select_existing_postcodes_query = text(f"""SELECT postcode FROM postcodes WHERE postcode LIKE '{postcode[0:-1].replace(" ", "")}%';""")
-        
-        result = session.execute(select_existing_postcodes_query)
-        postcode_list = result.all()
-        for p in postcode_list:
-            postcodes.append(p[0])
-        return postcodes
+        valid_postcode_list = postcode_df[postcode_df["postcode"].str.contains(postcode[0:-1])]
+        return valid_postcode_list.postcode.to_list()
     
     except Exception as e:
         print(f"Failed when searching postcodes. -> {e}")
-        session.rollback()
         return
-    
-    finally:
-        session.close()
 
 
-def prepare_data_for_db(flood_df):
+
+def prepare_data_for_db(flood_df, postcode_df):
     
     flood_data_rows = []
-
+    
     engine = create_db_connection()
 
     for idx, row in flood_df.iterrows():
+
         postcode = row.get("PC", None)
+        
         if postcode.split(" ")[0] not in kentPostcodes:
             continue
+        
+        postcode = postcode.replace(" ", "")
 
-        flood_data_rows.append(postcode)
         if postcode[-1] != "*":
-            frs_count_high = int(row.get("TOT_CNT_High"))
-            frs_count_medium = int(row.get("TOT_CNT_Medium"))
-            frs_count_low = int(row.get("TOT_CNT_Low"))
-            frs_count_very_low = int(row.get("TOT_CNT_VeryLow"))
-            
-            global frs_band
-            frs_band = "High"
-            frs_band_count = frs_count_high 
+            if postcode_df["postcode"].isin([postcode]).any():
+                frs_count_high = int(row.get("TOT_CNT_High"))
+                frs_count_medium = int(row.get("TOT_CNT_Medium"))
+                frs_count_low = int(row.get("TOT_CNT_Low"))
+                frs_count_very_low = int(row.get("TOT_CNT_VeryLow"))
+                
+                frs_band = "High"
+                frs_band_count = frs_count_high 
 
-            for frs_count in [frs_count_medium, frs_count_low, frs_count_very_low]:
-                if frs_count > frs_band_count:
-                    if frs_count == frs_count_medium:
-                        frs_band = "Medium"
-                    if frs_count == frs_count_low:
-                        frs_band = "Low"
-                    if frs_count == frs_count_very_low:
-                        frs_band = "Very_Low"
+                for frs_count in [frs_count_medium, frs_count_low, frs_count_very_low]:
+                    if frs_count > frs_band_count:
+                        if frs_count == frs_count_medium:
+                            frs_band = "Medium"
+                        if frs_count == frs_count_low:
+                            frs_band = "Low"
+                        if frs_count == frs_count_very_low:
+                            frs_band = "Very_Low"
+                        frs_band_count = frs_count
 
-
-            flood_row = {
-                'postcode' : postcode,
-                'frs_band' : frs_band,
-                'frs_count_high': frs_count_high,
-                'frs_count_medium': frs_count_medium,
-                'frs_count_low': frs_count_low,
-                'frs_count_very_low': frs_count_very_low,
-            }
-
-            flood_data_rows.append(flood_row)
-        else:
-            valid_postcodes = find_existing_postcodes(engine, postcode)
-            for valid_postcode in valid_postcodes:
                 flood_row = {
-                    'postcode' : valid_postcode,
-                    'frs_band' : "None",
-                    'frs_count_high': 0,
-                    'frs_count_medium': 0,
-                    'frs_count_low': 0,
-                    'frs_count_very_low': 0,
+                    'postcode' : postcode.replace(" ", ""),
+                    'frs_band' : frs_band,
+                    'frs_count_high': frs_count_high,
+                    'frs_count_medium': frs_count_medium,
+                    'frs_count_low': frs_count_low,
+                    'frs_count_very_low': frs_count_very_low,
                 }
 
-                flood_data_rows.append(flood_row) 
+                flood_data_rows.append(flood_row)
+            else:
+                print(f"Postcode: {postcode} is missing from the cleansed postcode csv when trying to add from Flood Data. Skipping.")
+        else:
+            valid_postcodes = find_existing_postcodes(postcode, postcode_df)
+            for valid_postcode in valid_postcodes:
+                if not flood_df["PC"].str.replace(" ", "").isin([valid_postcode]).any():
+                    flood_row = {
+                        'postcode' : valid_postcode.replace(" ", ""),
+                        'frs_band' : "None",
+                        'frs_count_high': 0,
+                        'frs_count_medium': 0,
+                        'frs_count_low': 0,
+                        'frs_count_very_low': 0,
+                    }
+
+                    flood_data_rows.append(flood_row) 
+
+    # Clean all accidentally duplicated rows
+    
     return flood_data_rows
 
 def make_csv_from_json(flood_rows, output_path: Path):
@@ -165,13 +164,16 @@ def make_csv_from_json(flood_rows, output_path: Path):
 
 def flood_process():
 
-    INPUT_PATH, OUTPUT_PATH = find_file_paths()
+    INPUT_PATH, OUTPUT_PATH, POSTCODE_PATH = find_file_paths()
     # rofrs = Risk of Flooding from Rivers and Seas
     rofrs_filepath = INPUT_PATH / "RoFRS_PostcodesAtRisk_v202501.csv"
     try:
         flood_df = pd.read_csv(rofrs_filepath)
+        
 
-        flood_data_rows = prepare_data_for_db(flood_df)
+        postcodes_df = pd.read_csv(POSTCODE_PATH)
+
+        flood_data_rows = prepare_data_for_db(flood_df, postcodes_df)
         make_csv_from_json(flood_data_rows, OUTPUT_PATH)
     
     except Exception as e:
