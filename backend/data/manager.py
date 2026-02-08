@@ -5,6 +5,7 @@ import glob
 from cleansing_scripts.postcodes_cleansing import postcodes_process
 from cleansing_scripts.lsoas_cleansing import lsoa_process
 from cleansing_scripts.crime_cleansing import crime_process
+from cleansing_scripts.school_cleansing import school_process
 from ingestion import initialise_db, ingest_table, get_rows
 from pathlib import Path
 from lsoa_issue_detection import lsoa_detection
@@ -43,7 +44,7 @@ def run_csv_creation(missingCsvFolders):
     if "school_data" in missingCsvFolders:
         print("=====================================================")
         print("Creating School Data CSV...")
-        #schoolProcess()
+        school_process()
     if "flood_data" in missingCsvFolders:
         print("=====================================================")
         print("Creating Flood Data CSV...")
