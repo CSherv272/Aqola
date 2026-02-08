@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS crime_data;
 DROP TABLE IF EXISTS statistical_areas;
 DROP TABLE IF EXISTS lsoas;
 DROP TABLE IF EXISTS display_zones;
+DROP TABLE IF EXISTS school_data;
 
 
 
