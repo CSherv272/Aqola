@@ -7,7 +7,7 @@ SCHEMA_SQL_PATH = os.path.join(BASE_DIR, '..', 'database', 'init', 'schema_integ
 DATA_QUALITY_SQL_PATH = os.path.join(BASE_DIR, '..', 'database', 'init', 'data_quality_validation.sql')
 
 # --- 2. DEFINE EXPECTED SCHEMA SPECS ---
-EXPECTED_TABLES = ['lsoas', 'postcodes', 'crime_data']
+EXPECTED_TABLES = ['lsoas', 'postcodes', 'crime_data', 'school_data']
 
 # Format: (table, column, type, nullable)
 EXPECTED_COLUMNS = {
@@ -34,16 +34,37 @@ EXPECTED_COLUMNS = {
     ('crime_data', 'date', 'date', 'NO'),                             # DATE
     ('crime_data', 'latitude', 'numeric', 'NO'),                      # DECIMAL(9,6)
     ('crime_data', 'longitude', 'numeric', 'NO'),                     # DECIMAL(9,6)
-    ('crime_data', 'crime_type', 'character varying', 'NO')
+    ('crime_data', 'crime_type', 'character varying', 'NO'),
+    
+    ('school_data', 'urn', 'character varying', 'NO'),              # VARCHAR(20)
+    ('school_data', 'lsoa_id', 'character varying', 'NO'),          # VARCHAR(20) (FK)
+    ('school_data', 'school_name', 'character varying', 'NO'),      # VARCHAR(255)
+    ('school_data', 'postcode', 'character varying', 'NO'),          # VARCHAR(10) (FK)
+    ('school_data', 'is_primary', 'boolean', 'NO'),                 # BOOLEAN
+    ('school_data', 'is_secondary', 'boolean', 'NO'),               # BOOLEAN
+    ('school_data', 'is_post16', 'boolean', 'NO'),                  # BOOLEAN
+    ('school_data', 'gender', 'character varying', 'NO'),           # VARCHAR(6)
+    ('school_data', 'year_range', 'character varying', 'NO'),       # VARCHAR(10)
+    ('school_data', 'ofsted_ranking', 'integer', 'YES'),            # INT (Nullable)
+    ('school_data', 'centroid', 'USER-DEFINED', 'YES'),             # GEOMETRY (Nullable)
+    ('school_data', 'latitude', 'numeric', 'YES'),                  # DECIMAL (Nullable)
+    ('school_data', 'longitude', 'numeric', 'YES')                  # DECIMAL (Nullable)
     }
 
 # Format: (table, type, column)
 EXPECTED_KEYS = {
     ('lsoas', 'PRIMARY KEY', 'lsoa_id'),
+    
     ('postcodes', 'PRIMARY KEY', 'postcode'),
     ('postcodes', 'FOREIGN KEY', 'lsoa_id'),
+    
     ('crime_data', 'PRIMARY KEY', 'crime_id'),
-    ('crime_data', 'FOREIGN KEY', 'lsoa_id')
+    ('crime_data', 'FOREIGN KEY', 'lsoa_id'),
+    
+    ('school_data', 'PRIMARY KEY', 'urn'),
+    ('school_data', 'PRIMARY KEY', 'year_range'),
+    ('school_data', 'FOREIGN KEY', 'lsoa_id'),
+    ('school_data', 'FOREIGN KEY', 'postcode')
 }
 
 # --- 3. TEST CLASSES ---
