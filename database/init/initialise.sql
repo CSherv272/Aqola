@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS postcodes;    -- References lsoas
 DROP TABLE IF EXISTS lsoas;
 
 
+
 CREATE TABLE IF NOT EXISTS lsoas (
     lsoa_id VARCHAR(20) PRIMARY KEY,
     area_name VARCHAR(100) NOT NULL,
