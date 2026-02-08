@@ -25,6 +25,8 @@ export default function LinePlot({
     const x = d3.scaleLinear([0, d3.max([...xVals])], [marginLeft, width - marginRight]);
     const y = d3.scaleLinear([0, d3.max([...yVals])], [height - marginBottom, marginTop]);
 
+    const colours = ["cyan", "white", "red", "blue", "purple", "green", "orange", "black", "grey"]
+
     // creates a 2-D array of x-y co-ordinates for each line. In JSON format.
     const lineArray = Object.values(data).map(line =>
         line.x.map((xVal, i) => ({
@@ -50,8 +52,8 @@ export default function LinePlot({
                 <g key={i}>
                     <path
                         d={lineGen(lineData)}
-                        fill="none"
-                        stroke="currentColor"
+                        fill= "none"
+                        stroke={colours[i % colours.length]}
                     />
 
                     {lineData.map((d, j) => (
@@ -61,7 +63,7 @@ export default function LinePlot({
                             cy={y(d.y)}
                             r="2.5"
                             fill="white"
-                            stroke="currentColor"
+                            stroke={colours[i % colours.length]}
                         />
                     ))}
                 </g>
