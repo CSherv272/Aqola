@@ -8,6 +8,7 @@ from cleansing_scripts.crime_cleansing import crime_process
 from ingestion import initialise_db, ingest_table, get_rows
 from pathlib import Path
 from lsoa_issue_detection import lsoa_detection
+from reference_checks import reference_check_process
 
 # loads the path to the data folder from the .env
 def load_data_path():
@@ -63,7 +64,7 @@ def ingest_check(dataPath):
 # find all CSVs that are in the data folder
 def get_present_CSVs(dataPath):
     dataPath = Path(dataPath)
-    folders = os.listdir(dataPath)
+    folders = [folder for folder in os.listdir(dataPath) if os.path.isdir(dataPath / folder)]
     presentCSVs = []
 
     for folder in folders:
@@ -113,7 +114,8 @@ def main():
     print("Missing CSVs: " + str(missingCsvFolders))
     run_csv_creation(missingCsvFolders)
 
-    lsoa_detection()
+    # lsoa_detection()
+    reference_check_process()
 
     ingest_check(dataPath)
 

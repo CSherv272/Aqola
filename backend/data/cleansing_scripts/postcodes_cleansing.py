@@ -3,6 +3,7 @@ import pandas as pd
 import geopandas as gpd
 import os.path
 from dotenv import load_dotenv
+from error_logging import error_process
 
 # list of postcodes in Kent from: https://www.postcode-info.co.uk/kent-postcodes-376.html
 kentPostcodes = ["BR6", "BR8",
@@ -71,13 +72,49 @@ def generate_centroids(data):
 # using postcodes in kent, extract the polygon data from the geojson files
 def extract_polygon_data(data, geojsonPath):
     newData = []
+    errDataGeo = { 
+        "data": [],
+        "where" : "extract_polygon_data",
+        "desc" : "postcode in geojson, but not in cleansed CSV",
+        "impact" : "skipped, due to foriegn key issues",
+        "cause" : "missing data for postcode in the all_postcodes CSV"
 
-    for pcdDist in data["pcd_d"].unique():
-        current_file = gpd.read_file(geojsonPath + "postcodes/raw/" + pcdDist + ".geojson")
-        districtPcd = data[data["pcd_d"] == pcdDist] # all postcodes in that district
+    }
+    errDataRaw = { 
+        "data": [],
+        "where" : "extract_polygon_data",
+        "desc" : "postcode in raw postcodes CSV, but not in GeoJSON files",
+        "impact" : "skipped, unable to represent on the map",
+        "cause" : "missing data for postcode in the GeoJSON files"
+
+    }
+    onlyInGeo = set()
+    # onlyInRaw = set()
+
+    for pcdDist in kentPostcodes: # data["pcd_d"].unique()
+        file_path = Path(geojsonPath) / "postcodes/raw" / f"{pcdDist}.geojson"
+        if not file_path.exists():
+            continue
+
+        current_file = gpd.read_file(file_path)
+        districtPcd = data[data["pcd_d"] == pcdDist]
+        
+        # all the postcodes in that geojson that are also in the dataframe
         for pcd in districtPcd["pcd"]:
             pcdData = current_file[current_file["mapit_code"] == pcd]
             newData.append(pcdData)
+
+#===========================================================================================#
+        # ERROR CHECKING - find missing postcodes between geojson and all_postcodes
+        onlyInGeo = set(list(set(current_file["mapit_code"].unique()) - set(districtPcd["pcd"].unique())) + list(onlyInGeo))
+        # onlyInRaw = set(list(set(districtPcd["pcd"].unique()) - set(current_file["mapit_code"].unique())) + list(onlyInRaw))
+        
+    #process errors
+    errDataGeo["data"] = list(onlyInGeo)
+    # errDataRaw["data"] = list(onlyInRaw)
+    error_process(errDataGeo)
+    error_process(errDataRaw)
+#===========================================================================================#
 
     return gpd.GeoDataFrame(pd.concat(newData, ignore_index=True))
 
