@@ -161,6 +161,7 @@ def school_process():
     raw_ofsted = get_ofsted_data(ofsted_dir)
     raw_spatial_data = get_spatial_data(postcodes_csv_path)
     
+    
     if postcodes_csv_path.exists():
         print(f"Loading Postcode Lookup: {postcodes_csv_path.name}")
         df_spatial = raw_spatial_data
@@ -174,6 +175,11 @@ def school_process():
 
     schools_clean, ofsted_clean = rename_columns(raw_schools, raw_ofsted)
     final_data = merge_and_finalise(schools_clean, ofsted_clean, df_spatial)
+    
+    # Convert 1/0 or strings to actual Booleans for Postgres
+    bool_cols = ["is_primary", "is_secondary", "is_post16"]
+    for col in bool_cols:
+        final_data[col] = final_data[col].astype(bool)
 
     export_to_csv(final_data, school_output_dir)
 
