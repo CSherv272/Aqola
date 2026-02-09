@@ -14,13 +14,15 @@ def add_error_to_logs(data):
         data.to_csv(log_path, mode="a", header=False, index=False)
 
 def format_error(d):
-    df = pd.DataFrame({
+    df = pd.DataFrame(
+    {
         "time": pd.Timestamp.now(),
         "where": d.get("where"),
         "data": d.get("data"),
         "desc": d.get("desc"),
         "impact": d.get("impact"),
-        "cause": d.get("cause")
+        "cause": d.get("cause"),
+        "state" : d.get("state", "unresolved")
     })
     return df
 

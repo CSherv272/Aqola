@@ -57,7 +57,8 @@ def reference_check_process():
                 "data": missingReferences,
                 "desc": "There were references to LSOAs in the data that were not present in the cleansed LSOA CSV",
                 "impact": "Data will not be able to be deleted, or will have missing values for the LSOA foreign key, leading to errors in ingestion",
-                "cause": "LAD codes incorrect, missing LSOA codes in the raw LSOA data"
+                "cause": "LAD codes incorrect, missing LSOA codes in the raw LSOA data",
+                "state" : "Data will be deleted with missing LSOA foreign key values, but will be marked as having reference errors in the error log"
             })
         
         missingReferences = check_references(data, postcodes, "postcode")
@@ -67,7 +68,8 @@ def reference_check_process():
                 "data": missingReferences,
                 "desc": "There were references to postcodes in the data that were not present in the cleansed postcode CSV",
                 "impact": "Data will not be able to be deleted, or will have missing values for the postcode foreign key, leading to errors in ingestion",
-                "cause": "Missing postcodes in raw CSV, missing postcodes in GeoJSON file"
+                "cause": "Missing postcodes in raw CSV, missing postcodes in GeoJSON file",
+                "state" : "Data will be deleted with missing postcode foreign key values, but will be marked as having reference errors in the error log"
             })
         print("================================")
     
