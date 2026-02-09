@@ -53,9 +53,9 @@ CREATE TABLE IF NOT EXISTS flood_data (
 
 CREATE TABLE IF NOT EXISTS school_data (
     urn VARCHAR(20) NOT NULL,
-    lsoa_id VARCHAR(20) NOT NULL REFERENCES lsoas(lsoa_id) ON DELETE CASCADE,
+    lsoa_id VARCHAR(20) REFERENCES lsoas(lsoa_id) ON DELETE CASCADE,
     school_name VARCHAR(255) NOT NULL,
-    postcode VARCHAR(10) NOT NULL REFERENCES postcodes(postcode) ON DELETE CASCADE,
+    postcode VARCHAR(10) REFERENCES postcodes(postcode) ON DELETE CASCADE,
     is_primary BOOLEAN NOT NULL,
     is_secondary BOOLEAN NOT NULL,
     is_post16 BOOLEAN NOT NULL,
