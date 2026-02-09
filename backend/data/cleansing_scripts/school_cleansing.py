@@ -100,22 +100,6 @@ def merge_and_finalise(df_schools, df_ofsted, df_spatial):
     # Use -1 for schools missing from Ofsted ranking
     final_df["ofsted_ranking"] = final_df["ofsted_ranking"].fillna(-1).astype(int)
     
-    if not df_spatial.empty:
-        # Normalise school postcodes to match the lookup file
-        final_df['postcode_clean'] = final_df['postcode'].str.replace(r'\s+', '', regex=True).str.upper()
-        
-        # Prepare lookup (dropping original postcode to avoid name clash)
-        spatial_lookup = df_spatial.drop(columns=['postcode'])
-        
-        # Merge on the cleaned keys
-        final_df = final_df.merge(spatial_lookup, on="postcode_clean", how="left")
-        
-        # Cleanup temp key
-        final_df = final_df.drop(columns=['postcode_clean'])
-    else:
-        for col in ["lsoa_id", "latitude", "longitude", "centroid"]:
-            final_df[col] = None
-    
     final_columns = [
         "urn",
         "lsoa_id",
@@ -131,6 +115,17 @@ def merge_and_finalise(df_schools, df_ofsted, df_spatial):
         "latitude",
         "longitude"
     ]
+    
+    if not df_spatial.empty:
+        # Standardize school postcodes PERMANENTLY here
+        final_df['postcode'] = final_df['postcode'].str.replace(r'\s+', '', regex=True).str.upper()
+        
+        # Merge directly on the 'postcode' column 
+        # (Assuming df_spatial['postcode'] was cleaned in get_spatial_data)
+        final_df = final_df.merge(df_spatial, on="postcode", how="left")
+    else:
+        for col in ["lsoa_id", "latitude", "longitude", "centroid"]:
+            final_df[col] = None
     
     missing_by_year = final_df[final_df["ofsted_ranking"] == -1].groupby("year_range").size()
     print("Count of missing Ofsted data by year:")
@@ -176,16 +171,22 @@ def school_process():
     schools_clean, ofsted_clean = rename_columns(raw_schools, raw_ofsted)
     final_data = merge_and_finalise(schools_clean, ofsted_clean, df_spatial)
     
-    # Convert 1/0 or strings to actual Booleans for Postgres
+    # Clean Booleans (for Postgres)
     bool_cols = ["is_primary", "is_secondary", "is_post16"]
     for col in bool_cols:
         final_data[col] = final_data[col].fillna(0).map({1: True, 0: False, '1': True, '0': False, True: True, False: False})
-        
-    #Convert 'DEFAULT' strings to None (To avoid Foreign Key errors)
+    
+    # Convert 'DEFAULT' strings to None (To avoid Foreign Key errors)
     # This allows Postgres to treat them as true NULLs  
     if 'lsoa_id' in final_data.columns:
         final_data['lsoa_id'] = final_data['lsoa_id'].replace('DEFAULT', None)
+        
+        # If no LSOA was found, nullify the postcode to prevent FK Violation
+        orphan_mask = final_data['lsoa_id'].isna()
+        final_data.loc[orphan_mask, 'postcode'] = None
 
+    # Final cleanup of duplicates
+    final_data = final_data.drop_duplicates(subset=['urn', 'year_range'], keep='first')
     export_to_csv(final_data, school_output_dir)
 
 if __name__ == "__main__":
