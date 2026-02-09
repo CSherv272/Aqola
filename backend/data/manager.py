@@ -9,6 +9,7 @@ from cleansing_scripts.school_cleansing import school_process
 from ingestion import initialise_db, ingest_table, get_rows
 from pathlib import Path
 from lsoa_issue_detection import lsoa_detection
+import pandas as pd
 
 # loads the path to the data folder from the .env
 def load_data_path():
@@ -99,6 +100,12 @@ def run_ingest(ingestCSVs, dataPath):
     for csv in ingestCSVs:
         print("=====================================================")
         print(f"Ingesting {csv.stem} data...")
+        
+        if csv.stem == "school_data":
+            df = pd.read_csv(csv)
+            # Convert 'DEFAULT' to None so it becomes a valid SQL NULL
+            df['lsoa_id'] = df['lsoa_id'].replace('DEFAULT', None)
+            df.to_csv(csv, index=False) # Overwrite before ingestion
         ingest_table(dataPath / csv, csv.stem)
         get_rows(5, csv.stem)
 
