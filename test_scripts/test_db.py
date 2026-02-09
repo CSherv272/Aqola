@@ -37,9 +37,9 @@ EXPECTED_COLUMNS = {
     ('crime_data', 'crime_type', 'character varying', 'NO'),
     
     ('school_data', 'urn', 'character varying', 'NO'),              # VARCHAR(20)
-    ('school_data', 'lsoa_id', 'character varying', 'NO'),          # VARCHAR(20) (FK)
+    ('school_data', 'lsoa_id', 'character varying', 'YES'),          # VARCHAR(20) (FK)
     ('school_data', 'school_name', 'character varying', 'NO'),      # VARCHAR(255)
-    ('school_data', 'postcode', 'character varying', 'NO'),          # VARCHAR(10) (FK)
+    ('school_data', 'postcode', 'character varying', 'YES'),          # VARCHAR(10) (FK)
     ('school_data', 'is_primary', 'boolean', 'NO'),                 # BOOLEAN
     ('school_data', 'is_secondary', 'boolean', 'NO'),               # BOOLEAN
     ('school_data', 'is_post16', 'boolean', 'NO'),                  # BOOLEAN
