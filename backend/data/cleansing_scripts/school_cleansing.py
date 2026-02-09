@@ -180,6 +180,11 @@ def school_process():
     bool_cols = ["is_primary", "is_secondary", "is_post16"]
     for col in bool_cols:
         final_data[col] = final_data[col].astype(bool)
+        
+    #Convert 'DEFAULT' strings to None (To avoid Foreign Key errors)
+    # This allows Postgres to treat them as true NULLs  
+    if 'lsoa_id' in final_data.columns:
+        final_data['lsoa_id'] = final_data['lsoa_id'].replace('DEFAULT', None)
 
     export_to_csv(final_data, school_output_dir)
 
