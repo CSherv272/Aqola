@@ -179,7 +179,7 @@ def school_process():
     # Convert 1/0 or strings to actual Booleans for Postgres
     bool_cols = ["is_primary", "is_secondary", "is_post16"]
     for col in bool_cols:
-        final_data[col] = final_data[col].astype(bool)
+        final_data[col] = final_data[col].fillna(0).map({1: True, 0: False, '1': True, '0': False, True: True, False: False})
         
     #Convert 'DEFAULT' strings to None (To avoid Foreign Key errors)
     # This allows Postgres to treat them as true NULLs  
