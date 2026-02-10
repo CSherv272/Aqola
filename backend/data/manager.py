@@ -7,17 +7,15 @@ from cleansing_scripts.lsoas_cleansing import lsoa_process
 from cleansing_scripts.crime_cleansing import crime_process
 from ingestion import initialise_db, ingest_table, get_rows
 from pathlib import Path
-from lsoa_issue_detection import lsoa_detection
 from reference_checks import reference_check_process
+from cleansing_scripts.data_cleansing import drop_missing_references, get_present_CSVs
 
-# loads the path to the data folder from the .env
-def load_data_path():
-    load_dotenv()
-    return os.getenv("DATA_PATH_DEV")
+load_dotenv()
 
 # find if there are any missing CSVs (where a folder is present, but has no CSV in it)
 def check_missing_CSVs(dataPath):
     folders = os.listdir(dataPath) # only works if there are just folders for the database in there
+    print(f"Folders: " + str(folders))
     missingCSVs = []
     for folder in folders:
         # print(folder)
@@ -28,24 +26,24 @@ def check_missing_CSVs(dataPath):
     return missingCSVs
 
 # takes a list of missing CSVs and runs the appropriate script to create them
-def run_csv_creation(missingCsvFolders):
-    if "lsoas" in missingCsvFolders:
+def run_csv_creation(missingCSVs):
+    if "lsoas" in missingCSVs:
         print("=====================================================")
         print("Creating LSOA CSV...")
         lsoa_process()
-    if "postcodes" in missingCsvFolders:
+    if "postcodes" in missingCSVs:
         print("=====================================================")
         print("Creating Postcodes CSV...")
         postcodes_process()
-    if "crime_data" in missingCsvFolders:
+    if "crime_data" in missingCSVs:
         print("=====================================================")
         print("Creating Crime Data CSV...")
         crime_process()
-    if "school_data" in missingCsvFolders:
+    if "school_data" in missingCSVs:
         print("=====================================================")
         print("Creating School Data CSV...")
         #schoolProcess()
-    if "flood_data" in missingCsvFolders:
+    if "flood_data" in missingCSVs:
         print("=====================================================")
         print("Creating Flood Data CSV...")
         #floodProcess()
@@ -61,18 +59,7 @@ def ingest_check(dataPath):
     else:
         run_ingest(presentCSVs, dataPath)
 
-# find all CSVs that are in the data folder
-def get_present_CSVs(dataPath):
-    dataPath = Path(dataPath)
-    folders = [folder for folder in os.listdir(dataPath) if os.path.isdir(dataPath / folder)]
-    presentCSVs = []
 
-    for folder in folders:
-        CSVs = (dataPath / folder).glob("*.csv")
-        for csv in CSVs:
-            presentCSVs.append(csv)
-
-    return presentCSVs
 
 # ingest LSOAs, then Postcodes, then everything else
 # calls ingestion.py functions: ingest_table, get_rows, initialise_db
@@ -104,7 +91,7 @@ def run_ingest(ingestCSVs, dataPath):
 
 
 def main():
-    dataPath = Path(load_data_path())
+    dataPath = Path(os.getenv("DATA_PATH_DEV"))
     # print("hello")
     # print(get_present_CSVs(dataPath))
     
@@ -116,8 +103,9 @@ def main():
 
     # lsoa_detection()
     reference_check_process()
+    drop_missing_references() # drops rows with invalid LSOA or postcode refs
 
-    ingest_check(dataPath)
+    # ingest_check(dataPath)
 
 
 

@@ -20,7 +20,7 @@ DB_CONFIG = {
 }
 
 TARGET_CRS = "EPSG:4326"   # WGS84 (lat/long)
-kent_lad_codes = [
+KENT_LAD_CODES = [
     'E07000105', 'E07000106', 'E07000107', 'E07000108',
     'E07000112', 'E07000109', 'E07000110', 'E06000035',
     'E07000111', 'E07000113', 'E07000114', 'E07000115',
@@ -72,7 +72,7 @@ def prepare_data_for_db(gdf, pop_df_path: Path = None):
         lsoa_id = row.get('LSOA21CD', None)
         lad_code = pop_df.loc[pop_df["LSOA 2021 Code"] == lsoa_id, "LAD 2023 Code"].values[0] if lsoa_id in pop_df["LSOA 2021 Code"].values else None
         # add the missing LSOAs - LAD codes
-        if lad_code not in kent_lad_codes:
+        if lad_code not in KENT_LAD_CODES:
             continue
 
         centroid = row.geometry.centroid

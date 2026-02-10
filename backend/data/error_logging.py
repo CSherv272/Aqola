@@ -8,10 +8,7 @@ load_dotenv()
 def add_error_to_logs(data):
     path = os.getenv("DATA_PATH_DEV")
     log_path = Path(path) / "error_log.csv"
-    if not os.path.isfile(log_path):
-        data.to_csv(log_path, index=False)
-    else:
-        data.to_csv(log_path, mode="a", header=False, index=False)
+    data.to_csv(log_path, index=False)
 
 def format_error(d):
     df = pd.DataFrame(

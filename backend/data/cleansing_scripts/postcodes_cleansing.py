@@ -21,10 +21,6 @@ def get_postcode_data(filePath):
     data = pd.read_csv(Path(filePath) / "postcodes/raw/all_postcodes.csv", usecols=[0, 41, 42, 50])
     return data
 
-# remove duplicate rows
-def remove_dupes(data):
-    return data.drop_duplicates()
-
 # strips any spaces from a given column
 def space_strip_column(data, column):
     data[column] = data[column].apply(lambda x: x.replace(" ", ""))
@@ -85,33 +81,43 @@ def extract_polygon_data(data, geojsonPath):
         "where" : "extract_polygon_data",
         "desc" : "postcode in raw postcodes CSV, but not in GeoJSON files",
         "impact" : "skipped, unable to represent on the map",
-        "cause" : "missing data for postcode in the GeoJSON files"
+        "cause" : "missing data for postcode in the GeoJSON files, may be an old postcode"
 
     }
     onlyInGeo = set()
-    # onlyInRaw = set()
+    onlyInRaw = set()
 
     for pcdDist in kentPostcodes: # data["pcd_d"].unique()
         file_path = Path(geojsonPath) / "postcodes/raw" / f"{pcdDist}.geojson"
+
+        #if file doesn't exist - log error and skip
         if not file_path.exists():
+            errNoGeo = {
+                "data": pcdDist,
+                "where" : "extract_polygon_data -> checking for geojson file",
+                "desc" : f"postcode district {pcdDist} is in the cleansed CSV but has no corresponding geojson file",
+                "impact" : "skipped, unable to represent on the map",
+                "cause" : "missing geojson file for postcode district"
+            }
+            error_process(errNoGeo)
             continue
 
         current_file = gpd.read_file(file_path)
-        districtPcd = data[data["pcd_d"] == pcdDist]
-        
-        # all the postcodes in that geojson that are also in the dataframe
-        for pcd in districtPcd["pcd"]:
+        rawPcdsForDistrict = data[data["pcd_d"] == pcdDist]
+        # filters postcodes in the current geojson file to only those with a postcode from the cleansed CSV
+        for pcd in rawPcdsForDistrict["pcd"]:
             pcdData = current_file[current_file["mapit_code"] == pcd]
             newData.append(pcdData)
 
 #===========================================================================================#
-        # ERROR CHECKING - find missing postcodes between geojson and all_postcodes
-        onlyInGeo = set(list(set(current_file["mapit_code"].unique()) - set(districtPcd["pcd"].unique())) + list(onlyInGeo))
-        # onlyInRaw = set(list(set(districtPcd["pcd"].unique()) - set(current_file["mapit_code"].unique())) + list(onlyInRaw))
+        # ERROR CHECKING - find missing postcodes between geojson df and all_postcodes df
+    onlyInGeo |= (set(current_file["mapit_code"].unique()) - set(rawPcdsForDistrict["pcd"].unique()))
+    onlyInRaw |= (set(rawPcdsForDistrict["pcd"].unique()) - set(current_file["mapit_code"].unique()))
+
         
     #process errors
     errDataGeo["data"] = list(onlyInGeo)
-    # errDataRaw["data"] = list(onlyInRaw)
+    errDataRaw["data"] = list(onlyInRaw) # removed due to large number of errors - caused by old postcodes in the raw data
     error_process(errDataGeo)
     error_process(errDataRaw)
 #===========================================================================================#
@@ -141,20 +147,6 @@ def rename_columns(data):
 
     return data.rename(columns=columns)
 
-# export dataframe to a csv (data = the dataframe, path = file path, excluding filename)
-def export_to_csv(data, path):
-    if os.path.isfile(Path(path) / "postcodes/postcodes.csv"):
-        overwrite = input("would you like to overwrite the current file? >> ").lower()
-        if overwrite == "y" or overwrite == "yes":
-            data.to_csv(Path(path, "postcodes/postcodes.csv"), index=False)
-            print("overwritten file at: " + path + "postcodes/raw/")
-        else:
-            print("file not overwritten")
-    else:
-        data.to_csv(Path(path, "postcodes\postcodes.csv"), index=False)
-        print("exported to " + path + "postcodes\raw")
-
-
 def postcodes_process():
     load_dotenv()
     path = os.getenv("DATA_PATH_DEV")
@@ -162,7 +154,7 @@ def postcodes_process():
 
     # remove irrelevant data
     data = data.dropna()
-    data = remove_dupes(data)
+    data = data.drop_duplicates()
 
     # postcode processes
     data = space_strip_column(data, "pcd")
@@ -179,8 +171,5 @@ def postcodes_process():
     data = reorganise_columns(data)
     data = rename_columns(data)
 
-    export_to_csv(data, path)
-
-
-# if __name__ == "__main__":
-#     main()
+    # export_to_csv(data, path)
+    data.to_csv(Path(path) / "postcodes/postcodes.csv", index=False)
