@@ -4,7 +4,7 @@ from decimal import Decimal
 
 class PostcodeResponse(BaseModel):
     postcode: str
-    stat_area_id: str
+    lsoa_id: str
     postcode_area: str
     postcode_district: str
     postcode_sector: str

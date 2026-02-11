@@ -25,8 +25,8 @@ services:
   # Backend
   backend:
     build:
-      context: ./backend/api/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./backend/api/Dockerfile
     container_name: aqola-backend
     environment:
       DATABASE_URL: postgresql://aqola_user:${POSTGRES_PASSWORD:-mysecretpassword}@db:5432/aqola
@@ -36,7 +36,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
     networks:
       - aqola-network
 

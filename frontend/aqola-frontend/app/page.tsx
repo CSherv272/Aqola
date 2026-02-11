@@ -23,7 +23,7 @@ export default function Home() {
   const [postcode, setPostcode] = useState([])
 
   const getPostcode = async () => {
-    const response = await getPostcodeData("CT2 7QS")
+    const response = await getPostcodeData("CT27QS")
     setPostcode(response)
   }
 
