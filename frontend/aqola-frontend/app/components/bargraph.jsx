@@ -19,12 +19,40 @@ export default function BarGraph({
       low_risk: 50,
       very_low_risk: 70,
     },
+    {
+      postcode: "CT2 7LS",
+      high_risk: 40,
+      medium_risk: 10,
+      low_risk: 50,
+      very_low_risk: 70,
+    },
+    {
+      postcode: "CT2 7BR",
+      high_risk: 30,
+      medium_risk: 10,
+      low_risk: 50,
+      very_low_risk: 70,
+    },
+    {
+      postcode: "CT2 7SY",
+      high_risk: 60,
+      medium_risk: 10,
+      low_risk: 50,
+      very_low_risk: 70,
+    },
+    {
+      postcode: "CT2 7RB",
+      high_risk: 20,
+      medium_risk: 10,
+      low_risk: 50,
+      very_low_risk: 70,
+    },
   ],
 
   marginTop = 20,
   marginRight = 20,
   marginBottom = 30,
-  marginLeft = 40,
+  marginLeft = 60,
   width = 640,
   height = 400,
 }) {
@@ -43,7 +71,8 @@ export default function BarGraph({
   const yScale = d3
     .scaleBand()
     .domain(data.map((d) => d.postcode))
-    .range([0, innerHeight]);
+    .range([0, innerHeight])
+    .padding(0.05);
 
   const xScale = d3
     .scaleLinear()
@@ -67,6 +96,17 @@ export default function BarGraph({
   return (
     <svg width={width} height={height}>
       <g transform={`translate(${marginLeft}, ${marginTop})`}>
+        {xScale.ticks().map((tickValue) => (
+          <line
+            x1={xScale(tickValue)}
+            y1={0}
+            x2={xScale(tickValue)}
+            y2={innerHeight}
+            stroke="white"
+            key={tickValue}
+          />
+        ))}
+
         {data.map((d, i) => [
           <rect
             x={0}
@@ -76,14 +116,14 @@ export default function BarGraph({
             key={i}
             fill="red"
           />,
-          <rect
-            x={0}
-            y={yScale(d.postcode)}
-            width={xScale(d.medium_risk)}
-            height={yScale.bandwidth()}
-            key={i}
-            fill="yellow"
-          />,
+          //   <rect
+          //     x={0}
+          //     y={yScale(d.postcode)}
+          //     width={xScale(d.medium_risk)}
+          //     height={yScale.bandwidth()}
+          //     key={i}
+          //     fill="yellow"
+          //   />,
         ])}
       </g>
       <g
