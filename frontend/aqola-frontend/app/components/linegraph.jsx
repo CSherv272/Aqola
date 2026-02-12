@@ -25,7 +25,7 @@ export default function LinePlot({
     const x = d3.scaleLinear([0, d3.max([...xVals])], [marginLeft, width - marginRight]);
     const y = d3.scaleLinear([0, d3.max([...yVals])], [height - marginBottom, marginTop]);
 
-    const colours = ["cyan", "white", "red", "blue", "purple", "green", "orange", "black", "grey"]
+    // const colours = ["cyan", "white", "red", "blue", "purple", "green", "orange", "black", "grey"]
 
     // creates a 2-D array of x-y co-ordinates for each line. In JSON format.
     const lineArray = Object.values(data).map(line =>
@@ -39,6 +39,7 @@ export default function LinePlot({
     const lineGen = d3.line()
         .x((d) => x(d.x))
         .y((d) => y(d.y));
+    // .attr("stroke-width", "10px");
 
     useEffect(() => void d3.select(xLabel.current).call(d3.axisBottom(x)), [xLabel, x]);
     useEffect(() => void d3.select(yLabel.current).call(d3.axisLeft(y)), [yLabel, y]);
@@ -52,19 +53,26 @@ export default function LinePlot({
                 <g key={i}>
                     <path
                         d={lineGen(lineData)}
-                        fill= "none"
-                        stroke={colours[i % colours.length]}
-                    />
+                        fill="none"
+                        // stroke={colours[i % colours.length]}
+                        stroke={Object.values(data)[i].colour}
+                        strokeWidth="4px"
+                    >
+                        <title>{Object.entries(data)[i][0]}</title>
+                    </path>
 
                     {lineData.map((d, j) => (
                         <circle
                             key={j}
                             cx={x(d.x)}
                             cy={y(d.y)}
-                            r="2.5"
+                            r="3"
                             fill="white"
-                            stroke={colours[i % colours.length]}
-                        />
+                            // stroke={colours[i % colours.length]}
+                            stroke={Object.values(data)[i].colour}
+                        >
+                            <title>{`x: ${d.x}, y: ${d.y}`}</title>
+                        </circle>
                     ))}
                 </g>
             ))}
