@@ -20,7 +20,7 @@ const Banner = dynamic(() => import("./components/aqola-banner"), {
 });
 
 //dynamically import of the leaflet map from a map component
-const LeafletMap = dynamic(() => import("./components/Map"), {
+const LeafletMap = dynamic(() => import("./components/maps"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
@@ -33,6 +33,10 @@ const LineGraph = dynamic(() => import("./components/linegraph"), {
 
 
 export default function Home() {
+  //app state variables
+  let [selectedPostcodes, setSelectedPostcodes] = useState([])
+  let [selectedDataSet, setSelectedDataSet] = useState("crime_data")
+
   const [data, setData] = useState([])
   const [showGraph, setShowGraph] = useState(false)
   const [postcode, setPostcode] = useState([])
@@ -64,17 +68,25 @@ export default function Home() {
   }, [postcode])
 
   let passData = {
-    line1: {
+    AA11ABC: {
       x: [5, 6, 9, 20],
-      y: [10, 30, 40, 70]
+      y: [10, 30, 40, 70],
+      colour: "red"
     },
-    line2: {
+    CT11AE: {
       x: [10, 18, 27, 30],
-      y: [15, 20, 50, 55]
+      y: [15, 20, 50, 55],
+      colour: "blue"
     },
-    line3: {
+    TN108FN: {
       x: [14, 19, 25, 37],
-      y: [15, 20, 50, 55]
+      y: [15, 20, 50, 55],
+      colour: "green"
+    },
+    AA102BN: {
+      x: [10, 20, 25, 30],
+      y: [20, 10, 40, 100],
+      colour: "orange"
     }
   };
 
