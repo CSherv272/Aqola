@@ -4,6 +4,11 @@
 import * as d3 from "d3";
 import { useRef, useEffect } from "react";
 
+// type Props = {
+//   onChange: (val: string) => void;
+// };
+
+
 export default function LinePlot({
     data,
     width = 640,
@@ -11,7 +16,8 @@ export default function LinePlot({
     marginTop = 20,
     marginRight = 20,
     marginBottom = 30,
-    marginLeft = 40
+    marginLeft = 40,
+    onChange
 }) {
     // Json passed in with x and y values for line graph
 
@@ -22,6 +28,7 @@ export default function LinePlot({
     const xLabel = useRef();
     const yLabel = useRef();
 
+    // create the x and y scales for the graph, using the max x and y values from the data input
     const x = d3.scaleLinear([0, d3.max([...xVals])], [marginLeft, width - marginRight]);
     const y = d3.scaleLinear([0, d3.max([...yVals])], [height - marginBottom, marginTop]);
 
@@ -35,32 +42,37 @@ export default function LinePlot({
         }))
     );
 
-
+    // generates the line path for each line in the data input
     const lineGen = d3.line()
         .x((d) => x(d.x))
         .y((d) => y(d.y));
-    // .attr("stroke-width", "10px");
 
+    // create the x and y axis using d3
     useEffect(() => void d3.select(xLabel.current).call(d3.axisBottom(x)), [xLabel, x]);
     useEffect(() => void d3.select(yLabel.current).call(d3.axisLeft(y)), [yLabel, y]);
 
     return (
         <svg width={width} height={height}>
+            {/* add the axis to the graph */}
             <g ref={xLabel} transform={`translate(0,${height - marginBottom})`} />
             <g ref={yLabel} transform={`translate(${marginLeft},0)`} />
 
+            {/* for each line in the data input */}
             {lineArray.map((lineData, i) => (
                 <g key={i}>
+                    {/* make a line */}
                     <path
                         d={lineGen(lineData)}
                         fill="none"
-                        // stroke={colours[i % colours.length]}
+                        // add the line's colour from data
                         stroke={Object.values(data)[i].colour}
                         strokeWidth="4px"
                     >
+                        {/* add the line's name on hover */}
                         <title>{Object.entries(data)[i][0]}</title>
                     </path>
 
+                    {/* add the circles at each co-ord */}
                     {lineData.map((d, j) => (
                         <circle
                             key={j}
@@ -68,9 +80,11 @@ export default function LinePlot({
                             cy={y(d.y)}
                             r="3"
                             fill="white"
-                            // stroke={colours[i % colours.length]}
+                            // add the circle's colour from data
                             stroke={Object.values(data)[i].colour}
+                            onClick={() => onChange("herro")}
                         >
+                            {/* add the point's co-ords on hover */}
                             <title>{`x: ${d.x}, y: ${d.y}`}</title>
                         </circle>
                     ))}
