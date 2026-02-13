@@ -31,11 +31,15 @@ const LineGraph = dynamic(() => import("./components/linegraph"), {
   loading: () => <p>Loading...</p>,
 });
 
-
 export default function Home() {
   //app state variables
   let [selectedPostcodes, setSelectedPostcodes] = useState([])
   let [selectedDataSet, setSelectedDataSet] = useState("crime_data")
+
+  const handleClick = (newValue : string) => {
+    setSelectedDataSet(newValue)
+    console.log("selected dataset", selectedDataSet)
+  }
 
   const [data, setData] = useState([])
   const [showGraph, setShowGraph] = useState(false)
@@ -93,7 +97,7 @@ export default function Home() {
   return (
     <div>
       <Banner trigger={getData} /> {/*trigger is button press*/}
-      {showGraph && <LineGraph data={passData} />} {/*show and hide map*/}
+      {showGraph && <LineGraph data={passData} onChange={handleClick} />} {/*show and hide map*/}
       <LeafletMap />
     </div>
   );
