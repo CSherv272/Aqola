@@ -7,45 +7,57 @@ export default function BarGraph({
   data = [
     {
       postcode: "CT2 7QS",
-      high_risk: 10,
-      medium_risk: 20,
-      low_risk: 50,
-      very_low_risk: 80,
+      risks: {
+        high_risk: 12,
+        medium_risk: 20,
+        low_risk: 50,
+        very_low_risk: 80,
+      },
     },
     {
       postcode: "CT2 7QB",
-      high_risk: 20,
-      medium_risk: 10,
-      low_risk: 50,
-      very_low_risk: 70,
+      risks: {
+        high_risk: 23,
+        medium_risk: 10,
+        low_risk: 50,
+        very_low_risk: 70,
+      },
     },
     {
       postcode: "CT2 7LS",
-      high_risk: 40,
-      medium_risk: 10,
-      low_risk: 50,
-      very_low_risk: 70,
+      risks: {
+        high_risk: 40,
+        medium_risk: 10,
+        low_risk: 50,
+        very_low_risk: 70,
+      },
     },
     {
       postcode: "CT2 7BR",
-      high_risk: 30,
-      medium_risk: 10,
-      low_risk: 50,
-      very_low_risk: 70,
+      risks: {
+        high_risk: 32,
+        medium_risk: 10,
+        low_risk: 50,
+        very_low_risk: 70,
+      },
     },
     {
       postcode: "CT2 7SY",
-      high_risk: 60,
-      medium_risk: 10,
-      low_risk: 50,
-      very_low_risk: 70,
+      risks: {
+        high_risk: 65,
+        medium_risk: 10,
+        low_risk: 50,
+        very_low_risk: 70,
+      },
     },
     {
       postcode: "CT2 7RB",
-      high_risk: 20,
-      medium_risk: 10,
-      low_risk: 50,
-      very_low_risk: 70,
+      risks: {
+        high_risk: 24,
+        medium_risk: 10,
+        low_risk: 50,
+        very_low_risk: 70,
+      },
     },
   ],
 
@@ -60,29 +72,34 @@ export default function BarGraph({
   const gy = useRef();
   const innerWidth = width - marginLeft - marginRight;
   const innerHeight = height - marginTop - marginBottom;
-  const x = d3.scaleLinear(
-    [0, data.length - 1],
-    [marginLeft, width - marginRight],
-  );
-  const y = d3.scaleLinear(d3.extent(data), [height - marginBottom, marginTop]);
 
-  const line = d3.line((d, i) => x(i), y);
+  const postcode_subgroups = d3.map(data, (d) => d.risks);
 
-  const yScale = d3
-    .scaleBand()
-    .domain(data.map((d) => d.postcode))
-    .range([0, innerHeight])
-    .padding(0.05);
+  const postcode_groups = d3.map(data, (d) => d.postcode);
+
+  console.log(postcode_subgroups + " SUBGROUPS");
+  console.log(postcode_groups + " GROUPS");
 
   const xScale = d3
+    .scaleBand()
+    .domain(data.map((d) => d.postcode))
+    .range([0, innerWidth])
+    .padding(0.2);
+
+  const yScale = d3
     .scaleLinear()
     .domain([
       0,
       d3.max(data, (d) =>
-        Math.max(d.high_risk, d.medium_risk, d.low_risk, d.very_low_risk),
+        Math.max(
+          d.risks.high_risk,
+          d.risks.medium_risk,
+          d.risks.low_risk,
+          d.risks.very_low_risk,
+        ),
       ),
     ])
-    .range([0, innerWidth]);
+    .range([innerHeight, 0]);
 
   useEffect(
     () => void d3.select(gx.current).call(d3.axisBottom(xScale)),
@@ -96,12 +113,12 @@ export default function BarGraph({
   return (
     <svg width={width} height={height}>
       <g transform={`translate(${marginLeft}, ${marginTop})`}>
-        {xScale.ticks().map((tickValue) => (
+        {yScale.ticks().map((tickValue) => (
           <line
-            x1={xScale(tickValue)}
-            y1={0}
-            x2={xScale(tickValue)}
-            y2={innerHeight}
+            x1={0}
+            y1={yScale(tickValue)}
+            x2={innerWidth}
+            y2={yScale(tickValue)}
             stroke="white"
             key={tickValue}
           />
@@ -109,10 +126,10 @@ export default function BarGraph({
 
         {data.map((d, i) => [
           <rect
-            x={0}
-            y={yScale(d.postcode)}
-            width={xScale(d.high_risk)}
-            height={yScale.bandwidth()}
+            x={xScale(d.postcode)}
+            y={yScale(d.risks.high_risk)}
+            width={xScale.bandwidth()}
+            height={innerHeight - yScale(d.risks.high_risk)}
             key={i}
             fill="red"
           />,
