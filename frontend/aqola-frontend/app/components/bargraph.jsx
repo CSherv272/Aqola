@@ -4,85 +4,98 @@ import * as d3 from "d3";
 import { useRef, useEffect } from "react";
 
 export default function BarGraph({
-  data = [
-    {
-      postcode: "CT2 7QS",
-      risks: {
-        high_risk: 12,
-        medium_risk: 20,
-        low_risk: 50,
-        very_low_risk: 80,
+  data = {
+    groups: [
+      {
+        name: "CT2 7QS",
+        bars: [
+          {
+            bar_name: "high_risk",
+            value: 30,
+          },
+          {
+            bar_name: "medium_risk",
+            value: 12,
+          },
+          {
+            bar_name: "low_risk",
+            value: 40,
+          },
+          {
+            bar_name: "very_low_risk",
+            value: 50,
+          },
+        ],
       },
-    },
-    {
-      postcode: "CT2 7QB",
-      risks: {
-        high_risk: 23,
-        medium_risk: 10,
-        low_risk: 50,
-        very_low_risk: 70,
+      {
+        name: "CT2 7QB",
+        bars: [
+          {
+            bar_name: "high_risk",
+            value: 45,
+          },
+          {
+            bar_name: "medium_risk",
+            value: 64,
+          },
+          {
+            bar_name: "low_risk",
+            value: 20,
+          },
+          {
+            bar_name: "very_low_risk",
+            value: 3,
+          },
+        ],
       },
-    },
-    {
-      postcode: "CT2 7LS",
-      risks: {
-        high_risk: 40,
-        medium_risk: 10,
-        low_risk: 50,
-        very_low_risk: 70,
+      {
+        name: "CT2 7QA",
+        bars: [
+          {
+            bar_name: "high_risk",
+            value: 45,
+          },
+          {
+            bar_name: "medium_risk",
+            value: 64,
+          },
+          {
+            bar_name: "low_risk",
+            value: 20,
+          },
+          {
+            bar_name: "very_low_risk",
+            value: 3,
+          },
+        ],
       },
-    },
-    {
-      postcode: "CT2 7BR",
-      risks: {
-        high_risk: 32,
-        medium_risk: 10,
-        low_risk: 50,
-        very_low_risk: 70,
-      },
-    },
-    {
-      postcode: "CT2 7SY",
-      risks: {
-        high_risk: 65,
-        medium_risk: 10,
-        low_risk: 50,
-        very_low_risk: 70,
-      },
-    },
-    {
-      postcode: "CT2 7RB",
-      risks: {
-        high_risk: 24,
-        medium_risk: 10,
-        low_risk: 50,
-        very_low_risk: 70,
-      },
-    },
-  ],
-
+    ],
+    title: "Flood data bargraph!",
+    xlabel: "Postcodes",
+    ylabel: "Number of Houses at risk",
+  },
   marginTop = 20,
   marginRight = 20,
   marginBottom = 30,
   marginLeft = 60,
-  width = 640,
-  height = 400,
+  width = 840,
+  height = 600,
 }) {
   const gx = useRef();
   const gy = useRef();
+  const subgx = useRef();
+
   const innerWidth = width - marginLeft - marginRight;
   const innerHeight = height - marginTop - marginBottom;
-
-  const postcode_subgroups = d3.map(data, (d) => d.risks);
-
-  const postcode_groups = d3.map(data, (d) => d.postcode);
+  const postcode_subgroups = d3.map(data.groups[0].bars, (bar) => bar.bar_name);
+  const postcode_groups = d3.map(data.groups, (group) => group.name);
 
   console.log(postcode_subgroups + " SUBGROUPS");
   console.log(postcode_groups + " GROUPS");
 
   const xScale = d3
     .scaleBand()
-    .domain(data.map((d) => d.postcode))
+    .domain(postcode_groups)
     .range([0, innerWidth])
     .padding(0.2);
 
@@ -90,16 +103,20 @@ export default function BarGraph({
     .scaleLinear()
     .domain([
       0,
-      d3.max(data, (d) =>
-        Math.max(
-          d.risks.high_risk,
-          d.risks.medium_risk,
-          d.risks.low_risk,
-          d.risks.very_low_risk,
-        ),
-      ),
+      d3.max(data.groups, (group) => d3.max(group.bars, (bar) => bar.value)),
     ])
     .range([innerHeight, 0]);
+
+  const xSubgroupScale = d3
+    .scaleBand()
+    .domain(postcode_subgroups)
+    .range([0, xScale.bandwidth()])
+    .padding(0.1);
+
+  const colourScale = d3
+    .scaleOrdinal()
+    .domain(postcode_subgroups)
+    .range(["#dc0000", "#e7b416", "#fff500", "#2dc937"]);
 
   useEffect(
     () => void d3.select(gx.current).call(d3.axisBottom(xScale)),
@@ -109,7 +126,13 @@ export default function BarGraph({
     () => void d3.select(gy.current).call(d3.axisLeft(yScale)),
     [gy, yScale],
   );
+  useEffect(
+    () => void d3.select(subgx.current).call(d3.axisBottom(xSubgroupScale)),
+    [subgx, xSubgroupScale],
+  );
 
+  console.log(data.groups[0].name);
+  console.log(xScale(data.groups[0].bars[0].bar_name));
   return (
     <svg width={width} height={height}>
       <g transform={`translate(${marginLeft}, ${marginTop})`}>
@@ -124,25 +147,33 @@ export default function BarGraph({
           />
         ))}
 
-        {data.map((d, i) => [
-          <rect
-            x={xScale(d.postcode)}
-            y={yScale(d.risks.high_risk)}
-            width={xScale.bandwidth()}
-            height={innerHeight - yScale(d.risks.high_risk)}
-            key={i}
-            fill="red"
-          />,
-          //   <rect
-          //     x={0}
-          //     y={yScale(d.postcode)}
-          //     width={xScale(d.medium_risk)}
-          //     height={yScale.bandwidth()}
-          //     key={i}
-          //     fill="yellow"
-          //   />,
-        ])}
+        {data.groups.map((group, index) => (
+          <g transform={`translate(${xScale(group.name)}, 0)`} key={group.name}>
+            {group.bars.map((bar, key) => (
+              <rect
+                x={xSubgroupScale(bar.bar_name)}
+                y={yScale(bar.value)}
+                width={xSubgroupScale.bandwidth()}
+                height={innerHeight - yScale(bar.value)}
+                key={key}
+                fill={colourScale(bar.bar_name)}
+              />
+            ))}
+          </g>
+        ))}
       </g>
+
+      {/* group.bars.map((bar, index) => [
+            <rect
+              x={xSubgroupScale(group.name)}
+              y={yScale(bar.value)}
+              width={xSubgroupScale.bandwidth()}
+              height={innerHeight - yScale(bar.value)}
+              key={key}
+              fill="red"
+            />,
+          ]), */}
+
       <g
         ref={gx}
         transform={`translate(${marginLeft},${height - marginBottom})`}
