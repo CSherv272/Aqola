@@ -81,7 +81,7 @@ export default function Home() {
     chart: {
       lines: [
         {
-          line_name: "Drugs",
+          line_name: "Burglary",
           coords: [
             [0, 10],
             [1, 20],
@@ -98,7 +98,7 @@ export default function Home() {
         },
       ],
       title: "Crime by Postcode",
-      xlabel: "Time (months)",
+      xlabel: "Postcode",
       ylabel: "Number of Crimes",
     },
   };
