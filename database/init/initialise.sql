@@ -8,7 +8,6 @@ DROP TABLE IF EXISTS postcodes;    -- References lsoas
 -- Drop parent tables last
 DROP TABLE IF EXISTS lsoas;
 DROP TABLE IF EXISTS statistical_areas;
-DROP TABLE IF EXISTS display_zones;
 
 
 CREATE TABLE IF NOT EXISTS lsoas (
