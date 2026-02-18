@@ -171,7 +171,8 @@ def school_process():
     schools_clean, ofsted_clean = rename_columns(raw_schools, raw_ofsted)
     final_data = merge_and_finalise(schools_clean, ofsted_clean, df_spatial)
     
-    # Clean Booleans (for Postgres)
+    # Clean Booleans to align with Postgres format
+    # Including {True: True, False: False} ensures the map won't overwrite existing booleans with NaN if the script runs twice.
     bool_cols = ["is_primary", "is_secondary", "is_post16"]
     for col in bool_cols:
         final_data[col] = final_data[col].fillna(0).map({1: True, 0: False, '1': True, '0': False, True: True, False: False})
