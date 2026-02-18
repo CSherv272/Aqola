@@ -36,7 +36,7 @@ export default function Home() {
   let [selectedPostcodes, setSelectedPostcodes] = useState([])
   let [selectedDataSet, setSelectedDataSet] = useState("crime_data")
 
-  const handleClick = (newValue : string) => {
+  const handleClick = (newValue: string) => {
     setSelectedDataSet(newValue)
     console.log("selected dataset", selectedDataSet)
   }
@@ -71,33 +71,58 @@ export default function Home() {
     console.log("your postcode data", postcode)
   }, [postcode])
 
-  let passData = {
-    AA11ABC: {
-      x: [5, 6, 9, 20],
-      y: [10, 30, 40, 70],
-      colour: "red"
-    },
-    CT11AE: {
-      x: [10, 18, 27, 30],
-      y: [15, 20, 50, 55],
-      colour: "blue"
-    },
-    TN108FN: {
-      x: [14, 19, 25, 37],
-      y: [15, 20, 50, 55],
-      colour: "green"
-    },
-    AA102BN: {
-      x: [10, 20, 25, 30],
-      y: [20, 10, 40, 100],
-      colour: "orange"
+  let crime_data = {
+    "chart_type": "line",
+    "type": "crime_data",
+    "area": "postcodes",
+    "chart": {
+      "lines": [
+        {
+          line_name: "Burglary",
+          coords: [
+            [0, 10],
+            [1, 20],
+            [2, 30]
+          ],
+        },
+        {
+          line_name: "Robbery",
+          coords: [
+            [0, 5],
+            [1, 15],
+            [2, 25]
+          ],
+        }
+      ],
+      "title": "Crime by Postcode",
+      "xlabel": "Postcode",
+      "ylabel": "Number of Crimes",
     }
-  };
+  }
+
+  let colours = {
+    "Burglary": "blue",
+    "Robbery": "red",
+    "Vehicle Crime": "green",
+    "Violent Crime": "orange",
+    "Other Crime": "purple",
+    "Anti-social Behaviour": "brown",
+    "Criminal Damage": "pink",
+    "Drugs": "cyan",
+    "Public Order": "magenta",
+    "Shoplifting": "yellow",
+    "Theft": "grey",
+    "Bicycle Theft": "black",
+    "Possession of Weapons": "lime",
+    "Other Theft": "teal",
+    "All Crime": "navy",
+    "Criminal Damage and Arson": "maroon",
+  }
 
   return (
     <div>
       <Banner trigger={getData} /> {/*trigger is button press*/}
-      {showGraph && <LineGraph data={passData} onChange={handleClick} />} {/*show and hide map*/}
+      {showGraph && <LineGraph data={crime_data} colours={colours} onChange={handleClick} />} {/*show and hide map*/}
       <LeafletMap />
     </div>
   );
