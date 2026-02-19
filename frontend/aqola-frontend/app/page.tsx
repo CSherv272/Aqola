@@ -25,21 +25,6 @@ const LeafletMap = dynamic(() => import("./components/maps"), {
   loading: () => <p>Loading...</p>,
 });
 
-const LineGraph = dynamic(() => import("./components/linegraph"), {
-  ssr: false,
-  loading: () => <p>Loading...</p>,
-});
-
-const LineGraph = dynamic(() => import("./components/linegraph"), {
-  ssr: false,
-  loading: () => <p>Loading...</p>,
-});
-
-const LineGraph = dynamic(() => import("./components/linegraph"), {
-  ssr: false,
-  loading: () => <p>Loading...</p>,
-});
-
 export default function Home() {
   //app state variables
   let [selectedPostcodes, setSelectedPostcodes] = useState([]);
