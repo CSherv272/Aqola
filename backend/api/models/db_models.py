@@ -23,3 +23,13 @@ class Postcode(Base):
     
     # # Relationships
     # zone = relationship("DisplayZone", back_populates="postcodes")
+
+class Crime(Base):
+    __tablename__ = "crime_data"
+    
+    crime_id = Column(String, unique=True, nullable=False, index=True, primary_key=True)
+    lsoa_id = Column(String(20), nullable=False, index=True)
+    date = Column(String(8))
+    latitude = Column(Float)
+    longitude = Column(Float)
+    crime_type = Column(String)
