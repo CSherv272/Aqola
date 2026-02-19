@@ -5,7 +5,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import LineGraph from "./components/linegraph";
+// import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
 import { useState, useEffect } from "react";
 
@@ -21,6 +21,12 @@ const Banner = dynamic(() => import("./components/aqola-banner"), {
 
 //dynamically import of the leaflet map from a map component
 const LeafletMap = dynamic(() => import("./components/maps"), {
+  ssr: false,
+  loading: () => <p>Loading...</p>,
+});
+
+
+const LineGraph = dynamic(() => import("./components/linegraph"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
@@ -65,11 +71,11 @@ export default function Home() {
   }, [postcode]);
 
   let crime_data = {
-    chart_type: "line",
-    type: "crime_data",
-    area: "postcodes",
-    chart: {
-      lines: [
+    "chart_type": "line",
+    "type": "crime_data",
+    "area": "postcodes",
+    "chart": {
+      "lines": [
         {
           line_name: "Drugs",
           coords: [
@@ -83,34 +89,34 @@ export default function Home() {
           coords: [
             [0, 5],
             [1, 15],
-            [2, 25],
+            [2, 25]
           ],
-        },
+        }
       ],
-      title: "Crime by Postcode",
-      xlabel: "Time (months)",
-      ylabel: "Number of Crimes",
-    },
-  };
+      "title": "Crime by Postcode",
+      "xlabel": "Time (months)",
+      "ylabel": "Number of Crimes",
+    }
+  }
 
   let colours = {
-    Burglary: "blue",
-    Robbery: "red",
+    "Burglary": "blue",
+    "Robbery": "red",
     "Vehicle Crime": "green",
     "Violent Crime": "orange",
     "Other Crime": "purple",
     "Anti-social Behaviour": "brown",
     "Criminal Damage": "pink",
-    Drugs: "cyan",
+    "Drugs": "cyan",
     "Public Order": "magenta",
-    Shoplifting: "yellow",
-    Theft: "grey",
+    "Shoplifting": "yellow",
+    "Theft": "grey",
     "Bicycle Theft": "black",
     "Possession of Weapons": "lime",
     "Other Theft": "teal",
     "All Crime": "navy",
     "Criminal Damage and Arson": "maroon",
-  };
+  }
 
   return (
     <div>
