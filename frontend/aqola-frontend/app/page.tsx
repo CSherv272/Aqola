@@ -36,7 +36,7 @@ export default function Home() {
   let [selectedPostcodes, setSelectedPostcodes] = useState([])
   let [selectedDataSet, setSelectedDataSet] = useState("crime_data")
 
-  const handleClick = (newValue: string) => {
+  const handleLineHover = (newValue: string) => {
     setSelectedDataSet(newValue)
     console.log("selected dataset", selectedDataSet)
   }
@@ -78,7 +78,7 @@ export default function Home() {
     "chart": {
       "lines": [
         {
-          line_name: "Burglary",
+          line_name: "Drugs",
           coords: [
             [0, 10],
             [1, 20],
@@ -95,7 +95,7 @@ export default function Home() {
         }
       ],
       "title": "Crime by Postcode",
-      "xlabel": "Postcode",
+      "xlabel": "Time (months)",
       "ylabel": "Number of Crimes",
     }
   }
@@ -122,7 +122,7 @@ export default function Home() {
   return (
     <div>
       <Banner trigger={getData} /> {/*trigger is button press*/}
-      {showGraph && <LineGraph data={crime_data} colours={colours} onChange={handleClick} />} {/*show and hide map*/}
+      {showGraph && <LineGraph data={crime_data} colours={colours} get_line_name={handleLineHover} />} {/*show and hide map*/}
       <LeafletMap />
     </div>
   );
