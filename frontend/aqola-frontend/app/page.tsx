@@ -5,7 +5,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-// import LineGraph from "./components/linegraph";
+import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
 import { useState, useEffect } from "react";
 
