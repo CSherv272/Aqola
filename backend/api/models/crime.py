@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 from decimal import Decimal
+from datetime import date
 
 class CrimeResponse(BaseModel):
-    crime_id: str
+    crime_id: int
     lsoa_id: str
-    date: str
+    date: date
     latitude: Decimal
     longitude: Decimal
     crime_type: str
