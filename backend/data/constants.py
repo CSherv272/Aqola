@@ -1,4 +1,5 @@
 class Cleansing:
+    # list of postcodes in Kent from: https://www.postcode-info.co.uk/kent-postcodes-376.html
     KENT_POSTCODE_DISTRICTS = ["BR6", "BR8",
         "CT1", "CT10", "CT11", "CT12", "CT13", "CT14", "CT15", "CT16", "CT17", "CT18", "CT19",
         "CT2", "CT20", "CT21", "CT3", "CT4", "CT5", "CT6", "CT7", "CT8", "CT9",

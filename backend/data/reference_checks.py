@@ -38,27 +38,22 @@ def reference_check_process():
     # load the data and the reference tables
     dataPath = os.getenv("DATA_PATH_DEV")
     datasetPaths = get_present_CSVs(dataPath)
-    # print(datasetPaths)
-    # datasetPaths.remove(Path(dataPath + "/crime_data/crime_data.csv"))
-    # datasetPaths.remove(Path(dataPath + "/lsoas/lsoas.csv"))
-    # datasetPaths.remove(Path(dataPath + "/postcodes/postcodes.csv"))
     
+    # load reference CSVs
     lsoasCleansed = pd.read_csv(dataPath + "/lsoas/lsoas.csv")
     lsoasRaw = pd.read_csv(dataPath + "/lsoas/raw/LSOA_population.csv")
     postcodesCleansed = pd.read_csv(dataPath + "/postcodes/postcodes.csv")
     postcodesRaw = pd.read_csv(dataPath + "/postcodes/raw/all_postcodes.csv", usecols=["pcd"])
-
 
     # check the references and log any errors
     print("=======================================================================")
     anyMissing = []
     for dataset in datasetPaths:
         data = pd.read_csv(dataset)
-        # print("=======================================================================")
         print(f"Checking references for {dataset.stem}")
+
+        # if missing in LSOA dataset 
         missingLsoaInRaw = check_references(data, lsoasRaw, "lsoa_id", "LSOA 2021 Code")
-        # print("=======================================================================")
-        # print(f"Checking LSOA references for {dataset.stem}, against cleansed CSV")
         missingLsoaInCleansed = check_references(data, lsoasCleansed, "lsoa_id", "lsoa_id")
 
         # if it's missing from the raw files
@@ -85,13 +80,7 @@ def reference_check_process():
         
 
         # if missing in postcodes dataset
-        # print("=======================================================================")
-        # print(f"Checking postcode references for {dataset.stem}, against raw data")
-
         missingPcInRaw = check_references(data, postcodesRaw, "postcode", "pcd")
-        # print("=======================================================================")
-        # print(f"Checking postcode references for {dataset.stem}, against cleansed CSV")
-
         missingPcInCleansed = check_references(data, postcodesCleansed, "postcode", "postcode")
 
         # if it's missing from the raw files
@@ -115,7 +104,7 @@ def reference_check_process():
                 "state" : "for review"
             })
 
-        #user feedback
+        # console feedback
         anyMissing = list(set(missingLsoaInCleansed + missingLsoaInRaw + missingPcInCleansed + missingPcInRaw + anyMissing))
     if anyMissing:
         print("-----------------------------------------------------------------------")

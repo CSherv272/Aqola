@@ -119,7 +119,7 @@ def main():
     reference_check_process()
     drop_missing_references() # drops rows with invalid LSOA or postcode refs
 
-    # ingest_process(dataPath)
+    ingest_process(dataPath)
 
 
 

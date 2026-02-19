@@ -179,12 +179,12 @@ def school_process():
     
     # Convert 'DEFAULT' strings to None (To avoid Foreign Key errors)
     # This allows Postgres to treat them as true NULLs  
-    if 'lsoa_id' in final_data.columns:
-        final_data['lsoa_id'] = final_data['lsoa_id'].replace('DEFAULT', None)
+    # if 'lsoa_id' in final_data.columns:
+    #     final_data['lsoa_id'] = final_data['lsoa_id'].replace('DEFAULT', None)
         
-        # If no LSOA was found, nullify the postcode to prevent FK Violation
-        orphan_mask = final_data['lsoa_id'].isna()
-        final_data.loc[orphan_mask, 'postcode'] = None
+    #     # If no LSOA was found, nullify the postcode to prevent FK Violation
+    #     orphan_mask = final_data['lsoa_id'].isna()
+    #     final_data.loc[orphan_mask, 'postcode'] = None
 
     # Final cleanup of duplicates
     final_data = final_data.drop_duplicates(subset=['urn', 'year_range'], keep='first')

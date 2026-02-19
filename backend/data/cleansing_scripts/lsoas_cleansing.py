@@ -21,13 +21,6 @@ DB_CONFIG = {
 }
 
 TARGET_CRS = "EPSG:4326"   # WGS84 (lat/long)
-# KENT_LAD_CODES = [
-#     'E07000105', 'E07000106', 'E07000107', 'E07000108',
-#     'E07000112', 'E07000109', 'E07000110', 'E06000035',
-#     'E07000111', 'E07000113', 'E07000114', 'E07000115',
-#     'E07000116',
-# ]
-
 
 def create_db_connection():
     connection_string = (

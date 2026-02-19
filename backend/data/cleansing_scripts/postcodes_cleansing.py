@@ -6,17 +6,6 @@ from dotenv import load_dotenv
 from error_logging import error_process
 from constants import Cleansing
 
-# list of postcodes in Kent from: https://www.postcode-info.co.uk/kent-postcodes-376.html
-# kentPostcodes = ["BR6", "BR8",
-#   "CT1", "CT10", "CT11", "CT12", "CT13", "CT14", "CT15", "CT16", "CT17", "CT18", "CT19",
-#   "CT2", "CT20", "CT21", "CT3", "CT4", "CT5", "CT6", "CT7", "CT8", "CT9",
-#   "DA1", "DA10", "DA11", "DA12", "DA13", "DA2", "DA3", "DA4", "DA9",
-#   "ME1", "ME10", "ME11", "ME12", "ME13", "ME14", "ME15", "ME16", "ME17", "ME18", "ME19",
-#   "ME2", "ME20", "ME3", "ME4", "ME5", "ME6", "ME7", "ME8", "ME9",
-#   "TN1", "TN10", "TN11", "TN12", "TN13", "TN14", "TN15", "TN16", "TN17", "TN18",
-#   "TN2", "TN23", "TN24", "TN25", "TN26", "TN27", "TN28", "TN29", "TN3", "TN30", "TN4", "TN8", "TN9"]
-
-
 # get all CSVs in file path
 def get_postcode_data(filePath):
     data = pd.read_csv(Path(filePath) / "postcodes/raw/all_postcodes.csv", usecols=[0, 41, 42, 50])

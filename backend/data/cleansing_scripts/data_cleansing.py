@@ -8,8 +8,6 @@ def get_present_CSVs(dataPath):
     dataPath = Path(dataPath)
     folders = [folder for folder in os.listdir(dataPath) if os.path.isdir(dataPath / folder)]
     presentCSVs = []
-    # print("=======================================================================")
-    # print(f"Folders in data path: {folders}")
 
     for folder in folders:
         CSVs = (dataPath / folder).glob("*.csv")
