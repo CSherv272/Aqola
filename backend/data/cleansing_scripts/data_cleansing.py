@@ -8,7 +8,8 @@ def get_present_CSVs(dataPath):
     dataPath = Path(dataPath)
     folders = [folder for folder in os.listdir(dataPath) if os.path.isdir(dataPath / folder)]
     presentCSVs = []
-    print(f"Folders in data path: {folders}")
+    # print("=======================================================================")
+    # print(f"Folders in data path: {folders}")
 
     for folder in folders:
         CSVs = (dataPath / folder).glob("*.csv")
@@ -42,8 +43,9 @@ def drop_missing_references():
     lsoaSet = set(lsoas["lsoa_id"].astype(str))
     pcdSet = set(postcodes["postcode"].astype(str))
 
-    for csv in get_present_CSVs(dataPath):
-        print(f"Checking {csv.stem} for invalid LSOAs & postcodes...")
+    print("=======================================================================")
+    for csv in get_present_CSVs(dataPath):    
+        print(f"{csv.stem}: Dropping all invalid LSOAs & postcodes...")
         df = pd.read_csv(csv)
 
         if "lsoa_id" in df.columns:

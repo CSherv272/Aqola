@@ -4,16 +4,17 @@ import geopandas as gpd
 import os.path
 from dotenv import load_dotenv
 from error_logging import error_process
+from constants import Cleansing
 
 # list of postcodes in Kent from: https://www.postcode-info.co.uk/kent-postcodes-376.html
-kentPostcodes = ["BR6", "BR8",
-  "CT1", "CT10", "CT11", "CT12", "CT13", "CT14", "CT15", "CT16", "CT17", "CT18", "CT19",
-  "CT2", "CT20", "CT21", "CT3", "CT4", "CT5", "CT6", "CT7", "CT8", "CT9",
-  "DA1", "DA10", "DA11", "DA12", "DA13", "DA2", "DA3", "DA4", "DA9",
-  "ME1", "ME10", "ME11", "ME12", "ME13", "ME14", "ME15", "ME16", "ME17", "ME18", "ME19",
-  "ME2", "ME20", "ME3", "ME4", "ME5", "ME6", "ME7", "ME8", "ME9",
-  "TN1", "TN10", "TN11", "TN12", "TN13", "TN14", "TN15", "TN16", "TN17", "TN18",
-  "TN2", "TN23", "TN24", "TN25", "TN26", "TN27", "TN28", "TN29", "TN3", "TN30", "TN4", "TN8", "TN9"]
+# kentPostcodes = ["BR6", "BR8",
+#   "CT1", "CT10", "CT11", "CT12", "CT13", "CT14", "CT15", "CT16", "CT17", "CT18", "CT19",
+#   "CT2", "CT20", "CT21", "CT3", "CT4", "CT5", "CT6", "CT7", "CT8", "CT9",
+#   "DA1", "DA10", "DA11", "DA12", "DA13", "DA2", "DA3", "DA4", "DA9",
+#   "ME1", "ME10", "ME11", "ME12", "ME13", "ME14", "ME15", "ME16", "ME17", "ME18", "ME19",
+#   "ME2", "ME20", "ME3", "ME4", "ME5", "ME6", "ME7", "ME8", "ME9",
+#   "TN1", "TN10", "TN11", "TN12", "TN13", "TN14", "TN15", "TN16", "TN17", "TN18",
+#   "TN2", "TN23", "TN24", "TN25", "TN26", "TN27", "TN28", "TN29", "TN3", "TN30", "TN4", "TN8", "TN9"]
 
 
 # get all CSVs in file path
@@ -52,7 +53,7 @@ def split_postcodes(data):
 
 # filter out all postcodes not in kent
 def kent_postcode_filter(data):
-    inKent = data["pcd_d"].isin(kentPostcodes)
+    inKent = data["pcd_d"].isin(Cleansing.KENT_POSTCODE_DISTRICTS )
     return data.loc[inKent, :]
 
 # reorder columns to match database
@@ -87,7 +88,7 @@ def extract_polygon_data(data, geojsonPath):
     onlyInGeo = set()
     onlyInRaw = set()
 
-    for pcdDist in kentPostcodes: # data["pcd_d"].unique()
+    for pcdDist in Cleansing.KENT_POSTCODE_DISTRICTS: # data["pcd_d"].unique()
         file_path = Path(geojsonPath) / "postcodes/raw" / f"{pcdDist}.geojson"
 
         #if file doesn't exist - log error and skip

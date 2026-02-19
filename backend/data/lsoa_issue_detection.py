@@ -2,7 +2,7 @@ import pandas as pd
 from dotenv import load_dotenv
 import os
 from pathlib import Path
-from cleansing_scripts.lsoas_cleansing import lsoa_process
+# from cleansing_scripts.lsoas_cleansing import lsoa_process
 from pandas import DataFrame
 
 # find all CSVs that are in the data folder

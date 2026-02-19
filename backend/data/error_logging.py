@@ -7,8 +7,16 @@ load_dotenv()
 
 def add_error_to_logs(data):
     path = os.getenv("DATA_PATH_DEV")
+    # os.remove(Path(path) / "error_log.csv")
     log_path = Path(path) / "error_log.csv"
-    data.to_csv(log_path, index=False)
+
+    # print(f"error log path {log_path}")
+    if log_path.is_file():
+        # print(f"Adding error to log file...")
+        data.to_csv(log_path, index=False, mode="a", header=False)
+    else:
+        # print(f"Creating log file: {log_path}\nAnd appending errors...")
+        data.to_csv(log_path, index=False, header=True)
 
 def format_error(d):
     df = pd.DataFrame(
