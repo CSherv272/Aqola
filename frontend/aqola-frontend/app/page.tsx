@@ -5,19 +5,42 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Banner from "./components/aqola-banner";
-import LineGraph from "./components/linegraph";
-import { useEffect, useState } from "react";
+// import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
-import { Html, Head } from "next/document";
+import { useState, useEffect } from "react";
 
-//import of the leaflet map from a map component
-const LeafletMap = dynamic(() => import("./components/Map"), {
+// import LineGraph from "./components/linegraph";
+// import LeafletMap from "./components/Map";
+// import Banner from "./components/aqola-banner";
+
+//dynamically import banner from banner component
+const Banner = dynamic(() => import("./components/aqola-banner"), {
+  ssr: false,
+  loading: () => <p>Loading...</p>,
+});
+
+//dynamically import of the leaflet map from a map component
+const LeafletMap = dynamic(() => import("./components/maps"), {
+  ssr: false,
+  loading: () => <p>Loading...</p>,
+});
+
+
+const LineGraph = dynamic(() => import("./components/linegraph"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
 
 export default function Home() {
+  //app state variables
+  let [selectedPostcodes, setSelectedPostcodes] = useState([])
+  let [selectedDataSet, setSelectedDataSet] = useState("crime_data")
+
+  const handleLineHover = (newValue: string) => {
+    setSelectedDataSet(newValue)
+    console.log("selected dataset", selectedDataSet)
+  }
+
   const [data, setData] = useState([])
   const [showGraph, setShowGraph] = useState(false)
   const [postcode, setPostcode] = useState([])
@@ -48,20 +71,59 @@ export default function Home() {
     console.log("your postcode data", postcode)
   }, [postcode])
 
+  let crime_data = {
+    "chart_type": "line",
+    "type": "crime_data",
+    "area": "postcodes",
+    "chart": {
+      "lines": [
+        {
+          line_name: "Drugs",
+          coords: [
+            [0, 10],
+            [1, 20],
+            [2, 30]
+          ],
+        },
+        {
+          line_name: "Robbery",
+          coords: [
+            [0, 5],
+            [1, 15],
+            [2, 25]
+          ],
+        }
+      ],
+      "title": "Crime by Postcode",
+      "xlabel": "Time (months)",
+      "ylabel": "Number of Crimes",
+    }
+  }
 
+  let colours = {
+    "Burglary": "blue",
+    "Robbery": "red",
+    "Vehicle Crime": "green",
+    "Violent Crime": "orange",
+    "Other Crime": "purple",
+    "Anti-social Behaviour": "brown",
+    "Criminal Damage": "pink",
+    "Drugs": "cyan",
+    "Public Order": "magenta",
+    "Shoplifting": "yellow",
+    "Theft": "grey",
+    "Bicycle Theft": "black",
+    "Possession of Weapons": "lime",
+    "Other Theft": "teal",
+    "All Crime": "navy",
+    "Criminal Damage and Arson": "maroon",
+  }
 
   return (
-    <html>
-      <head>
-        <link rel="icon" type="image/png" href="/icon.png" sizes="any" />
-      </head>
-      <body>
-        <div>
-          <Banner trigger={getData} /> {/*trigger is button press*/}
-          {showGraph && <LineGraph />} {/*show and hide map*/}
-          <LeafletMap />
-        </div>
-      </body>
-    </html>
+    <div>
+      <Banner trigger={getData} /> {/*trigger is button press*/}
+      {showGraph && <LineGraph data={crime_data} colours={colours} get_line_name={handleLineHover} />} {/*show and hide map*/}
+      <LeafletMap />
+    </div>
   );
 }

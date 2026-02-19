@@ -123,10 +123,18 @@ def process_each_file(basePath: Path):
 
 # in the CSV with LSOA references missing in the whole LSOA dataset, set these to "DEFAULT"
 def replace_missing_lsoas_as_default(data, missingLsoas, dataPath):
+    
+    # Make column to be a string/object type
+    data["lsoa_id"] = data["lsoa_id"].astype(object)
+
     if "DEFAULT" in missingLsoas:
         missingLsoas.remove("DEFAULT")
     
     data.loc[data["lsoa_id"].isin(missingLsoas), "lsoa_id"] = "DEFAULT"
+    
+    #if any NaNs remain, set them to DEFAULT too
+    data["lsoa_id"] = data["lsoa_id"].fillna("DEFAULT")
+    
     data.to_csv(dataPath, index=False)
 
 

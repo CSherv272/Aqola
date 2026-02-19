@@ -5,10 +5,12 @@ import glob
 from cleansing_scripts.postcodes_cleansing import postcodes_process
 from cleansing_scripts.lsoas_cleansing import lsoa_process
 from cleansing_scripts.crime_cleansing import crime_process
+from cleansing_scripts.school_cleansing import school_process
 from ingestion import initialise_db, ingest_table, get_rows
 from pathlib import Path
 from reference_checks import reference_check_process
 from cleansing_scripts.data_cleansing import drop_missing_references, get_present_CSVs
+import pandas as pd
 
 load_dotenv()
 
@@ -42,8 +44,8 @@ def run_csv_creation(missingCSVs):
     if "school_data" in missingCSVs:
         print("=====================================================")
         print("Creating School Data CSV...")
-        #schoolProcess()
-    if "flood_data" in missingCSVs:
+        school_process()
+    if "flood_data" in missingCsvFolders:
         print("=====================================================")
         print("Creating Flood Data CSV...")
         #floodProcess()
@@ -86,6 +88,12 @@ def run_ingest(ingestCSVs, dataPath):
     for csv in ingestCSVs:
         print("=====================================================")
         print(f"Ingesting {csv.stem} data...")
+        
+        if csv.stem == "school_data":
+            df = pd.read_csv(csv)
+            # Convert 'DEFAULT' to None so it becomes a valid SQL NULL
+            df['lsoa_id'] = df['lsoa_id'].replace('DEFAULT', None)
+            df.to_csv(csv, index=False) # Overwrite before ingestion
         ingest_table(dataPath / csv, csv.stem)
         get_rows(5, csv.stem)
 
