@@ -18,7 +18,7 @@ export default function LinePlot({
     marginRight = 50,
     marginBottom = 40,
     marginLeft = 50,
-    onChange
+    get_line_name
 }) {
     // Json passed in with x and y values for line graph
 
@@ -50,7 +50,7 @@ export default function LinePlot({
             .attr("y", 35)
             .attr("fill", "white")
             .attr("text-anchor", "middle")
-            .text("Time (s)");
+            .text(data.chart.xlabel);
 
         d3.select(yLabel.current)
             .call(d3.axisLeft(y))
@@ -60,7 +60,7 @@ export default function LinePlot({
             .attr("y", -35)
             .attr("fill", "white")
             .attr("text-anchor", "middle")
-            .text("Value");
+            .text(data.chart.ylabel);
         d3.select(svg.current)
             .append("text")
             .attr("x", width / 2)
@@ -87,7 +87,7 @@ export default function LinePlot({
                         // add the line's colour from data
                         stroke={colours[line.line_name]}
                         strokeWidth="4px"
-                        onMouseEnter={() => onChange(line.line_name)}
+                        onMouseEnter={() => get_line_name(line.line_name)}
                     >
                         {/* add the line's name on hover */}
                         <title>{line.line_name}</title>
@@ -103,7 +103,7 @@ export default function LinePlot({
                             fill="white"
                             // add the circle's colour from data
                             stroke={colours[line.line_name]}
-                            onMouseEnter={() => onChange(line.line_name)}
+                            onMouseEnter={() => get_line_name(line.line_name)}
                         >
                             {/* add the point's co-ords on hover */}
                             <title>{`x: ${d[0]}, y: ${d[1]}`}</title>
