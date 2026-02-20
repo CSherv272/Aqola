@@ -5,10 +5,12 @@ import glob
 from cleansing_scripts.postcodes_cleansing import postcodes_process
 from cleansing_scripts.lsoas_cleansing import lsoa_process
 from cleansing_scripts.crime_cleansing import crime_process
+from cleansing_scripts.school_cleansing import school_process
 from cleansing_scripts.flood_cleansing import flood_process
 from ingestion import initialise_db, ingest_table, get_rows
 from pathlib import Path
 from lsoa_issue_detection import lsoa_detection
+import pandas as pd
 
 # loads the path to the data folder from the .env
 def load_data_path():
@@ -44,7 +46,7 @@ def run_csv_creation(missingCsvFolders):
     if "school_data" in missingCsvFolders:
         print("=====================================================")
         print("Creating School Data CSV...")
-        #schoolProcess()
+        school_process()
     if "flood_data" in missingCsvFolders:
         print("=====================================================")
         print("Creating Flood Data CSV...")
@@ -99,6 +101,12 @@ def run_ingest(ingestCSVs, dataPath):
     for csv in ingestCSVs:
         print("=====================================================")
         print(f"Ingesting {csv.stem} data...")
+        
+        if csv.stem == "school_data":
+            df = pd.read_csv(csv)
+            # Convert 'DEFAULT' to None so it becomes a valid SQL NULL
+            df['lsoa_id'] = df['lsoa_id'].replace('DEFAULT', None)
+            df.to_csv(csv, index=False) # Overwrite before ingestion
         ingest_table(dataPath / csv, csv.stem)
         get_rows(5, csv.stem)
 

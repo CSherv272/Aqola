@@ -2,23 +2,11 @@ import sys
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-
-import geopandas as gpd
 import pandas as pd
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
-from geoalchemy2 import Geometry, WKTElement
 
 load_dotenv()
 
-DB_CONFIG = {
-    'host' : 'localhost',
-    'port' : 5432,
-    'database': 'aqola',
-    'user': 'aqola_user',
-    'password': 'mysecretpassword'
-}
-
+# TODO AQOLAGP-198 change these to take from constants file.
 kentPostcodes = ["BR6", "BR8",
   "CT1", "CT10", "CT11", "CT12", "CT13", "CT14", "CT15", "CT16", "CT17", "CT18", "CT19",
   "CT2", "CT20", "CT21", "CT3", "CT4", "CT5", "CT6", "CT7", "CT8", "CT9",
@@ -28,13 +16,6 @@ kentPostcodes = ["BR6", "BR8",
   "TN1", "TN10", "TN11", "TN12", "TN13", "TN14", "TN15", "TN16", "TN17", "TN18",
   "TN2", "TN23", "TN24", "TN25", "TN26", "TN27", "TN28", "TN29", "TN3", "TN30", "TN4", "TN8", "TN9"
   ]
-
-def create_db_connection():
-    connection_string = (
-        f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@"
-        f"{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
-    )
-    return create_engine(connection_string)
 
 
 def find_output_file_path(env_var: str):
@@ -79,7 +60,7 @@ def find_file_paths():
     
     return input, output, postcode_df_path
 
-def find_existing_postcodes(postcode: str, postcode_df):
+def find_valid_postcode_beginnings(postcode: str, postcode_df):
     try:
         valid_postcode_list = postcode_df[postcode_df["postcode"].str.contains(postcode[0:-1])]
         return valid_postcode_list.postcode.to_list()
@@ -94,9 +75,7 @@ def prepare_data_for_db(flood_df, postcode_df):
     
     flood_data_rows = []
     
-    engine = create_db_connection()
-
-    for idx, row in flood_df.iterrows():
+    for _, row in flood_df.iterrows():
 
         postcode = row.get("PC", None)
         
@@ -111,19 +90,24 @@ def prepare_data_for_db(flood_df, postcode_df):
                 frs_count_medium = int(row.get("TOT_CNT_Medium"))
                 frs_count_low = int(row.get("TOT_CNT_Low"))
                 frs_count_very_low = int(row.get("TOT_CNT_VeryLow"))
-                
-                frs_band = "High"
-                frs_band_count = frs_count_high 
 
-                for frs_count in [frs_count_medium, frs_count_low, frs_count_very_low]:
-                    if frs_count > frs_band_count:
-                        if frs_count == frs_count_medium:
-                            frs_band = "Medium"
-                        if frs_count == frs_count_low:
-                            frs_band = "Low"
-                        if frs_count == frs_count_very_low:
-                            frs_band = "Very_Low"
-                        frs_band_count = frs_count
+                risk_band = {
+                    4 : "High",
+                    3 : "Medium",
+                    2 : "Low",
+                    1 : "Very_Low"
+                }
+
+                # Risk counts and their weightings 
+                risk_counts = [frs_count_high, frs_count_medium, frs_count_low, frs_count_very_low]
+                risk_weights = [4, 3, 2, 1]
+
+                total_risk_count = sum(risk_counts)
+                weighted_risks = []
+                for i in range(len(risk_counts)):
+                    weighted_risks.append(risk_counts[i] * risk_weights[i])
+
+                frs_band = risk_band[round(sum(weighted_risks)/total_risk_count)]
 
                 flood_row = {
                     'postcode' : postcode.replace(" ", ""),
@@ -136,9 +120,10 @@ def prepare_data_for_db(flood_df, postcode_df):
 
                 flood_data_rows.append(flood_row)
             else:
+                # TODO Change in AQOLAGP-198. Change to be used in error log instead of this print.
                 print(f"Postcode: {postcode} is missing from the cleansed postcode csv when trying to add from Flood Data. Skipping.")
         else:
-            valid_postcodes = find_existing_postcodes(postcode, postcode_df)
+            valid_postcodes = find_valid_postcode_beginnings(postcode, postcode_df)
             for valid_postcode in valid_postcodes:
                 if not flood_df["PC"].str.replace(" ", "").isin([valid_postcode]).any():
                     flood_row = {
@@ -180,5 +165,5 @@ def flood_process():
         print(f"Error -> : {e}")
         sys.exit(1)
 
-if __name__ == "__main__":
-    flood_process()
+# if __name__ == "__main__":
+#     flood_process()
