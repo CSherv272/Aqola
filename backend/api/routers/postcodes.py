@@ -5,6 +5,7 @@ from typing import List
 
 from api.database import get_db
 from api.models.db_models import Postcode
+from api.models.db_models import SchoolData
 from api.models.postcode import PostcodeResponse
 
 router = APIRouter()
@@ -51,3 +52,27 @@ async def get_postcode(postcode: str, db: Session = Depends(get_db)):
         latitude=postcode_record.latitude,
         longitude=postcode_record.longitude,
     )
+    
+@router.get("/{postcode}/schools")
+async def get_schools_by_postcode(postcode: str, db: Session = Depends(get_db)):
+    """Fetch all schools for a specific postcode for graph representation"""
+    schools = (
+        db.query(SchoolData)
+        .filter(func.lower(SchoolData.postcode) == func.lower(postcode))
+        .all()
+    )
+
+    if not schools:
+        raise HTTPException(status_code=404, detail="Postcode not found")
+
+    return [
+        {
+            "school_name": s.school_name,
+            "year_range": s.year_range,
+            "ofsted_ranking": s.ofsted_ranking,
+            "is_primary": s.is_primary,
+            "is_secondary": s.is_secondary,
+            "is_post16": s.is_post16
+        }
+        for s in schools
+    ]
