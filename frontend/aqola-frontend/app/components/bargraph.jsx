@@ -131,8 +131,6 @@ export default function BarGraph({
     [subgx, xSubgroupScale],
   );
 
-  console.log(data.groups[0].name);
-  console.log(xScale(data.groups[0].bars[0].bar_name));
   return (
     <svg width={width} height={height}>
       <g transform={`translate(${marginLeft}, ${marginTop})`}>
@@ -156,7 +154,9 @@ export default function BarGraph({
                 width={xSubgroupScale.bandwidth()}
                 height={innerHeight - yScale(bar.value)}
                 key={key}
+                id=""
                 fill={colourScale(bar.bar_name)}
+                className="hover:saturate-300 focus:outline-2 transition-transform duration-300"
               />
             ))}
           </g>
