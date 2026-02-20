@@ -42,7 +42,11 @@ export default function LinePlot({
     [height - marginBottom, marginTop],
   );
 
-  const line = d3.line((d, i) => x(i), y);
+  // generates the line path for each line in the data input
+  const lineGen = d3
+    .line()
+    .x((d) => x(d[0]))
+    .y((d) => y(d[1]));
 
   // create the x & y axis, title, and x & y labels using d3
   useEffect(() => {
