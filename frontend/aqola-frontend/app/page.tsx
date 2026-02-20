@@ -5,9 +5,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Banner from "./components/aqola-banner";
+// import Banner from "./components/aqola-banner";
 import BarGraph from "./components/bargraph";
-import { useEffect, useState } from "react";
 // import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
 import { useState, useEffect } from "react";
