@@ -6,6 +6,7 @@ from cleansing_scripts.postcodes_cleansing import postcodes_process
 from cleansing_scripts.lsoas_cleansing import lsoa_process
 from cleansing_scripts.crime_cleansing import crime_process
 from cleansing_scripts.school_cleansing import school_process
+from cleansing_scripts.flood_cleansing import flood_process
 from ingestion import initialise_db, ingest_table, get_rows
 from pathlib import Path
 from reference_checks import reference_check_process
@@ -49,10 +50,7 @@ def run_csv_creation(missingCSVs):
     if "flood_data" in missingCSVs:
         # print("=======================================================================")
         print("Creating Flood Data CSV...")
-        #floodProcess()
-    else:
-        print("No missing CSVs")
-    # print("=======================================================================")
+        flood_process()
 
 # ensures that the LSOA CSV is present, and if there's more than one to be ingest, that both the LSOA and postcodes table are there
 def ingest_process(dataPath):
