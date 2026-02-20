@@ -77,29 +77,30 @@ def process_each_file(basePath: Path):
     print("Prechecks:")
     for filePath in filePaths:
         fileLoaded = pd.read_csv(filePath)
-        notInRaw = check_raw_lsoa_file(fileLoaded, basePath)
-        notInCleansed = check_cleansed_lsoa_file(fileLoaded, basePath)
+        if "lsoa_id" in fileLoaded.columns.values:
+            notInRaw = check_raw_lsoa_file(fileLoaded, basePath)
+            notInCleansed = check_cleansed_lsoa_file(fileLoaded, basePath)
 
-        # if in raw but not in cleansed
-        onlyInRaw = set(notInCleansed) - set(notInRaw)
-        onlyInRaw = list(onlyInRaw)
-        lads = find_missing_lads(onlyInRaw, basePath)
+            # if in raw but not in cleansed
+            onlyInRaw = set(notInCleansed) - set(notInRaw)
+            onlyInRaw = list(onlyInRaw)
+            lads = find_missing_lads(onlyInRaw, basePath)
 
-        requiredLads.extend(lads)
-        requiredLads = list(set(requiredLads))
-        print("---------------------------------------------")
-        print(f"\nFile: {filePath.name}")
-        # print(f"Not in cleansed: {notInCleansed}")
-        print(f"Not in raw: {notInRaw}")
-        print(f"Only in Raw: {onlyInRaw}")
+            requiredLads.extend(lads)
+            requiredLads = list(set(requiredLads))
+            print("---------------------------------------------")
+            print(f"\nFile: {filePath.name}")
+            # print(f"Not in cleansed: {notInCleansed}")
+            print(f"Not in raw: {notInRaw}")
+            print(f"Only in Raw: {onlyInRaw}")
 
-        # if not in raw or in cleansed - set default (put this at the end)
-        # need to make sure that premade default values are skipped
-        if notInRaw and Path(filePath).stem != "lsoas":
-            print("=====================================================")
-            print(f"replacing values with default in {Path(filePath).stem}")
-            print("=====================================================")
-            replace_missing_lsoas_as_default(fileLoaded, notInRaw, filePath)
+            # if not in raw or in cleansed - set default (put this at the end)
+            # need to make sure that premade default values are skipped
+            if notInRaw and Path(filePath).stem != "lsoas":
+                print("=====================================================")
+                print(f"replacing values with default in {Path(filePath).stem}")
+                print("=====================================================")
+                replace_missing_lsoas_as_default(fileLoaded, notInRaw, filePath)
 
 
     
@@ -111,15 +112,18 @@ def process_each_file(basePath: Path):
     # final checks
     for filePath in filePaths:
         fileLoaded = pd.read_csv(filePath)
-        # notInRaw = check_raw_lsoa_file(fileLoaded, basePath)
-        notInCleansed = check_cleansed_lsoa_file(fileLoaded, basePath)
-        notInRaw = check_raw_lsoa_file(fileLoaded, basePath)
-        onlyInRaw = set(notInCleansed) - set(notInRaw)
-        print("---------------------------------------------")
-        print(f"\nFile: {filePath.name}")
-        print(f"Not in cleansed: {notInCleansed}")
-        print(f"Not in raw: {notInRaw}")
-        print(f"Only in Raw: {onlyInRaw}")
+        if "lsoa_id" in fileLoaded.columns.values:
+            # notInRaw = check_raw_lsoa_file(fileLoaded, basePath)
+            notInCleansed = check_cleansed_lsoa_file(fileLoaded, basePath)
+            notInRaw = check_raw_lsoa_file(fileLoaded, basePath)
+            onlyInRaw = set(notInCleansed) - set(notInRaw)
+            print("---------------------------------------------")
+            print(f"\nFile: {filePath.name}")
+            print(f"Not in cleansed: {notInCleansed}")
+            print(f"Not in raw: {notInRaw}")
+            print(f"Only in Raw: {onlyInRaw}")
+        else:
+            print(f"File: {filePath}\nDoes not contain lsao_id")
 
 # in the CSV with LSOA references missing in the whole LSOA dataset, set these to "DEFAULT"
 def replace_missing_lsoas_as_default(data, missingLsoas, dataPath):
