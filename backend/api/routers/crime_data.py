@@ -30,13 +30,14 @@ async def list_crime(db: Session = Depends(get_db)):
         for crime in crimes
     ]
 
+
 # get crime for an LSOA (and can filter by month)
 # get all crime for lsoa : http://localhost:8000/crime/E01023987
 # get all crrime for lsoa in x month: http://localhost:8000/crime/E01023987?month=2022-10-01
-@router.get("/{lsoa}", response_model=List[CrimeResponse])
+@router.get("/lsoa/{lsoa}", response_model=List[CrimeResponse])
 async def get_crime_by_postcode(
     lsoa: str,
-    month: Optional[date] = None,   # 👈 make optional
+    month: Optional[date] = None,
     db: Session = Depends(get_db)
 ):
     # query for that lsoa
