@@ -6,6 +6,7 @@ from typing import List
 from api.database import get_db
 from api.models.db_models import Postcode
 from api.models.response_models.postcode import PostcodeResponse
+from api.models.db_models import SchoolData
 
 router = APIRouter()
 
@@ -72,8 +73,7 @@ async def get_schools_by_postcode(postcode: str, db: Session = Depends(get_db)):
             "ofsted_ranking": s.ofsted_ranking,
             "is_primary": s.is_primary,
             "is_secondary": s.is_secondary,
-            "is_post16": s.is_post16,
-            "gender": s.gender
+            "is_post16": s.is_post16
         }
         for s in schools
     ]
