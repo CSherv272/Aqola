@@ -5,6 +5,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+// import Banner from "./components/aqola-banner";
+import BarGraph from "./components/bargraph";
 // import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
 import { useState, useEffect } from "react";
@@ -25,7 +27,6 @@ const LeafletMap = dynamic(() => import("./components/maps"), {
   loading: () => <p>Loading...</p>,
 });
 
-
 const LineGraph = dynamic(() => import("./components/linegraph"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
@@ -43,6 +44,7 @@ export default function Home() {
 
   const [data, setData] = useState([]);
   const [showGraph, setShowGraph] = useState(false);
+  const [showBarGraph, setShowBarGraph] = useState(false);
   const [postcode, setPostcode] = useState([]);
 
   const getPostcode = async () => {
@@ -55,6 +57,10 @@ export default function Home() {
     const response = await hello();
     setData(response.message);
     setShowGraph(!showGraph);
+  };
+
+  const showBar = async () => {
+    setShowBarGraph(!showBarGraph);
   };
 
   // when data changes, update is printed to console
@@ -70,12 +76,70 @@ export default function Home() {
     console.log("your postcode data", postcode);
   }, [postcode]);
 
+  const bar_graph_data_template = {
+    groups: [
+      {
+        name: "CT2 7QS",
+        bars: [
+          {
+            bar_name: "high_risk",
+            value: 30,
+            color: "red",
+          },
+          {
+            bar_name: "medium_risk",
+            value: 12,
+            color: "yellow",
+          },
+          {
+            bar_name: "low_risk",
+            value: 40,
+            color: "blue",
+          },
+          {
+            bar_name: "very_low_risk",
+            value: 50,
+            color: "green",
+          },
+        ],
+      },
+      {
+        name: "CT2 7QB",
+        bars: [
+          {
+            bar_name: "high_risk",
+            value: 45,
+            color: "red",
+          },
+          {
+            bar_name: "medium_risk",
+            value: 64,
+            color: "yellow",
+          },
+          {
+            bar_name: "low_risk",
+            value: 20,
+            color: "blue",
+          },
+          {
+            bar_name: "very_low_risk",
+            value: 3,
+            color: "green",
+          },
+        ],
+      },
+    ],
+    title: "Flood data bargraph!",
+    xlabel: "Postcodes",
+    ylabel: "Number of Houses at risk",
+  };
+
   let crime_data = {
-    "chart_type": "line",
-    "type": "crime_data",
-    "area": "postcodes",
-    "chart": {
-      "lines": [
+    chart_type: "line",
+    type: "crime_data",
+    area: "postcodes",
+    chart: {
+      lines: [
         {
           line_name: "Drugs",
           coords: [
@@ -89,38 +153,39 @@ export default function Home() {
           coords: [
             [0, 5],
             [1, 15],
-            [2, 25]
+            [2, 25],
           ],
-        }
+        },
       ],
-      "title": "Crime by Postcode",
-      "xlabel": "Time (months)",
-      "ylabel": "Number of Crimes",
-    }
-  }
+      title: "Crime by Postcode",
+      xlabel: "Time (months)",
+      ylabel: "Number of Crimes",
+    },
+  };
 
   let colours = {
-    "Burglary": "blue",
-    "Robbery": "red",
+    Burglary: "blue",
+    Robbery: "red",
     "Vehicle Crime": "green",
     "Violent Crime": "orange",
     "Other Crime": "purple",
     "Anti-social Behaviour": "brown",
     "Criminal Damage": "pink",
-    "Drugs": "cyan",
+    Drugs: "cyan",
     "Public Order": "magenta",
-    "Shoplifting": "yellow",
-    "Theft": "grey",
+    Shoplifting: "yellow",
+    Theft: "grey",
     "Bicycle Theft": "black",
     "Possession of Weapons": "lime",
     "Other Theft": "teal",
     "All Crime": "navy",
     "Criminal Damage and Arson": "maroon",
-  }
+  };
 
   return (
     <div>
-      <Banner trigger={getData} /> {/*trigger is button press*/}
+      <Banner trigger={getData} barGraphTrigger={showBar} />{" "}
+      {/*trigger is button press*/}
       {showGraph && (
         <LineGraph
           data={crime_data}
@@ -129,6 +194,7 @@ export default function Home() {
         />
       )}{" "}
       {/*show and hide map*/}
+      {showBarGraph && <BarGraph data={bar_graph_data_template} />}
       <LeafletMap />
     </div>
   );
