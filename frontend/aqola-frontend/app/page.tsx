@@ -33,43 +33,42 @@ const LineGraph = dynamic(() => import("./components/linegraph"), {
 
 export default function Home() {
   //app state variables
-  let [selectedPostcodes, setSelectedPostcodes] = useState([])
-  let [selectedDataSet, setSelectedDataSet] = useState("crime_data")
+  let [selectedPostcodes, setSelectedPostcodes] = useState([]);
+  let [selectedDataSet, setSelectedDataSet] = useState("crime_data");
 
   const handleLineHover = (newValue: string) => {
-    setSelectedDataSet(newValue)
-    console.log("selected dataset", selectedDataSet)
-  }
+    setSelectedDataSet(newValue);
+    console.log("selected dataset", selectedDataSet);
+  };
 
-  const [data, setData] = useState([])
-  const [showGraph, setShowGraph] = useState(false)
-  const [postcode, setPostcode] = useState([])
+  const [data, setData] = useState([]);
+  const [showGraph, setShowGraph] = useState(false);
+  const [postcode, setPostcode] = useState([]);
 
   const getPostcode = async () => {
-    const response = await getPostcodeData("CT27QS")
-    setPostcode(response)
-  }
-
+    const response = await getPostcodeData("CT27QS");
+    setPostcode(response);
+  };
 
   // retrieves data through an api.ts function
   const getData = async () => {
-    const response = await hello()
-    setData(response.message)
-    setShowGraph(!showGraph)
-  }
+    const response = await hello();
+    setData(response.message);
+    setShowGraph(!showGraph);
+  };
 
   // when data changes, update is printed to console
   useEffect(() => {
-    console.log("your data", data)
-  }, [data])
+    console.log("your data", data);
+  }, [data]);
 
   useEffect(() => {
     const postcode_data = getPostcode();
-  }, [])
+  }, []);
 
   useEffect(() => {
-    console.log("your postcode data", postcode)
-  }, [postcode])
+    console.log("your postcode data", postcode);
+  }, [postcode]);
 
   let crime_data = {
     "chart_type": "line",
@@ -82,7 +81,7 @@ export default function Home() {
           coords: [
             [0, 10],
             [1, 20],
-            [2, 30]
+            [2, 30],
           ],
         },
         {
@@ -122,7 +121,14 @@ export default function Home() {
   return (
     <div>
       <Banner trigger={getData} /> {/*trigger is button press*/}
-      {showGraph && <LineGraph data={crime_data} colours={colours} get_line_name={handleLineHover} />} {/*show and hide map*/}
+      {showGraph && (
+        <LineGraph
+          data={crime_data}
+          colours={colours}
+          get_line_name={handleLineHover}
+        />
+      )}{" "}
+      {/*show and hide map*/}
       <LeafletMap />
     </div>
   );
