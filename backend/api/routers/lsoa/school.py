@@ -46,15 +46,15 @@ async def list_schools(db: Session = Depends(get_db)):
 
 # get crime for an LSOA (and can filter by month and a list of crime types)
 # get multiple crime types and by a specific month: http://localhost:8000/crime/lsoa/E01023987?crimeType=Other%20theft&crimeType=Drugs
-@router.get("/{postcode}/school", response_model=List[SchoolResponse])
+@router.get("/{lsoa}/school", response_model=List[SchoolResponse])
 async def get_school_by_postcode(
-    postcode: str,
+    lsoa: str,
     db: Session = Depends(get_db)
 ):
     # query for that lsoa
     query = (
         db.query(School)
-        .filter(func.lower(School.postcode) == func.lower(postcode))
+        .filter(func.lower(School.lsoa_id) == func.lower(lsoa))
     )
 
     pcdRecords = query.all()

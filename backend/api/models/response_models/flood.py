@@ -10,6 +10,13 @@ class FloodResponse(BaseModel):
     frs_count_low: int
     frs_count_very_low: int
 
-
     class Config:
         from_attributes = True # Allows SQL Alchemy to convert to this.
+
+
+class RiskBand(BaseModel):
+    postcode: str
+    frs_band: str
+
+    class Config:
+        from_attributes = True

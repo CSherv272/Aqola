@@ -4,7 +4,8 @@ from api.routers.postcode import postcodes
 from api.routers.lsoa import crime
 from api.routers.postcode import flood
 from api.routers.lsoa import lsoas
-from api.routers.postcode import school
+from api.routers.postcode import school as school_pcd
+from api.routers.lsoa import school as school_lsoa
 
 origins ={
     "http://localhost:3000",
@@ -32,4 +33,5 @@ app.include_router(postcodes.router, prefix="/postcode")
 app.include_router(crime.router, prefix="/lsoa")
 app.include_router(flood.router, prefix="/postcode")
 app.include_router(lsoas.router, prefix="/lsoa")
-app.include_router(school.router, prefix="/postcode")
+app.include_router(school_lsoa.router, prefix="/lsoa")
+app.include_router(school_pcd.router, prefix="/postcode")

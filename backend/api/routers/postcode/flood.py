@@ -6,6 +6,7 @@ from typing import List, Optional
 from api.database import get_db
 from api.models.db_models import Flood
 from api.models.response_models.flood import FloodResponse
+from api.models.response_models.flood import RiskBand
 from datetime import date
 
 router = APIRouter()
@@ -66,3 +67,25 @@ async def get_crime_by_postcode(
         )
         for floodRow in pcdRecords
     ]
+
+@router.get("/{postcode}/flood/riskband", response_model= RiskBand)
+async def get_risk_band_by_postcode(
+    postcode: str,
+    db: Session = Depends(get_db)
+):
+    # query for that lsoa
+    query = (
+        db.query(Flood)
+        .with_entities(Flood.postcode, Flood.frs_band)
+        .filter(func.lower(Flood.postcode) == func.lower(postcode))
+        
+    )
+
+    pcdRecord = query.first()
+
+    return (
+        RiskBand(
+            postcode=pcdRecord.postcode,
+            frs_band=pcdRecord.frs_band
+        )
+    )
