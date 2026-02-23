@@ -10,13 +10,7 @@ from datetime import date
 
 router = APIRouter()
 
-@router.get("/")
-async def welcome():
-    return {
-        "message": "welcome to the crime API, please see documentation for use"
-    }
-
-@router.get("/lsoa")
+@router.get("/crime")
 async def list_crime(db: Session = Depends(get_db)):
     """List postcodes"""
     crimes = (
@@ -39,7 +33,7 @@ async def list_crime(db: Session = Depends(get_db)):
 
 # get crime for an LSOA (and can filter by month and a list of crime types)
 # get multiple crime types and by a specific month: http://localhost:8000/crime/lsoa/E01023987?crimeType=Other%20theft&crimeType=Drugs
-@router.get("/lsoa/{lsoa}", response_model=List[CrimeResponse])
+@router.get("/{lsoa}/crime", response_model=List[CrimeResponse])
 async def get_crime_by_postcode(
     lsoa: str,
     month: Optional[date] = None,

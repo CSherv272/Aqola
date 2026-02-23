@@ -10,7 +10,7 @@ from datetime import date
 
 router = APIRouter()
 
-@router.get("/")
+@router.get("/flood")
 async def welcome():
     return {
         "message": "welcome to the flood API, please see documentation for use"
@@ -39,7 +39,7 @@ async def list_crime(db: Session = Depends(get_db)):
 
 # get crime for an LSOA (and can filter by month and a list of crime types)
 # get multiple crime types and by a specific month: http://localhost:8000/crime/lsoa/E01023987?crimeType=Other%20theft&crimeType=Drugs
-@router.get("/postcode/{postcode}", response_model=List[FloodResponse])
+@router.get("/{postcode}/flood", response_model=List[FloodResponse])
 async def get_crime_by_postcode(
     postcode: str,
     db: Session = Depends(get_db)

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Float, Integer, ForeignKey, Index
+from sqlalchemy import Column, String, Float, Integer, ForeignKey, Index, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from geoalchemy2 import Geometry
@@ -43,3 +43,20 @@ class Flood(Base):
     frs_count_medium = Column(Integer)
     frs_count_low = Column(Integer)
     frs_count_very_low = Column(Integer)
+
+class School(Base):
+    __tablename__ = "school_data"
+    
+    urn = Column(Integer, unique=True, nullable=False, primary_key=True)
+    lsoa_id = Column(String, nullable=False)
+    school_name = Column(String)
+    postcode = Column(String, nullable=False)
+    is_primary = Column(Boolean)
+    is_secondary = Column(Boolean)
+    is_post16 = Column(Boolean)
+    gender = Column(String)
+    year_range = Column(String)
+    ofsted_ranking = Column(Integer)
+    centroid = Column(Geometry('POINT', srid=4326))
+    latitude = Column(Float)
+    longitude = Column(Float)

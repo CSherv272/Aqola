@@ -36,7 +36,7 @@ async def list_postcodes(db: Session = Depends(get_db)):
         for p in postcodes
     ]
 
-@router.get("/{postcode}", response_model=PostcodeResponse)
+@router.get("/{postcode}/area", response_model=PostcodeResponse)
 async def get_postcode(postcode: str, db: Session = Depends(get_db)):
     """Get postcode by postcode string"""
     postcode_record = (

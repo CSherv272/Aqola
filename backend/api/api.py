@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routers import postcodes
-from api.routers import crime
-from api.routers import flood
-from api.routers import lsoas
-from api.routers import school
+from api.routers.postcode import postcodes
+from api.routers.lsoa import crime
+from api.routers.postcode import flood
+from api.routers.lsoa import lsoas
+from api.routers.postcode import school
 
 origins ={
     "http://localhost:3000",
@@ -28,8 +28,8 @@ app.add_middleware(
 async def root():
     return {"message": "Hello World"}
 
-app.include_router(postcodes.router, prefix="/postcodes")
-app.include_router(crime.router, prefix="/crime")
-app.include_router(flood.router, prefix="/flood")
-app.include_router(lsoas.router, prefix="/lsoas")
-app.include_router(school.router, prefix="/school")
+app.include_router(postcodes.router, prefix="/postcode")
+app.include_router(crime.router, prefix="/lsoa")
+app.include_router(flood.router, prefix="/postcode")
+app.include_router(lsoas.router, prefix="/lsoa")
+app.include_router(school.router, prefix="/postcode")
