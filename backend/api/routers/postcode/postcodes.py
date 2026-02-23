@@ -72,7 +72,8 @@ async def get_schools_by_postcode(postcode: str, db: Session = Depends(get_db)):
             "ofsted_ranking": s.ofsted_ranking,
             "is_primary": s.is_primary,
             "is_secondary": s.is_secondary,
-            "is_post16": s.is_post16
+            "is_post16": s.is_post16,
+            "gender": s.gender
         }
         for s in schools
     ]
