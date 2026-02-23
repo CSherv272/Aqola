@@ -33,3 +33,13 @@ class Crime(Base):
     latitude = Column(Float)
     longitude = Column(Float)
     crime_type = Column(String)
+
+class Flood(Base):
+    __tablename__ = "flood_data"
+    
+    postcode = Column(String, unique=True, nullable=False, primary_key=True)
+    frs_band = Column(String)
+    frs_count_high = Column(Integer)
+    frs_count_medium = Column(Integer)
+    frs_count_low = Column(Integer)
+    frs_count_very_low = Column(Integer)

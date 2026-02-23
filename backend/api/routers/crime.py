@@ -1,16 +1,22 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List, Optional
 
 from api.database import get_db
 from api.models.db_models import Crime
-from api.models.crime import CrimeResponse
+from api.models.response_models.crime import CrimeResponse
 from datetime import date
 
 router = APIRouter()
 
 @router.get("/")
+async def welcome():
+    return {
+        "message": "welcome to the crime API, please see documentation for use"
+    }
+
+@router.get("/lsoa")
 async def list_crime(db: Session = Depends(get_db)):
     """List postcodes"""
     crimes = (
@@ -31,13 +37,13 @@ async def list_crime(db: Session = Depends(get_db)):
     ]
 
 
-# get crime for an LSOA (and can filter by month)
-# get all crime for lsoa : http://localhost:8000/crime/E01023987
-# get all crrime for lsoa in x month: http://localhost:8000/crime/E01023987?month=2022-10-01
+# get crime for an LSOA (and can filter by month and a list of crime types)
+# get multiple crime types and by a specific month: http://localhost:8000/crime/lsoa/E01023987?crimeType=Other%20theft&crimeType=Drugs
 @router.get("/lsoa/{lsoa}", response_model=List[CrimeResponse])
 async def get_crime_by_postcode(
     lsoa: str,
     month: Optional[date] = None,
+    crimeType: Optional[List[str]] = Query(None),
     db: Session = Depends(get_db)
 ):
     # query for that lsoa
@@ -49,6 +55,9 @@ async def get_crime_by_postcode(
     # Only filter by month if it was provided
     if month:
         query = query.filter(Crime.date == month)
+
+    if crimeType:
+        query = query.filter(Crime.crime_type.in_(crimeType))
 
     lsoa_records = query.all()
 

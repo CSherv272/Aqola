@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.routers import postcodes
-from api.routers import crime_data
+from api.routers import crime
+from api.routers import flood
+from api.routers import lsoas
+from api.routers import school
 
 origins ={
     "http://localhost:3000",
@@ -26,4 +29,7 @@ async def root():
     return {"message": "Hello World"}
 
 app.include_router(postcodes.router, prefix="/postcodes")
-app.include_router(crime_data.router, prefix="/crime")
+app.include_router(crime.router, prefix="/crime")
+app.include_router(flood.router, prefix="/flood")
+app.include_router(lsoas.router, prefix="/lsoas")
+app.include_router(school.router, prefix="/school")

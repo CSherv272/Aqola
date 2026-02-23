@@ -5,11 +5,17 @@ from typing import List
 
 from api.database import get_db
 from api.models.db_models import Postcode
-from api.models.postcode import PostcodeResponse
+from api.models.response_models.postcode import PostcodeResponse
 
 router = APIRouter()
 
-@router.get("/", response_model=List[PostcodeResponse])
+@router.get("/")
+async def welcome():
+    return {
+        "message": "welcome to the crime API, please see documentation for use"
+    }
+
+@router.get("/postcodes", response_model=List[PostcodeResponse])
 async def list_postcodes(db: Session = Depends(get_db)):
     """List postcodes"""
     postcodes = (
