@@ -2,6 +2,7 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 from pathlib import Path
+from testing.error_logging import error_process
 
 # find all CSVs that are in the data folder
 def get_present_CSVs(dataPath):
@@ -31,7 +32,7 @@ def drop_row_if_no_reference_postcode(data, postcodesData):
     return data
 
 # iterates through all CSVs and drops rows with invalid LSOA or postcode references, based on cleansed lsoa and postcode CSVs
-def drop_missing_references():
+def drop_missing_references_in_file():
     load_dotenv()
     dataPath = os.getenv("DATA_PATH_DEV")
 
@@ -55,3 +56,48 @@ def drop_missing_references():
             df = df[df["postcode"].isin(pcdSet)]
 
         df.to_csv(csv, index=False)
+
+def drop_missing_references_in_df(df, filtered_postcodes):
+    load_dotenv()
+    dataPath = os.getenv("DATA_PATH_DEV")
+
+    lsoas = pd.read_csv(f"{dataPath}/lsoas/lsoas.csv")
+
+    lsoaSet = set(lsoas["lsoa_id"].astype(str))
+    pcdSet = set(filtered_postcodes["postcode"].astype(str))
+
+    if "lsoa_id" in df.columns:
+        df["lsoa_id"] = df["lsoa_id"].astype(str)
+        df = df[df["lsoa_id"].isin(lsoaSet)]
+
+    if "postcode" in df.columns:
+        df["postcode"] = df["postcode"].astype(str)
+        df = df[df["postcode"].isin(pcdSet)]
+    
+    return df
+
+# error logs for postcodes referencing LSOAs that don't exist in lsoas.csv
+def postcode_ref_checks(df):
+    load_dotenv()
+    dataPath = os.getenv("DATA_PATH_DEV")
+
+    lsoas = pd.read_csv(f"{dataPath}/lsoas/lsoas.csv")
+    lsoaSet = set(lsoas["lsoa_id"].astype(str))
+
+    df["lsoa_id"] = df["lsoa_id"].astype(str)
+    
+    # any missing lsoas
+    missing_lsoas = df[~df["lsoa_id"].isin(lsoaSet)]
+    if not missing_lsoas.empty:
+        error_process({
+            "where": "postcode_ref_checks -> checking LSOA ref",
+            "data": list(missing_lsoas["lsoa_id"]),
+            "desc": "There were references to LSOAs in postcodes.csv that were not present in the cleansed LSOA CSV",
+            "impact": "Postcode will be deleted. Any data using this postcode will not be ingested",
+            "cause": "LAD codes incorrect, missing LSOA data",
+            "state" : "for review"
+        })
+    # postcodes being cleansed
+    df = df[df["lsoa_id"].isin(lsoaSet)]
+
+    return df

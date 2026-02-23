@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from error_logging import error_process
+from testing.error_logging import error_process
 import pandas as pd
 import os
 from pathlib import Path
@@ -108,7 +108,7 @@ def reference_check_process():
         anyMissing = list(set(missingLsoaInCleansed + missingLsoaInRaw + missingPcInCleansed + missingPcInRaw + anyMissing))
     if anyMissing:
         print("-----------------------------------------------------------------------")
-        print(f"Missing values: {anyMissing}\nPlease see error log")
+        print(f"Missing values: {anyMissing}\n\nPlease see error log...")
     else:
         print("-----------------------------------------------------------------------")
         print("No missing references found")

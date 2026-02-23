@@ -3,7 +3,7 @@ import pandas as pd
 import geopandas as gpd
 import os.path
 from dotenv import load_dotenv
-from error_logging import error_process
+from testing.error_logging import error_process
 from constants import Cleansing
 
 # get all CSVs in file path

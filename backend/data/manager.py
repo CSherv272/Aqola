@@ -7,10 +7,10 @@ from cleansing_scripts.lsoas_cleansing import lsoa_process
 from cleansing_scripts.crime_cleansing import crime_process
 from cleansing_scripts.school_cleansing import school_process
 from cleansing_scripts.flood_cleansing import flood_process
-from ingestion import initialise_db, ingest_table, get_rows
+from ingestion import initialise_db, ingest_table, get_rows, get_row_count
 from pathlib import Path
-from reference_checks import reference_check_process
-from cleansing_scripts.data_cleansing import drop_missing_references, get_present_CSVs
+from testing.reference_checks import reference_check_process
+from cleansing_scripts.data_cleansing import drop_missing_references_in_file, get_present_CSVs, postcode_ref_checks
 import pandas as pd
 
 load_dotenv()
@@ -18,6 +18,7 @@ load_dotenv()
 # find if there are any missing CSVs (where a folder is present, but has no CSV in it)
 def check_missing_CSVs(dataPath):
     folders = os.listdir(dataPath) # only works if there are just folders for the database in there
+    print("=======================================================================")
     print(f"Folders: " + str(folders))
     folders = [f for f in folders if Path(dataPath / f).is_dir()] # filter out all values that aren't a subfolder (e.g. error_log.csv)
     missingCSVs = []
@@ -71,34 +72,34 @@ def run_ingest(ingestCSVs, dataPath):
     # setup database
     initialise_db()
 
+    # create postcodes df - filtered on valid LSOAs
+    filtered_postcodes = postcode_ref_checks(pd.read_csv(dataPath / "postcodes" / "postcodes.csv"))
+
     # # ingest LSOAs
-    ingest_table(dataPath / "lsoas" / "lsoas.csv", "lsoas")
-    ingestCSVs.remove(dataPath / "lsoas" / "lsoas.csv")
     print("=======================================================================")
     print(f"Ingesting lsoa data...")
-    get_rows(5, "lsoas")
+    ingest_table(dataPath / "lsoas" / "lsoas.csv", "lsoas", filtered_postcodes)
+    ingestCSVs.remove(dataPath / "lsoas" / "lsoas.csv")
+    # get_rows(5, "lsoas")
+    get_row_count("lsoas")
 
-    # # then ingest postcodes
-    ingest_table(dataPath / "postcodes" / "postcodes.csv", "postcodes")
-    ingestCSVs.remove(dataPath / "postcodes" / "postcodes.csv")
+
+    # then ingest postcodes
     print("=======================================================================")
     print(f"Ingesting postcode data...")
-    get_rows(5, "postcodes")
+    ingest_table(dataPath / "postcodes" / "postcodes.csv", "postcodes", filtered_postcodes)
+    ingestCSVs.remove(dataPath / "postcodes" / "postcodes.csv")
+    # get_rows(5, "postcodes")
+    get_row_count("postcodes")
 
 
     # then ingest everything else
     for csv in ingestCSVs:
         print("=======================================================================")
         print(f"Ingesting {csv.stem} data...")
-        
-        # if csv.stem == "school_data":
-        #     df = pd.read_csv(csv)
-        #     # Convert 'DEFAULT' to None so it becomes a valid SQL NULL
-        #     df['lsoa_id'] = df['lsoa_id'].replace('DEFAULT', None)
-        #     df.to_csv(csv, index=False) # Overwrite before ingestion
 
-        ingest_table(dataPath / csv, csv.stem)
-        get_rows(5, csv.stem)
+        ingest_table(dataPath / csv, csv.stem, filtered_postcodes)
+        get_row_count(csv.stem)
 
 
 def main():
@@ -115,7 +116,7 @@ def main():
 
     # lsoa_detection()
     reference_check_process()
-    drop_missing_references() # drops rows with invalid LSOA or postcode refs
+    # drop_missing_references_in_file() # drops rows with invalid LSOA or postcode refs
 
     ingest_process(dataPath)
 
