@@ -9,13 +9,8 @@ from api.models.response_models.postcode import PostcodeResponse
 
 router = APIRouter()
 
-@router.get("/")
-async def welcome():
-    return {
-        "message": "welcome to the crime API, please see documentation for use"
-    }
 
-@router.get("/postcodes", response_model=List[PostcodeResponse])
+@router.get("/", response_model=List[PostcodeResponse])
 async def list_postcodes(db: Session = Depends(get_db)):
     """List postcodes"""
     postcodes = (
@@ -36,7 +31,7 @@ async def list_postcodes(db: Session = Depends(get_db)):
         for p in postcodes
     ]
 
-@router.get("/{postcode}/area", response_model=PostcodeResponse)
+@router.get("/{postcode}", response_model=PostcodeResponse)
 async def get_postcode(postcode: str, db: Session = Depends(get_db)):
     """Get postcode by postcode string"""
     postcode_record = (

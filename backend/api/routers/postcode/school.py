@@ -46,37 +46,27 @@ async def list_schools(db: Session = Depends(get_db)):
 
 # get crime for an LSOA (and can filter by month and a list of crime types)
 # get multiple crime types and by a specific month: http://localhost:8000/crime/lsoa/E01023987?crimeType=Other%20theft&crimeType=Drugs
-@router.get("/{postcode}/school", response_model=List[SchoolResponse])
-async def get_school_by_postcode(
-    postcode: str,
-    db: Session = Depends(get_db)
-):
-    # query for that lsoa
-    query = (
+@router.get("/{postcode}/school")
+async def get_schools_by_postcode(postcode: str, db: Session = Depends(get_db)):
+    """Fetch all schools for a specific postcode for graph representation"""
+    schools = (
         db.query(School)
         .filter(func.lower(School.postcode) == func.lower(postcode))
+        .all()
     )
 
-    pcdRecords = query.all()
-
-    if not pcdRecords:
-        raise HTTPException(status_code=404, detail="No records found")
+    if not schools:
+        raise HTTPException(status_code=404, detail="Postcode not found")
 
     return [
-        SchoolResponse(
-            urn = schoolRow.urn,
-            lsoa_id = schoolRow.lsoa_id,
-            school_name = schoolRow.school_name,
-            postcode = schoolRow.postcode,
-            is_primary = schoolRow.is_primary,
-            is_secondary = schoolRow.is_secondary,
-            is_post16 = schoolRow.is_post16,
-            gender = schoolRow.gender,
-            year_range = schoolRow.year_range,
-            ofsted_ranking = schoolRow.ofsted_ranking,
-            # centroid = Column(Geometry('POINT', srid=4326))
-            latitude = schoolRow.latitude,
-            longitude = schoolRow.longitude
-        )
-        for schoolRow in pcdRecords
+        {
+            "school_name": s.school_name,
+            "year_range": s.year_range,
+            "ofsted_ranking": s.ofsted_ranking,
+            "is_primary": s.is_primary,
+            "is_secondary": s.is_secondary,
+            "is_post16": s.is_post16,
+            "gender": s.gender
+        }
+        for s in schools
     ]

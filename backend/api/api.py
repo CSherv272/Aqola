@@ -29,9 +29,9 @@ app.add_middleware(
 async def root():
     return {"message": "Hello World"}
 
-app.include_router(postcodes.router, prefix="/postcode")
-app.include_router(crime.router, prefix="/lsoa")
-app.include_router(flood.router, prefix="/postcode")
-app.include_router(lsoas.router, prefix="/lsoa")
-app.include_router(school_lsoa.router, prefix="/lsoa")
-app.include_router(school_pcd.router, prefix="/postcode")
+app.include_router(postcodes.router, prefix="/postcodes")
+app.include_router(crime.router, prefix="/lsoas")
+app.include_router(flood.router, prefix="/postcodes")
+app.include_router(lsoas.router, prefix="/lsoas")
+app.include_router(school_lsoa.router, prefix="/lsoas")
+app.include_router(school_pcd.router, prefix="/postcodes")

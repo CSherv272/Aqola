@@ -1,14 +1,14 @@
 from fastapi.testclient import TestClient
 from fastapi import APIRouter, FastAPI
 
-from backend.api.routers.postcode.postcodes import router
+from api.routers.postcode.postcodes import router
 
 app = FastAPI()
 app.include_router(router, prefix="/postcodes")
 client = TestClient(app)
 
 def test_get_postcode_valid():
-    response = client.get("/postcodes/")
+    response = client.get("/postcodes/CT27QS")
     assert response.status_code == 200
     data = response.json()
     assert data[0]["postcode"] == "CT2 7QS"
