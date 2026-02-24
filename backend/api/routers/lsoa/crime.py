@@ -10,27 +10,6 @@ from datetime import date
 
 router = APIRouter()
 
-@router.get("/crime")
-async def list_crime(db: Session = Depends(get_db)):
-    """List postcodes"""
-    crimes = (
-        db.query(Crime)
-        .all()
-    )
-    
-    return [
-        CrimeResponse(
-            crime_id = crime.crime_id,
-            lsoa_id=crime.lsoa_id,
-            date=crime.date,
-            latitude=crime.latitude,
-            longitude=crime.longitude,
-            crime_type=crime.crime_type
-        )
-        for crime in crimes
-    ]
-
-
 # get crime for an LSOA (and can filter by month and a list of crime types)
 # get multiple crime types and by a specific month: http://localhost:8000/crime/lsoa/E01023987?crimeType=Other%20theft&crimeType=Drugs
 @router.get("/{lsoa}/crime", response_model=List[CrimeResponse])
