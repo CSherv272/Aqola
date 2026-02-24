@@ -215,8 +215,9 @@ export default function Home() {
         <LeafletMap />
 
       </div>
-
+      
       <DataSelector />
+      
 
       {/* Bottom Navigation Overlay */}
       <div className="bottom-nav">
