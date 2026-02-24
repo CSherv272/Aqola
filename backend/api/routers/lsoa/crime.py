@@ -13,7 +13,7 @@ router = APIRouter()
 # get crime for an LSOA (and can filter by month and a list of crime types)
 # get multiple crime types and by a specific month: http://localhost:8000/crime/lsoa/E01023987?crimeType=Other%20theft&crimeType=Drugs
 @router.get("/{lsoa}/crime", response_model=List[CrimeResponse])
-async def get_crime_by_postcode(
+async def get_crime_by_lsoa(
     lsoa: str,
     month: Optional[date] = None,
     crimeType: Optional[List[str]] = Query(None),

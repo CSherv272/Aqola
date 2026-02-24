@@ -1,6 +1,4 @@
 from pydantic import BaseModel
-from decimal import Decimal
-from datetime import date
 from typing import Optional
 
 class FloodResponse(BaseModel):

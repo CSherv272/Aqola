@@ -1,18 +1,14 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import func
-from typing import List, Optional
-
 from api.database import get_db
 from api.models.db_models import School
 from api.models.response_models.school import SchoolResponse
-from datetime import date
 
 router = APIRouter()
 
 @router.get("/")
 async def list_schools(db: Session = Depends(get_db)):
-    """List postcodes"""
+    """Lists all school data"""
     schoolData = (
         db.query(School)
         .all()

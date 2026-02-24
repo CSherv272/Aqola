@@ -40,8 +40,8 @@ class Crime(Base):
     crime_id = Column(Integer, unique=True, nullable=False, primary_key=True)
     lsoa_id = Column(String(20), nullable=False, index=True)
     date = Column(String(8))
-    latitude = Column(Float)
-    longitude = Column(Float)
+    latitude = Column(DECIMAL(9, 6))
+    longitude = Column(DECIMAL(9, 6))
     crime_type = Column(String)
 
 class Flood(Base):

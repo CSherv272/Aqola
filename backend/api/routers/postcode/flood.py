@@ -1,20 +1,16 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from typing import List, Optional
-
+from typing import List
 from api.database import get_db
 from api.models.db_models import Flood
 from api.models.response_models.flood import FloodResponse
 from api.models.response_models.flood import RiskBand
-from datetime import date
-from sqlalchemy import func
 
 router = APIRouter()
 
 
-# get crime for an LSOA (and can filter by month and a list of crime types)
-# get multiple crime types and by a specific month: http://localhost:8000/crime/lsoa/E01023987?crimeType=Other%20theft&crimeType=Drugs
+# get flood data for a postcode
 @router.get("/{postcode}/flood", response_model=List[FloodResponse])
 async def get_flood_by_postcode(
     postcode: str,

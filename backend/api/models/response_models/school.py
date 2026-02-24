@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 from decimal import Decimal
-from datetime import date
 
 class SchoolResponse(BaseModel):
     urn: str
@@ -14,8 +13,8 @@ class SchoolResponse(BaseModel):
     year_range: str
     ofsted_ranking: int
     # centroid: Column(Geometry('POINT', srid=4326))
-    latitude: float
-    longitude: float
+    latitude: Decimal
+    longitude: Decimal
     
     class Config:
         from_attributes = True # Allows SQL Alchemy to convert to this.

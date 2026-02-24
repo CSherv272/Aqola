@@ -10,36 +10,7 @@ from datetime import date
 
 router = APIRouter()
 
-@router.get("/school")
-async def list_schools(db: Session = Depends(get_db)):
-    """List postcodes"""
-    schoolData = (
-        db.query(School)
-        .all()
-    )
-    
-    return [
-        SchoolResponse(
-            urn = schoolRow.urn,
-            lsoa_id = schoolRow.lsoa_id,
-            school_name = schoolRow.school_name,
-            postcode = schoolRow.postcode,
-            is_primary = schoolRow.is_primary,
-            is_secondary = schoolRow.is_secondary,
-            is_post16 = schoolRow.is_post16,
-            gender = schoolRow.gender,
-            year_range = schoolRow.year_range,
-            ofsted_ranking = schoolRow.ofsted_ranking,
-            # centroid = Column(Geometry('POINT', srid=4326))
-            latitude = schoolRow.latitude,
-            longitude = schoolRow.longitude
-        )
-        for schoolRow in schoolData
-    ]
-
-
-# get crime for an LSOA (and can filter by month and a list of crime types)
-# get multiple crime types and by a specific month: http://localhost:8000/crime/lsoa/E01023987?crimeType=Other%20theft&crimeType=Drugs
+# get school data for a postcode
 @router.get("/{postcode}/school")
 async def get_schools_by_postcode(postcode: str, db: Session = Depends(get_db)):
     """Fetch all schools for a specific postcode for graph representation"""
