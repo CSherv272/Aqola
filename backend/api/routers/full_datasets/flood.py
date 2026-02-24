@@ -1,14 +1,8 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import func
-from typing import List, Optional
-
 from api.database import get_db
 from api.models.db_models import Flood
 from api.models.response_models.flood import FloodResponse
-from api.models.response_models.flood import RiskBand
-from datetime import date
-from sqlalchemy import func
 
 router = APIRouter()
 

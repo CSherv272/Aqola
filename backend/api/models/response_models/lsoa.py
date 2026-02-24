@@ -1,10 +1,11 @@
 from pydantic import BaseModel
+from decimal import Decimal
 
 class LsoaResponse(BaseModel):
     lsoa_id: str
     area_name: str
     population: int
-    area_sq_km: float
+    area_sq_km: Decimal
     # boundary: 
     # centroid: 
 

@@ -1,20 +1,17 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from typing import List, Optional
-
+from typing import List
 from api.database import get_db
 from api.models.db_models import School
 from api.models.response_models.school import SchoolResponse
-from datetime import date
 
 router = APIRouter()
 
 
-# get crime for an LSOA (and can filter by month and a list of crime types)
-# get multiple crime types and by a specific month: http://localhost:8000/crime/lsoa/E01023987?crimeType=Other%20theft&crimeType=Drugs
+# get school data for an LSOA
 @router.get("/{lsoa}/school", response_model=List[SchoolResponse])
-async def get_school_by_postcode(
+async def get_school_by_lsoa(
     lsoa: str,
     db: Session = Depends(get_db)
 ):

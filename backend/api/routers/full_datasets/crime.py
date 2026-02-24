@@ -1,8 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import func
-from typing import List, Optional
-
 from api.database import get_db
 from api.models.db_models import Crime
 from api.models.response_models.crime import UniqueTypesResponse, CrimeResponse, UniqueDatesResponse
@@ -12,7 +9,7 @@ router = APIRouter()
 
 @router.get("/")
 async def list_crime(db: Session = Depends(get_db), response_model=CrimeResponse):
-    """List postcodes"""
+    """List all crime"""
     crimes = (
         db.query(Crime)
         .all()

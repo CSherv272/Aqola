@@ -10,8 +10,8 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[LsoaResponse])
-async def list_postcodes(db: Session = Depends(get_db)):
-    """List postcodes"""
+async def list_lsoas(db: Session = Depends(get_db)):
+    """List all lsoas"""
     query = (
         db.query(Lsoa)
         .all()
@@ -28,8 +28,8 @@ async def list_postcodes(db: Session = Depends(get_db)):
     ]
 
 @router.get("/{lsoa}", response_model=LsoaResponse)
-async def get_postcode(lsoa: str, db: Session = Depends(get_db)):
-    """Get postcode by postcode string"""
+async def get_lsoa(lsoa: str, db: Session = Depends(get_db)):
+    """Get lsoa by lsoa string"""
     query = (
         db.query(Lsoa)
         .filter(func.lower(Lsoa.lsoa_id) == func.lower(lsoa))
@@ -37,7 +37,7 @@ async def get_postcode(lsoa: str, db: Session = Depends(get_db)):
     )
 
     if not query:
-        raise HTTPException(status_code=404, detail="Postcode not found")
+        raise HTTPException(status_code=404, detail="LSOA not found")
 
     return LsoaResponse(
         lsoa_id= query.lsoa_id,
