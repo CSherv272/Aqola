@@ -12,3 +12,16 @@ class CrimeResponse(BaseModel):
     
     class Config:
         from_attributes = True # Allows SQL Alchemy to convert to this.
+
+
+class UniqueTypesResponse(BaseModel):
+    values: list[str]
+    
+    class Config:
+        from_attributes = True # Allows SQL Alchemy to convert to this.
+
+class UniqueDatesResponse(BaseModel):
+    values: list[date]
+    
+    class Config:
+        from_attributes = True # Allows SQL Alchemy to convert to this.

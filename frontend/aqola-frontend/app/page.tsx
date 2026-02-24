@@ -9,7 +9,8 @@ import dynamic from "next/dynamic";
 import BarGraph from "./components/bargraph";
 // import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
-import {get_bar_info} from "./lib/bar_graph"
+import {county_ofsted_frequency} from "./lib/bar_graph"
+import {postcode_time_frequency_crimetypes} from "./lib/line_graph"
 import { useState, useEffect } from "react";
 
 // import LineGraph from "./components/linegraph";
@@ -44,8 +45,9 @@ export default function Home() {
   };
 
   const [data, setData] = useState([]);
-  const [showGraph, setShowGraph] = useState(false);
+  const [showLineGraph, setShowLineGraph] = useState(false);
   const [showBarGraph, setShowBarGraph] = useState(false);
+  let [graphData, setGraphData] = useState<any>(null)
   const [postcode, setPostcode] = useState([]);
 
   const getPostcode = async () => {
@@ -57,15 +59,21 @@ export default function Home() {
   const getData = async () => {
     const response = await hello();
     setData(response.message);
-    setShowGraph(!showGraph);
+    setShowLineGraph(!showLineGraph);
   };
 
-  const showBar = async () => {
+  const handleDataBar = async () => {
+    let data = await county_ofsted_frequency()
+    setGraphData(data.chart)
     setShowBarGraph(!showBarGraph);
-  };
+  }
 
-  const getDataBar = () => {
-    console.log(get_bar_info())
+  
+  const handleDataLine = async () => {
+    let data = await postcode_time_frequency_crimetypes("E01016024")
+    setGraphData(data)
+    console.log(data)
+    setShowLineGraph(!showLineGraph)
   }
 
   // when data changes, update is printed to console
@@ -189,17 +197,17 @@ export default function Home() {
 
   return (
     <div>
-      <Banner trigger={getData} barGraphTrigger={showBar} apiTrigger={getDataBar}/>{" "}
+      <Banner lineGraphTrigger={handleDataLine} barGraphTrigger={handleDataBar} apiTrigger={handleDataBar}/>{" "}
       {/*trigger is button press*/}
-      {showGraph && (
+      {showLineGraph && (
         <LineGraph
-          data={crime_data}
+          data={graphData}
           colours={colours}
           get_line_name={handleLineHover}
         />
       )}{" "}
       {/*show and hide map*/}
-      {showBarGraph && <BarGraph data={bar_graph_data_template} />}
+      {showBarGraph && graphData && <BarGraph data={graphData} />}
       <LeafletMap />
     </div>
   );

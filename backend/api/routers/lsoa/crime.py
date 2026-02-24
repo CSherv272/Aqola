@@ -35,7 +35,7 @@ async def get_crime_by_postcode(
     lsoa_records = query.all()
 
     if not lsoa_records:
-        raise HTTPException(status_code=404, detail="No records found")
+        return []
 
     return [
         CrimeResponse(
