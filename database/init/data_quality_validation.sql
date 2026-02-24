@@ -72,6 +72,42 @@ WITH completeness_failures AS (
     UNION ALL
     SELECT 'crime_data', 'ALL', 'TABLE IS EMPTY', '0'
     WHERE (SELECT COUNT(*) FROM crime_data) = 0
+
+    UNION ALL
+
+    -- School Data
+    SELECT 'school_data' AS tbl, 'urn' AS col, 'Logical Null (Empty/Spaces)' AS issue, urn::text AS row_id
+    FROM school_data WHERE urn::text ~ '^\s*$'
+    UNION ALL
+    SELECT 'school_data', 'school_name', 'Logical Null (Empty/Spaces)', urn::text
+    FROM school_data WHERE school_name ~ '^\s*$'
+    UNION ALL
+    SELECT 'school_data', 'urn', 'Malformed (Trailing/Leading Space)', urn::text
+    FROM school_data WHERE urn::text != TRIM(urn::text)
+    UNION ALL
+    SELECT 'school_data', 'school_name', 'Malformed (Trailing/Leading Space)', urn::text
+    FROM school_data WHERE school_name != TRIM(school_name)
+    UNION ALL
+    SELECT 'school_data', 'ofsted_ranking', 'Invalid Ranking Value (Outside -1 to 4)', urn::text
+    FROM school_data WHERE ofsted_ranking < -1 OR ofsted_ranking > 4
+    UNION ALL
+    SELECT 'school_data', 'year_range', 'Invalid Year Format (Expects YYYY-YYYY)', urn::text
+    FROM school_data WHERE year_range !~ '^\d{4}-\d{4}$'
+    UNION ALL
+    SELECT 'school_data', 'latitude', 'Out of Kent Bounds', urn::text
+    FROM school_data WHERE latitude IS NOT NULL AND (latitude NOT BETWEEN 50.88 AND 51.52)
+    UNION ALL
+    SELECT 'school_data', 'longitude', 'Out of Kent Bounds', urn::text
+    FROM school_data WHERE longitude IS NOT NULL AND (longitude NOT BETWEEN 0.01 AND 1.47)
+    UNION ALL
+    SELECT 'school_data', 'centroid', 'Empty Geometry', urn::text
+    FROM school_data WHERE centroid IS NOT NULL AND ST_IsEmpty(centroid)
+    UNION ALL
+    SELECT 'school_data', 'urn/year_range', 'Duplicate URN for same Year', urn || ' (' || year_range || ')'
+    FROM school_data GROUP BY urn, year_range HAVING COUNT(*) > 1
+    UNION ALL
+    SELECT 'school_data', 'ALL', 'TABLE IS EMPTY', '0'
+    WHERE (SELECT COUNT(*) FROM school_data) = 0
     
 )
 SELECT tbl, col, issue, COUNT(*) AS issue_count, ARRAY_AGG(row_id) AS failing_ids
