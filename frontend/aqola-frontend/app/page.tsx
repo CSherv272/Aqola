@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 // import Banner from "./components/aqola-banner";
 import BarGraph from "./components/bargraph";
 // import LineGraph from "./components/linegraph";
-import { hello, getPostcodeData } from "./lib/api";
+import { hello, getPostcodeData } from "./lib/api/api";
 import { useState, useEffect } from "react";
 
 // import LineGraph from "./components/linegraph";
@@ -22,7 +22,7 @@ const Banner = dynamic(() => import("./components/aqola-banner"), {
 });
 
 //dynamically import of the leaflet map from a map component
-const LeafletMap = dynamic(() => import("./components/maps"), {
+const LeafletMap = dynamic(() => import("./components/maps/maps"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
