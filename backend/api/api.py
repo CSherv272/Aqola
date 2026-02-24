@@ -2,10 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.routers import postcodes
 
-origins ={
+origins =[
     "http://localhost:3000",
     "localhost:3000"
-}
+]
 
 app = FastAPI(
     title="AQOLA API",
@@ -14,7 +14,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
