@@ -47,7 +47,8 @@ export default function Home() {
   const [data, setData] = useState([]);
   const [showLineGraph, setShowLineGraph] = useState(false);
   const [showBarGraph, setShowBarGraph] = useState(false);
-  let [graphData, setGraphData] = useState<any>(null)
+  let [lineGraphData, setLineGraphData] = useState<any>(null)
+  let [barGraphData, setBarGraphData] = useState<any>(null)
   const [postcode, setPostcode] = useState([]);
 
   const getPostcode = async () => {
@@ -64,14 +65,14 @@ export default function Home() {
 
   const handleDataBar = async () => {
     let data = await county_ofsted_frequency()
-    setGraphData(data.chart)
+    setBarGraphData(data.chart)
     setShowBarGraph(!showBarGraph);
   }
 
   
   const handleDataLine = async () => {
     let data = await postcode_time_frequency_crimetypes("E01016024")
-    setGraphData(data)
+    setLineGraphData(data)
     console.log(data)
     setShowLineGraph(!showLineGraph)
   }
@@ -199,15 +200,15 @@ export default function Home() {
     <div>
       <Banner lineGraphTrigger={handleDataLine} barGraphTrigger={handleDataBar} apiTrigger={handleDataBar}/>{" "}
       {/*trigger is button press*/}
-      {showLineGraph && (
+      {showLineGraph && lineGraphData && (
         <LineGraph
-          data={graphData}
+          data={lineGraphData}
           colours={colours}
           get_line_name={handleLineHover}
         />
       )}{" "}
       {/*show and hide map*/}
-      {showBarGraph && graphData && <BarGraph data={graphData} />}
+      {showBarGraph && barGraphData && <BarGraph data={barGraphData} />}
       <LeafletMap />
     </div>
   );
