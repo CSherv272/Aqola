@@ -198,14 +198,25 @@ export default function Home() {
 
   return (
     <div className = "page-container">
-      {/*<Banner trigger={getData} /> {/*trigger is button press*/} 
-      {showGraph && <LineGraph />} {/*show and hide map*/}
+      <Banner trigger={getData} barGraphTrigger={showBar} />{" "}
+      {/*trigger is button press*/}
+      {showGraph && (
+        <LineGraph
+          data={crime_data}
+          colours={colours}
+          get_line_name={handleLineHover}
+        />
+      )}{" "}
+      {/*show and hide map*/}
+      {showBarGraph && <BarGraph data={bar_graph_data_template} />}
 
       {/* Map wrapper */}
       <div className="map-wrapper">
         <LeafletMap />
 
       </div>
+
+      <DataSelector />
 
       {/* Bottom Navigation Overlay */}
       <div className="bottom-nav">
