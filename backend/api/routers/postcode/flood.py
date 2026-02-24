@@ -12,26 +12,6 @@ from sqlalchemy import func
 
 router = APIRouter()
 
-@router.get("/flood")
-async def list_flood(db: Session = Depends(get_db)):
-    """List all flood data"""
-    floodData = (
-        db.query(Flood)
-        .all()
-    )
-    
-    return [
-        FloodResponse(
-            postcode=floodRow.postcode,
-            frs_band=floodRow.frs_band,
-            frs_count_high=floodRow.frs_count_high,
-            frs_count_medium=floodRow.frs_count_medium,
-            frs_count_low=floodRow.frs_count_low,
-            frs_count_very_low=floodRow.frs_count_very_low,
-        )
-        for floodRow in floodData
-    ]
-
 
 # get crime for an LSOA (and can filter by month and a list of crime types)
 # get multiple crime types and by a specific month: http://localhost:8000/crime/lsoa/E01023987?crimeType=Other%20theft&crimeType=Drugs
