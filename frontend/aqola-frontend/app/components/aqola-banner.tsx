@@ -3,9 +3,11 @@
 export default function Banner({
   trigger,
   barGraphTrigger,
+  apiTrigger
 }: {
   trigger: () => void;
   barGraphTrigger: () => void;
+  apiTrigger: () => void;
 }) {
   // const test = () => {
   //     console.log("hi");
@@ -27,6 +29,12 @@ export default function Banner({
         className="text-4xl text-cyan-400 m-10 font-sans bg-cyan-900 p-3 border rounded-2xl hover:bg-cyan-950"
       >
         Bar Graph
+      </button>
+      <button
+        onClick={apiTrigger}
+        className="text-4xl text-cyan-400 m-10 font-sans bg-cyan-900 p-3 border rounded-2xl hover:bg-cyan-950"
+      >
+        Contact API 2
       </button>
     </div>
   );

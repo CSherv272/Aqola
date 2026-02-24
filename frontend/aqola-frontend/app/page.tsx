@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import BarGraph from "./components/bargraph";
 // import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
+import {get_bar_info} from "./lib/bar_graph"
 import { useState, useEffect } from "react";
 
 // import LineGraph from "./components/linegraph";
@@ -62,6 +63,10 @@ export default function Home() {
   const showBar = async () => {
     setShowBarGraph(!showBarGraph);
   };
+
+  const getDataBar = () => {
+    console.log(get_bar_info())
+  }
 
   // when data changes, update is printed to console
   useEffect(() => {
@@ -184,7 +189,7 @@ export default function Home() {
 
   return (
     <div>
-      <Banner trigger={getData} barGraphTrigger={showBar} />{" "}
+      <Banner trigger={getData} barGraphTrigger={showBar} apiTrigger={getDataBar}/>{" "}
       {/*trigger is button press*/}
       {showGraph && (
         <LineGraph
