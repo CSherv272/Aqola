@@ -5,9 +5,10 @@ from typing import List
 
 from api.database import get_db
 from api.models.db_models import Postcode
-from api.models.postcode import PostcodeResponse
+from api.models.response_models.postcode import PostcodeResponse
 
 router = APIRouter()
+
 
 @router.get("/", response_model=List[PostcodeResponse])
 async def list_postcodes(db: Session = Depends(get_db)):
