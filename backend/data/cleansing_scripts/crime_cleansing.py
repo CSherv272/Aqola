@@ -50,6 +50,12 @@ def rename_columns(data):
 def reorganise_columns(data):
     return data.reindex(columns=["lsoa_id", "date", "latitude", "longitude", "crime_type"])
 
+def drop_row_if_no_reference_lsoa(data):
+    lsoas = pd.read_csv(str(os.getenv("DATA_PATH_DEV")) + r"/lsoas/lsoas.csv")
+    lsoaSet = set(lsoas["lsoa_id"].unique())
+    # data["lsoa_id"] = data["lsoa_id"].astype(str)
+    data = data[data["lsoa_id"].isin(lsoaSet)]
+    return data
 
 def crime_process():
     load_dotenv()
@@ -60,6 +66,7 @@ def crime_process():
     data = rename_columns(data)
     data = reorganise_columns(data)
     data = data.dropna()
+    # data = drop_row_if_no_reference_lsoa(data)
     data = format_dates(data)
 
     #export

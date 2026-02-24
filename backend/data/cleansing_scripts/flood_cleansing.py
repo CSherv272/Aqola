@@ -3,20 +3,10 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 import pandas as pd
+from constants import Cleansing
+from testing.error_logging import error_process
 
 load_dotenv()
-
-# TODO AQOLAGP-198 change these to take from constants file.
-kentPostcodes = ["BR6", "BR8",
-  "CT1", "CT10", "CT11", "CT12", "CT13", "CT14", "CT15", "CT16", "CT17", "CT18", "CT19",
-  "CT2", "CT20", "CT21", "CT3", "CT4", "CT5", "CT6", "CT7", "CT8", "CT9",
-  "DA1", "DA10", "DA11", "DA12", "DA13", "DA2", "DA3", "DA4", "DA9",
-  "ME1", "ME10", "ME11", "ME12", "ME13", "ME14", "ME15", "ME16", "ME17", "ME18", "ME19",
-  "ME2", "ME20", "ME3", "ME4", "ME5", "ME6", "ME7", "ME8", "ME9",
-  "TN1", "TN10", "TN11", "TN12", "TN13", "TN14", "TN15", "TN16", "TN17", "TN18",
-  "TN2", "TN23", "TN24", "TN25", "TN26", "TN27", "TN28", "TN29", "TN3", "TN30", "TN4", "TN8", "TN9"
-  ]
-
 
 def find_output_file_path(env_var: str):
     """Find the output path to place the processed CSV"""
@@ -72,73 +62,100 @@ def find_valid_postcode_beginnings(postcode: str, postcode_df):
 
 
 def prepare_data_for_db(flood_df, postcode_df):
+    # Makes a copy of passed df (so we can edit without risk of changin the original)
+    flood_df = flood_df.copy()
+
+    flood_df["postcode"] = flood_df["PC"].str.replace(" ", "", regex=False)
+
+    # Get postcode district & filter to Kent
+    flood_df["district"] = flood_df["PC"].str.split(" ").str[0]
+    flood_df = flood_df[flood_df["district"].isin(Cleansing.KENT_POSTCODE_DISTRICTS)]
+
+
+    # Risk band calculations
+    # 4 * count(high) + 3 * count(med) + 2 * count(low) + ...
+    flood_df["total_risk"] = (
+        flood_df["TOT_CNT_High"] * 4 +
+        flood_df["TOT_CNT_Medium"] * 3 +
+        flood_df["TOT_CNT_Low"] * 2 +
+        flood_df["TOT_CNT_VeryLow"] * 1
+    )
+
+    flood_df["count_sum"] = (
+        flood_df["TOT_CNT_High"] +
+        flood_df["TOT_CNT_Medium"] +
+        flood_df["TOT_CNT_Low"] +
+        flood_df["TOT_CNT_VeryLow"]
+    )
+
+    flood_df["band_value"] = (
+        flood_df["total_risk"] / flood_df["count_sum"]
+    ).round()
+
+    risk_bands = {
+        4: "High",
+        3: "Medium",
+        2: "Low",
+        1: "Very_Low"
+    }
+    flood_df["frs_band"] = flood_df["band_value"].map(risk_bands)
+
     
+    # Remove last digit from all postcodes, giving a lookup table for asterisk values
+    postcode_df["prefix"] = postcode_df["postcode"].str[:-1]
+    prefix_map = (
+        postcode_df.groupby("prefix")["postcode"]
+        .apply(list)
+        .to_dict() # creates a dictionary, e.g.: AB123C = [AA123CA, AA123CB, AA123CC, AA123CD, ...]
+    )
+
+
+    asterisk_df = flood_df[flood_df["postcode"].str.endswith("*")]
+    complete_pcd_df = flood_df[~flood_df["postcode"].str.endswith("*")]
+
     flood_data_rows = []
-    
-    for _, row in flood_df.iterrows():
 
-        postcode = row.get("PC", None)
-        
-        if postcode.split(" ")[0] not in kentPostcodes:
-            continue
-        
-        postcode = postcode.replace(" ", "")
+    # Handle non-asterisk rows
+    complete_pcd_rows = complete_pcd_df[[
+        "postcode",
+        "frs_band",
+        "TOT_CNT_High",
+        "TOT_CNT_Medium",
+        "TOT_CNT_Low",
+        "TOT_CNT_VeryLow"
+    ]].rename(columns={
+        "TOT_CNT_High": "frs_count_high",
+        "TOT_CNT_Medium": "frs_count_medium",
+        "TOT_CNT_Low": "frs_count_low",
+        "TOT_CNT_VeryLow": "frs_count_very_low",
+    })
 
-        if postcode[-1] != "*":
-            if postcode_df["postcode"].isin([postcode]).any():
-                frs_count_high = int(row.get("TOT_CNT_High"))
-                frs_count_medium = int(row.get("TOT_CNT_Medium"))
-                frs_count_low = int(row.get("TOT_CNT_Low"))
-                frs_count_very_low = int(row.get("TOT_CNT_VeryLow"))
+    flood_data_rows.extend(complete_pcd_rows.to_dict("records"))
 
-                risk_band = {
-                    4 : "High",
-                    3 : "Medium",
-                    2 : "Low",
-                    1 : "Very_Low"
-                }
+    # Handle asterisk rows
+    for row in asterisk_df.itertuples():
+        # Take the asterisk row and get the list of postcodes for that prefix
+        # i.e.: AB123CD -> AB123C -> lookup -> returns the dictionary list for that prefix
+        prefix = row.postcode[:-1]
+        valid_postcodes = prefix_map.get(prefix, [])
 
-                # Risk counts and their weightings 
-                risk_counts = [frs_count_high, frs_count_medium, frs_count_low, frs_count_very_low]
-                risk_weights = [4, 3, 2, 1]
+        # add every additional postcode
+        for valid_postcode in valid_postcodes:
+            flood_data_rows.append({
+                "postcode": valid_postcode,
+                "frs_band": "None",
+                "frs_count_high": 0,
+                "frs_count_medium": 0,
+                "frs_count_low": 0,
+                "frs_count_very_low": 0,
+            })
+            
+    # note: behaviour means that values which have an asterisk, will only be updated values in postcodes.csv
+    # So, if the postcode is not in postcodes.csv, then there will be missing values (not caught by the error log)
+    # i.e.: AB123CB is not in the postcodes.csv, in the flood data you have AB123C*
+    # Say your dictionary contains [AA123CA, AA123CC, AA123CD], the postcode AA123CB may exist, but isn't picked up
+    # and the error log will not find any discrepency between the value being in flood_data.csv and postcodes.csv
 
-                total_risk_count = sum(risk_counts)
-                weighted_risks = []
-                for i in range(len(risk_counts)):
-                    weighted_risks.append(risk_counts[i] * risk_weights[i])
-
-                frs_band = risk_band[round(sum(weighted_risks)/total_risk_count)]
-
-                flood_row = {
-                    'postcode' : postcode.replace(" ", ""),
-                    'frs_band' : frs_band,
-                    'frs_count_high': frs_count_high,
-                    'frs_count_medium': frs_count_medium,
-                    'frs_count_low': frs_count_low,
-                    'frs_count_very_low': frs_count_very_low,
-                }
-
-                flood_data_rows.append(flood_row)
-            else:
-                # TODO Change in AQOLAGP-198. Change to be used in error log instead of this print.
-                print(f"Postcode: {postcode} is missing from the cleansed postcode csv when trying to add from Flood Data. Skipping.")
-        else:
-            valid_postcodes = find_valid_postcode_beginnings(postcode, postcode_df)
-            for valid_postcode in valid_postcodes:
-                if not flood_df["PC"].str.replace(" ", "").isin([valid_postcode]).any():
-                    flood_row = {
-                        'postcode' : valid_postcode.replace(" ", ""),
-                        'frs_band' : "None",
-                        'frs_count_high': 0,
-                        'frs_count_medium': 0,
-                        'frs_count_low': 0,
-                        'frs_count_very_low': 0,
-                    }
-
-                    flood_data_rows.append(flood_row) 
-
-    # Clean all accidentally duplicated rows
-    
     return flood_data_rows
 
 def make_csv_from_json(flood_rows, output_path: Path):
