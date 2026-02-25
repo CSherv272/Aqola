@@ -25,7 +25,8 @@
 
 - Backend API
 - Frontend API
-- Linked two graphs up to
+- Linked two graphs up to buttons on the frontend
+- Performance issues
 
 ## Poster Suggestions
 
