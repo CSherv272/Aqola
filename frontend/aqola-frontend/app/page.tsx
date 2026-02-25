@@ -9,8 +9,8 @@ import dynamic from "next/dynamic";
 import BarGraph from "./components/bargraph";
 // import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
-import {county_ofsted_frequency} from "./lib/bar_graph"
-import {postcode_time_frequency_crimetypes} from "./lib/line_graph"
+import { county_ofsted_frequency } from "./lib/bar_graph"
+import { postcode_time_frequency_crimetypes } from "./lib/line_graph"
 import { useState, useEffect } from "react";
 
 // import LineGraph from "./components/linegraph";
@@ -69,7 +69,7 @@ export default function Home() {
     setShowBarGraph(!showBarGraph);
   }
 
-  
+
   const handleDataLine = async () => {
     let data = await postcode_time_frequency_crimetypes("E01016024")
     setLineGraphData(data)
@@ -178,27 +178,25 @@ export default function Home() {
   };
 
   let colours = {
-    Burglary: "blue",
-    Robbery: "red",
-    "Vehicle Crime": "green",
-    "Violent Crime": "orange",
-    "Other Crime": "purple",
-    "Anti-social Behaviour": "brown",
-    "Criminal Damage": "pink",
-    Drugs: "cyan",
-    "Public Order": "magenta",
-    Shoplifting: "yellow",
-    Theft: "grey",
-    "Bicycle Theft": "black",
-    "Possession of Weapons": "lime",
-    "Other Theft": "teal",
-    "All Crime": "navy",
-    "Criminal Damage and Arson": "maroon",
+    "Anti-social behaviour": "brown",
+    "Bicycle theft": "black",
+    "Burglary": "blue",
+    "Criminal damage and arson": "pink",
+    "Drugs": "cyan",
+    "Other crime": "purple",
+    "Other theft": "grey",
+    "Possession of weapons": "lime",
+    "Public order": "teal",
+    "Robbery": "red",
+    "Shoplifting": "yellow",
+    "Theft from the person": "maroon",
+    "Vehicle crime": "green",
+    "Violence and sexual offences": "orange",
   };
 
   return (
     <div>
-      <Banner lineGraphTrigger={handleDataLine} barGraphTrigger={handleDataBar} apiTrigger={handleDataBar}/>{" "}
+      <Banner lineGraphTrigger={handleDataLine} barGraphTrigger={handleDataBar} apiTrigger={handleDataBar} />{" "}
       {/*trigger is button press*/}
       {showLineGraph && lineGraphData && (
         <LineGraph
