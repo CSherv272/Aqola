@@ -1,7 +1,7 @@
 from pydantic import BaseModel, field_validator
 from typing import Optional
 from decimal import Decimal
-from api.models.polygon import GeometryModel, PolygonResponse
+from backend.api.models.response_models.polygon import GeometryModel, PolygonResponse
 from geoalchemy2.shape import to_shape
 from shapely.geometry import mapping
 

@@ -3,7 +3,7 @@ import {
   PostcodeGeoJson,
   PostcodePolygonResponse,
   PostcodeResponse,
-} from "../types";
+} from "./types";
 
 export const getPostcode = async (
   postcode: string,
