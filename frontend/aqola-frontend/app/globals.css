@@ -19,17 +19,19 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+
 
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .page-container {
@@ -145,3 +147,18 @@ html, body {
   border-radius: 8px;
   cursor: pointer;
 }*/
+
+.postcode-tooltip {
+  background: white;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+}
+
+/* Remove the default tooltip arrow */
+.postcode-tooltip::before {
+  display: none;
+}
