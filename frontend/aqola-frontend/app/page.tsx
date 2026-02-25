@@ -187,18 +187,22 @@ export default function Home() {
   };
 
   const navButtonBar = () => {
-  console.log("Bar chart clicked");
+    console.log("Bar chart clicked");
+    showBar();
+    console.log(showBarGraph)
+    console.log("test");
   };
 
   const navButtonLine = () => {
-  console.log("Line graph clicked");
+    console.log("Line graph clicked");
+    getData();
   };
 
 
 
   return (
     <div className = "page-container">
-      <Banner trigger={getData} barGraphTrigger={showBar} />{" "}
+      {/* <Banner trigger={getData} barGraphTrigger={showBar} />{" "} */}
       {/*trigger is button press*/}
       {showGraph && (
         <LineGraph
