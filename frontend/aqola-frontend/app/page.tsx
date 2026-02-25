@@ -179,7 +179,7 @@ export default function Home() {
 
   let colours = {
     "Anti-social behaviour": "brown",
-    "Bicycle theft": "black",
+    "Bicycle theft": "white",
     "Burglary": "blue",
     "Criminal damage and arson": "pink",
     "Drugs": "cyan",

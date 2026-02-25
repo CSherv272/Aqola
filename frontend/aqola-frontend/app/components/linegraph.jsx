@@ -11,7 +11,8 @@ import { useRef, useEffect } from "react";
 export default function LinePlot({
   data,
   colours,
-  width = 640,
+  width = 1000,
+  graphWidth = 700,
   height = 400,
   marginTop = 100,
   marginRight = 50,
@@ -35,7 +36,7 @@ export default function LinePlot({
   // create the x and y scales for the graph, using the max x and y values from the data input
   const x = d3.scaleLinear(
     [d3.min([...xVals]), d3.max([...xVals])],
-    [marginLeft, width - marginRight],
+    [marginLeft, graphWidth - marginRight],
   );
   const y = d3.scaleLinear(
     [0, d3.max([...yVals])],
@@ -56,7 +57,7 @@ export default function LinePlot({
     d3.select(xLabel.current)
       .call(d3.axisBottom(x))
       .append("text")
-      .attr("x", width / 2)
+      .attr("x", graphWidth / 2)
       .attr("y", 35)
       .attr("fill", "white")
       .attr("text-anchor", "middle")
@@ -73,7 +74,7 @@ export default function LinePlot({
       .text(data.chart.ylabel);
     d3.select(svg.current)
       .append("text")
-      .attr("x", width / 2)
+      .attr("x", graphWidth / 2)
       .attr("y", marginTop / 2)
       .attr("fill", "white")
       .attr("text-anchor", "middle")
@@ -119,6 +120,23 @@ export default function LinePlot({
               <title>{`x: ${d[0]}, y: ${d[1]}`}</title>
             </circle>
           ))}
+          {/* Legend */}
+          <g>
+            <circle
+              cx={width - 250}
+              cy={marginTop + (i * 15)}
+              r="6"
+              fill={colours[line.line_name]}
+            />
+            <text
+              x={width - 240}
+              y={marginTop + (i * 15)}
+              fill="white"
+              dominantBaseline="middle"
+            >
+              {line.line_name}
+            </text>
+          </g>
         </g>
       ))}
     </svg>
