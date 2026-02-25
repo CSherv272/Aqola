@@ -13,6 +13,14 @@ export type School = {
     longitude: number;
 };
 
+export type SchoolCounts = {
+    area: string;
+    ofsted_rankings: [{
+        ranking: string;
+        count: number;
+    }]
+}
+
 export type Crime = {
     lsoa_id: string;
     date: Date; //may need changing

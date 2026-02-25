@@ -1,5 +1,5 @@
 import axios from "axios";
-import type {School} from "./api_models";
+import type {School, SchoolCounts} from "./api_models";
 import type {BarChartResponse} from "./frontend_models";
 
 // method naming convention <area>_<xlabel>_<ylabel>_<bars>
@@ -13,74 +13,68 @@ export const get_bar_info = async () => {
   return response.data;
 };
 
-export const county_ofsted_frequency = async (): Promise<BarChartResponse> => {
-  const apiResponse = await api.get<School[]>("/school")
-  let excellent = 0
-  let good = 0
-  let ok = 0
-  let bad = 0
-  let ungraded = 0
+export const county_ofsted_frequency = async (area? : string): Promise<BarChartResponse> => {
+  let apiResponse
 
-  apiResponse.data.forEach((school) => {
-    switch(school.ofsted_ranking){
-      case -1:
-        ungraded++
-        break;
-      case 4:
-        bad++
-        break;
-      case 3:
-        ok++
-        break;
-      case 2:
-        good++
-        break;
-      case 1:
-        excellent++
-        break;
-    }
-  });
-
-  let response: BarChartResponse = {
-    "chartType": "bar",
-    "type": "school_data",
-    "area": "county",
-    chart:{
-      "groups":[
-        {
-          "name": "Kent School Performance",
-          "bars": [
-            {
-              "bar_name": "excellent",
-              "value": excellent,
-              "color": "red"
-            },
-            {
-              "bar_name": "good",
-              "value": good,
-              "color": "blue"
-            },
-            {
-              "bar_name": "Needs Improvement",
-              "value": ok,
-              "color": "green"
-            },
-            {
-              "bar_name": "Inadequate",
-              "value": bad,
-              "color": "teal"
-            },
-            {
-              "bar_name": "Ungraded",
-              "value": ungraded,
-              "color": "cyan"
-            }]
-        }],
-      title: "Kent Ofsted Performance",
-      xlabel: "Ofsted Rating",
-      ylabel: "Frequency",
-    }
+  if (area && area.length > 7){
+    apiResponse = await api.get<SchoolCounts>(`/lsoas/${area}/school/ofstedcount`)
   }
+  else if (area){
+    apiResponse = await api.get<SchoolCounts>(`/postcodes/${area}/school/ofstedcount`)
+  }
+  else{
+    apiResponse = await api.get<SchoolCounts>("/school/ofstedcount")
+  }
+  
+  const scores = apiResponse.data
 
-  return response;
+const rankingCounts = Object.fromEntries(
+  scores.ofsted_rankings.map(school => [school.ranking, school.count])
+);
+
+let response: BarChartResponse = {
+  chartType: "bar",
+  type: "school_data",
+  area: "county",
+
+  chart: {
+    groups: [
+      {
+        name: "Kent School Performance",
+        bars: [
+          {
+            bar_name: "excellent",
+            value: rankingCounts[1] ?? 0,
+            color: "red"
+          },
+          {
+            bar_name: "good",
+            value: rankingCounts[2] ?? 0,
+            color: "blue"
+          },
+          {
+            bar_name: "Needs Improvement",
+            value: rankingCounts[3] ?? 0,
+            color: "green"
+          },
+          {
+            bar_name: "Inadequate",
+            value: rankingCounts[4] ?? 0,
+            color: "teal"
+          },
+          {
+            bar_name: "Ungraded",
+            value: (rankingCounts[0] ?? 0) + (rankingCounts[-1] ?? 0),
+            color: "cyan"
+          }
+        ]
+      }
+    ],
+    title: "Kent Ofsted Performance",
+    xlabel: "Ofsted Rating",
+    ylabel: "Frequency"
+  }
+}
+
+return response;
 }

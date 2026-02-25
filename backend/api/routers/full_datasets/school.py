@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from api.database import get_db
 from api.models.db_models import School
 from api.models.response_models.school import SchoolResponse
+from sqlalchemy import func
 
 router = APIRouter()
 
@@ -32,3 +33,24 @@ async def list_schools(db: Session = Depends(get_db)):
         )
         for schoolRow in schoolData
     ]
+
+from sqlalchemy import func
+
+@router.get("/ofstedcount")
+async def list_schools(db: Session = Depends(get_db)):
+    """Lists counts of schools by Ofsted ranking"""
+    
+    schoolData = (
+        db.query(School.ofsted_ranking, func.count(School.ofsted_ranking))
+        .group_by(School.ofsted_ranking)
+        .all()
+    )
+
+    return {
+        "ofsted_rankings":[
+        {
+            "ranking": ranking,
+            "count": count
+        }
+        for ranking, count in schoolData
+    ]}

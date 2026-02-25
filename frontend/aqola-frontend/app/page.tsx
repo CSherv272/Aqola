@@ -64,7 +64,7 @@ export default function Home() {
   };
 
   const handleDataBar = async () => {
-    let data = await county_ofsted_frequency()
+    let data = await county_ofsted_frequency("DA125JT")
     setBarGraphData(data.chart)
     setShowBarGraph(!showBarGraph);
   }
