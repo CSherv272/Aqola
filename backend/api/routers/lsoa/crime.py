@@ -7,6 +7,7 @@ from api.database import get_db
 from api.models.db_models import Crime
 from api.models.response_models.crime import CrimeResponse
 from datetime import date
+from collections import defaultdict
 
 router = APIRouter()
 
@@ -48,3 +49,28 @@ async def get_crime_by_lsoa(
         )
         for crime in lsoa_records
     ]
+
+@router.get("/{lsoa}/crime/timeseries")
+async def crime_timeseries(
+    lsoa: str,
+    db: Session = Depends(get_db)
+):
+    results = (
+        db.query(
+            Crime.date,
+            Crime.crime_type,
+            func.count().label("count")
+        )
+        .filter(Crime.lsoa_id == lsoa)
+        .group_by(Crime.date, Crime.crime_type)
+        .order_by(Crime.date)
+        .all()
+    )
+
+    dataDict = defaultdict(list)
+
+    for result in results:
+        coords = [result.date, result.count]
+        dataDict[result.crime_type].append(coords)
+
+    return dataDict

@@ -25,3 +25,9 @@ class UniqueDatesResponse(BaseModel):
     
     class Config:
         from_attributes = True # Allows SQL Alchemy to convert to this.
+
+# class TimeseriesResponse(BaseModel):
+    # line_name:[]
+    
+    class Config:
+        from_attributes = True # Allows SQL Alchemy to convert to this.
