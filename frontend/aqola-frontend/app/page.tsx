@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 // import Banner from "./components/aqola-banner";
 import BarGraph from "./components/bargraph";
 // import LineGraph from "./components/linegraph";
-import { hello, getPostcodeData } from "./lib/api/api";
+import { hello, getPostcodeData } from "./lib/api";
 import { useState, useEffect } from "react";
 
 // import LineGraph from "./components/linegraph";

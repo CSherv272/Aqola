@@ -1,7 +1,7 @@
 import { GeoJSON, useMapEvents } from "react-leaflet";
 import { PostcodeGeoJson } from "@/app/lib/types";
 import { Polygon } from "./polygon";
-import { getPostcodeBoundaries } from "@/app/lib/api/postcodes";
+import { getPostcodeBoundaries } from "@/app/lib/postcodes";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { debounce } from "lodash";
 import { Feature, FeatureCollection } from "geojson";

@@ -13,10 +13,9 @@ def test_get_postcode_valid():
     response = client.get("/postcodes/CT27QS")
     assert response.status_code == 200
     data = response.json()
-    for postcode_response in data: 
-        assert postcode_response["postcode"][0:2] in VALID_POSTCODE_STARTS
-        assert "latitude" in data[0]
-        assert "longitude" in data[0]
+    assert data["postcode"][0:2] in VALID_POSTCODE_STARTS
+    assert "latitude" in data
+    assert "longitude" in data
 
 def test_get_specific_postcode():
     response = client.get("/postcodes/CT27QS")
