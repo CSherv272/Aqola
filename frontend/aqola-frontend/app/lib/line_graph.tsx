@@ -15,10 +15,10 @@ export const postcode_time_frequency_crimetypes = async (lsoa: string): Promise<
   const uniqueMonths = await api.get<UniqueMonths>(`/crime/months`);
 
   const months = uniqueMonths.data.values ?? [];
-  let lines: { line_name: string; coords: [number, number][] }[] = [];
+  let lines: { line_name: string; coords: [Date, number][] }[] = [];
 
   for (const crime of uniqueCrimeTypes.data.values) {
-    const coords: [number, number][] = [];
+    const coords: [Date, number][] = [];
     // for each unique month
     for (let monthIdx = 0; monthIdx < months.length; monthIdx++) {
       const month = months[monthIdx];
@@ -26,7 +26,8 @@ export const postcode_time_frequency_crimetypes = async (lsoa: string): Promise<
       const apiResponse = await api.get<Crime[]>(`/lsoas/${lsoa}/crime?crimeType=${crime}&month=${month}`);
       // take either the dataset returned, or if empty, an empty array
       const crimes = Array.isArray(apiResponse.data) ? apiResponse.data : [];
-      coords.push([monthIdx, crimes.length]);
+      const date = crimes[0]?.date ? new Date(crimes[0].date) : new Date(month);
+      coords.push([date, crimes.length]);
     }
     // for each crime type, add the array of co-ordinates
     lines.push({ line_name: crime, coords });
@@ -38,7 +39,7 @@ export const postcode_time_frequency_crimetypes = async (lsoa: string): Promise<
     area: "postcode",
     chart: {
       lines,
-      title: "Crime by Postcode",
+      title: "Crime by Crime Type",
       xlabel: "Months",
       ylabel: "Frequency",
     },

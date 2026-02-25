@@ -15,7 +15,7 @@ export type School = {
 
 export type Crime = {
     lsoa_id: string;
-    date: string; //may need changing
+    date: Date; //may need changing
     latitude: number;
     longitude: number;
     crime_type: string;

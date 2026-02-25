@@ -34,10 +34,17 @@ export default function LinePlot({
   const yLabel = useRef();
 
   // create the x and y scales for the graph, using the max x and y values from the data input
-  const x = d3.scaleLinear(
-    [d3.min([...xVals]), d3.max([...xVals])],
-    [marginLeft, graphWidth - marginRight],
-  );
+  const isDate = xVals[0] instanceof Date;
+  console.log(isDate)
+  const x = isDate
+    ? d3.scaleTime(
+      [d3.min(xVals), d3.max(xVals)],
+      [marginLeft, graphWidth - marginRight]
+    )
+    : d3.scaleLinear(
+      [d3.min(xVals), d3.max(xVals)],
+      [marginLeft, graphWidth - marginRight]
+    );
   const y = d3.scaleLinear(
     [0, d3.max([...yVals])],
     [height - marginBottom, marginTop],
