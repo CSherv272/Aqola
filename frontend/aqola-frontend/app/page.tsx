@@ -22,7 +22,7 @@ const Banner = dynamic(() => import("./components/aqola-banner"), {
 });
 
 //dynamically import of the leaflet map from a map component
-const LeafletMap = dynamic(() => import("./components/maps"), {
+const LeafletMap = dynamic(() => import("./components/maps/maps"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });

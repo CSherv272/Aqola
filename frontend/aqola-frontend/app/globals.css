@@ -24,3 +24,18 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.postcode-tooltip {
+  background: white;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+}
+
+/* Remove the default tooltip arrow */
+.postcode-tooltip::before {
+  display: none;
+}
