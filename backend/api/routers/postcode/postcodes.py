@@ -61,6 +61,10 @@ async def list_postcodes(min_lat: float, max_lat: float, min_lng: float, max_lng
 
     postcode_polygons = []
 
+    if len(postcodes) == 0:
+        print("No postcodes found within bounds")
+        return postcode_polygons    
+
     for postcode_record in postcodes:
         boundary_json = json.loads(postcode_record.boundary)
         postcode_polygons.append(PostcodePolygonResponse(boundary=GeometryModel(type=boundary_json["type"], coordinates=boundary_json["coordinates"]), postcode=postcode_record.postcode))
@@ -104,12 +108,15 @@ async def get_postcode_polygon(postcode:str, db: Session = Depends(get_db)):
         .filter(func.lower(Postcode.postcode) == func.lower(postcode))
         .first()
     )
+
+    if not postcode_record:
+        raise HTTPException(status_code=404, detail="Postcode not found")
+    
     boundary_json = json.loads(postcode_record.boundary)
     boundary = GeometryModel(type=boundary_json["type"], coordinates=boundary_json["coordinates"])
 
 
-    if not postcode_record:
-        raise HTTPException(status_code=404, detail="Postcode not found")
+    
 
     return PostcodePolygonResponse(
         postcode=postcode_record.postcode,
