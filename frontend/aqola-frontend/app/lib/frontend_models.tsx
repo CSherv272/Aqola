@@ -31,3 +31,6 @@ export type LineChartResponse = {
     ylabel: string;
   };
 };
+
+// type for determining which chart button is clicked
+export type ChartType = "line_over_time" | "bar_frequency" | "api_bar";

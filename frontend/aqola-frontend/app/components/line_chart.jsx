@@ -8,7 +8,7 @@ import { useRef, useEffect } from "react";
 //   onChange: (val: string) => void;
 // };
 
-export default function LinePlot({
+export default function LineChart({
   data,
   // colours,
   width = 1000,

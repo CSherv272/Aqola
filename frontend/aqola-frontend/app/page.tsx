@@ -6,12 +6,14 @@
 
 import dynamic from "next/dynamic";
 // import Banner from "./components/aqola-banner";
-import BarGraph from "./components/bargraph";
+import BarChart from "./components/bar_chart";
+import LineChart from "./components/line_chart";
 // import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
 import { ofsted_frequency_by_band } from "./lib/bar_graph"
 import { crime_rate_by_type_and_area } from "./lib/line_graph"
 import { useState, useEffect } from "react";
+import { ChartType } from "./lib/frontend_models";
 
 // import LineGraph from "./components/linegraph";
 // import LeafletMap from "./components/Map";
@@ -29,10 +31,10 @@ const LeafletMap = dynamic(() => import("./components/maps"), {
   loading: () => <p>Loading...</p>,
 });
 
-const LineGraph = dynamic(() => import("./components/linegraph"), {
-  ssr: false,
-  loading: () => <p>Loading...</p>,
-});
+// const LineChart = dynamic(() => import("./components/linegraph"), {
+//   ssr: false,
+//   loading: () => <p>Loading...</p>,
+// });
 
 export default function Home() {
   //app state variables
@@ -45,10 +47,10 @@ export default function Home() {
   };
 
   const [data, setData] = useState([]);
-  const [showLineGraph, setShowLineGraph] = useState(false);
-  const [showBarGraph, setShowBarGraph] = useState(false);
-  let [lineGraphData, setLineGraphData] = useState<any>(null)
-  let [barGraphData, setBarGraphData] = useState<any>(null)
+  const [showLineChart, setShowLineChart] = useState(false);
+  const [showBarChart, setShowBarChart] = useState(false);
+  let [lineChartData, setLineChartData] = useState<any>(null)
+  let [barChartData, setBarChartData] = useState<any>(null)
   const [postcode, setPostcode] = useState([]);
 
   const getPostcode = async () => {
@@ -60,37 +62,29 @@ export default function Home() {
   const getData = async () => {
     const response = await hello();
     setData(response.message);
-    setShowLineGraph(!showLineGraph);
+    setShowLineChart(!showLineChart);
   };
 
-  const handleDataBar = async () => {
-    let data = await ofsted_frequency_by_band("DA125JT")
-    setBarGraphData(data.chart)
-    setShowBarGraph(!showBarGraph);
-  }
-
-  const handleDataLine = async () => {
-    let data = await crime_rate_by_type_and_area("E01016024", ["Other theft", "Drugs"])
-    setLineGraphData(data)
-    console.log(data)
-    setShowLineGraph(!showLineGraph)
-  }
-
-  const handleChartSelection = async (chartId: string) => {
+  // takes the id of the chart required and creates it
+  // looks at app state for the values - to be conmpleted
+  const handleChartSelection = async (chartType : ChartType) => {
     let selectedDataset = "crime"
     let selectedLsoa = ["E01016024"]
     let selectedPcd = ["DA125JT"]
     let selectedCrimeTypes: string[] = ["Other theft", "Drugs"]
+    console.log(chartType)
 
-    switch (chartId){
+    switch (chartType){
       case "line_over_time":
         let line_data = await crime_rate_by_type_and_area(selectedLsoa[0], selectedCrimeTypes)
-        setLineGraphData(line_data)
-        setShowLineGraph(!showLineGraph)
+        setLineChartData(line_data)
+        setShowLineChart(!showLineChart)
+        break;
       case "bar_frequency":
         let bar_data = await ofsted_frequency_by_band(selectedPcd[0])
-        setBarGraphData(bar_data.chart)
-        setShowBarGraph(!showBarGraph);
+        setBarChartData(bar_data.chart)
+        setShowBarChart(!showBarChart);
+        break;
     }
   }
 
@@ -108,7 +102,7 @@ export default function Home() {
     console.log("your postcode data", postcode);
   }, [postcode]);
 
-  // const bar_graph_data_template = {
+  // const bar_chart_data_template = {
   //   groups: [
   //     {
   //       name: "CT2 7QS",
@@ -199,17 +193,10 @@ export default function Home() {
 
   return (
     <div>
-      <Banner lineGraphTrigger={handleDataLine} barGraphTrigger={handleDataBar} apiTrigger={handleDataBar} />{" "}
+      <Banner onChartSelect={handleChartSelection} />
       {/*trigger is button press*/}
-      {showLineGraph && lineGraphData && (
-        <LineGraph
-          data={lineGraphData} //lineGraphData
-          // colours={colours}
-          get_line_name={handleLineHover}
-        />
-      )}{" "}
-      {/*show and hide map*/}
-      {showBarGraph && barGraphData && <BarGraph data={barGraphData} />}
+      {showLineChart && lineChartData && <LineChart data={lineChartData} get_line_name={handleLineHover}/>}
+      {showBarChart && barChartData && <BarChart data={barChartData} />}
       <LeafletMap />
     </div>
   );
