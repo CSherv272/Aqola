@@ -15,6 +15,23 @@ export const api = axios.create({
 //      crime type (list of strings) - optional
 export const crime_rate_by_type_and_area = async (lsoa: string, crimeTypes? : string[]): Promise<LineChartResponse> => {
   let crimeTypeSlug: string = "";
+
+  let colours: Record<string, string> = {
+    "Anti-social behaviour": "brown",
+    "Bicycle theft": "white",
+    "Burglary": "blue",
+    "Criminal damage and arson": "pink",
+    "Drugs": "cyan",
+    "Other crime": "purple",
+    "Other theft": "grey",
+    "Possession of weapons": "lime",
+    "Public order": "orange",
+    "Robbery": "red",
+    "Shoplifting": "yellow",
+    "Theft from the person": "maroon",
+    "Vehicle crime": "green",
+    "Violence and sexual offences": "teal",
+  };
   
   if (crimeTypes){
     crimeTypeSlug = "?"
@@ -27,12 +44,13 @@ export const crime_rate_by_type_and_area = async (lsoa: string, crimeTypes? : st
   const apiResponse = await api.get(`/lsoas/${lsoa}/crime/timeseries/${crimeTypeSlug}`);
   const crimeCountData = apiResponse.data;
 
-  let lines: { line_name: string; coords: [Date, number][] }[] = [];
+  let lines: { line_name: string; coords: [Date, number][]; color: string }[] = [];
 
   for (const [crimeType, coords] of Object.entries(crimeCountData)) {
     lines.push({
       line_name: crimeType,
-      coords: (coords as [Date, number][]).map(([date, count]) => [new Date(date), count])
+      coords: (coords as [Date, number][]).map(([date, count]) => [new Date(date), count]),
+      color: colours[crimeType]
     });
   }
 

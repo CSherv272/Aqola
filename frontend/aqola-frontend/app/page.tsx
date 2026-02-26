@@ -69,13 +69,31 @@ export default function Home() {
     setShowBarGraph(!showBarGraph);
   }
 
-
   const handleDataLine = async () => {
     let data = await crime_rate_by_type_and_area("E01016024", ["Other theft", "Drugs"])
     setLineGraphData(data)
     console.log(data)
     setShowLineGraph(!showLineGraph)
   }
+
+  const handleChartSelection = async (chartId: string) => {
+    let selectedDataset = "crime"
+    let selectedLsoa = ["E01016024"]
+    let selectedPcd = ["DA125JT"]
+    let selectedCrimeTypes: string[] = ["Other theft", "Drugs"]
+
+    switch (chartId){
+      case "line_over_time":
+        let line_data = await crime_rate_by_type_and_area(selectedLsoa[0], selectedCrimeTypes)
+        setLineGraphData(line_data)
+        setShowLineGraph(!showLineGraph)
+      case "bar_frequency":
+        let bar_data = await ofsted_frequency_by_band(selectedPcd[0])
+        setBarGraphData(bar_data.chart)
+        setShowBarGraph(!showBarGraph);
+    }
+  }
+
 
   // when data changes, update is printed to console
   useEffect(() => {
@@ -90,109 +108,94 @@ export default function Home() {
     console.log("your postcode data", postcode);
   }, [postcode]);
 
-  const bar_graph_data_template = {
-    groups: [
-      {
-        name: "CT2 7QS",
-        bars: [
-          {
-            bar_name: "high_risk",
-            value: 30,
-            color: "red",
-          },
-          {
-            bar_name: "medium_risk",
-            value: 12,
-            color: "yellow",
-          },
-          {
-            bar_name: "low_risk",
-            value: 40,
-            color: "blue",
-          },
-          {
-            bar_name: "very_low_risk",
-            value: 50,
-            color: "green",
-          },
-        ],
-      },
-      {
-        name: "CT2 7QB",
-        bars: [
-          {
-            bar_name: "high_risk",
-            value: 45,
-            color: "red",
-          },
-          {
-            bar_name: "medium_risk",
-            value: 64,
-            color: "yellow",
-          },
-          {
-            bar_name: "low_risk",
-            value: 20,
-            color: "blue",
-          },
-          {
-            bar_name: "very_low_risk",
-            value: 3,
-            color: "green",
-          },
-        ],
-      },
-    ],
-    title: "Flood data bargraph!",
-    xlabel: "Postcodes",
-    ylabel: "Number of Houses at risk",
-  };
+  // const bar_graph_data_template = {
+  //   groups: [
+  //     {
+  //       name: "CT2 7QS",
+  //       bars: [
+  //         {
+  //           bar_name: "high_risk",
+  //           value: 30,
+  //           color: "red",
+  //         },
+  //         {
+  //           bar_name: "medium_risk",
+  //           value: 12,
+  //           color: "yellow",
+  //         },
+  //         {
+  //           bar_name: "low_risk",
+  //           value: 40,
+  //           color: "blue",
+  //         },
+  //         {
+  //           bar_name: "very_low_risk",
+  //           value: 50,
+  //           color: "green",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       name: "CT2 7QB",
+  //       bars: [
+  //         {
+  //           bar_name: "high_risk",
+  //           value: 45,
+  //           color: "red",
+  //         },
+  //         {
+  //           bar_name: "medium_risk",
+  //           value: 64,
+  //           color: "yellow",
+  //         },
+  //         {
+  //           bar_name: "low_risk",
+  //           value: 20,
+  //           color: "blue",
+  //         },
+  //         {
+  //           bar_name: "very_low_risk",
+  //           value: 3,
+  //           color: "green",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  //   title: "Flood data bargraph!",
+  //   xlabel: "Postcodes",
+  //   ylabel: "Number of Houses at risk",
+  // };
 
-  let crime_data = {
-    chart_type: "line",
-    type: "crime_data",
-    area: "postcodes",
-    chart: {
-      lines: [
-        {
-          line_name: "Drugs",
-          coords: [
-            [0, 10],
-            [1, 20],
-            [2, 30],
-          ],
-        },
-        {
-          line_name: "Robbery",
-          coords: [
-            [0, 5],
-            [1, 15],
-            [2, 25],
-          ],
-        },
-      ],
-      title: "Crime by Postcode",
-      xlabel: "Time (months)",
-      ylabel: "Number of Crimes",
-    },
-  };
-
-  let colours = {
-    "Anti-social behaviour": "brown",
-    "Bicycle theft": "white",
-    "Burglary": "blue",
-    "Criminal damage and arson": "pink",
-    "Drugs": "cyan",
-    "Other crime": "purple",
-    "Other theft": "grey",
-    "Possession of weapons": "lime",
-    "Public order": "teal",
-    "Robbery": "red",
-    "Shoplifting": "yellow",
-    "Theft from the person": "maroon",
-    "Vehicle crime": "green",
-    "Violence and sexual offences": "orange",
-  };
+  // let crime_data_template = {
+  //   chart_type: "line",
+  //   type: "crime_data",
+  //   area: "postcodes",
+  //   chart: {
+  //     lines: [
+  //       {
+  //         line_name: "Drugs",
+  //         coords: [
+  //           [0, 10],
+  //           [1, 20],
+  //           [2, 30],
+  //         ],
+  //         color: "blue",
+  //       },
+  //       {
+  //         line_name: "Robbery",
+  //         coords: [
+  //           [0, 5],
+  //           [1, 15],
+  //           [2, 25],
+  //         ],
+  //         color: "red",
+  //       },
+  //     ],
+  //     title: "Crime by Postcode",
+  //     xlabel: "Time (months)",
+  //     ylabel: "Number of Crimes",
+  //   },
+  // };
 
   return (
     <div>
@@ -200,8 +203,8 @@ export default function Home() {
       {/*trigger is button press*/}
       {showLineGraph && lineGraphData && (
         <LineGraph
-          data={lineGraphData}
-          colours={colours}
+          data={lineGraphData} //lineGraphData
+          // colours={colours}
           get_line_name={handleLineHover}
         />
       )}{" "}

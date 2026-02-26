@@ -10,7 +10,7 @@ import { useRef, useEffect } from "react";
 
 export default function LinePlot({
   data,
-  colours,
+  // colours,
   width = 1000,
   graphWidth = 700,
   height = 400,
@@ -103,7 +103,7 @@ export default function LinePlot({
             d={lineGen(line.coords)}
             fill="none"
             // add the line's colour from data
-            stroke={colours[line.line_name]}
+            stroke={line.color}
             strokeWidth="4px"
             onMouseEnter={() => get_line_name(line.line_name)}
           >
@@ -120,7 +120,7 @@ export default function LinePlot({
               r="3"
               fill="white"
               // add the circle's colour from data
-              stroke={colours[line.line_name]}
+              stroke={line.color}
               onMouseEnter={() => get_line_name(line.line_name)}
             >
               {/* add the point's co-ords on hover */}
@@ -133,7 +133,7 @@ export default function LinePlot({
               cx={width - 250}
               cy={marginTop + (i * 15)}
               r="6"
-              fill={colours[line.line_name]}
+              fill={line.color}
             />
             <text
               x={width - 240}

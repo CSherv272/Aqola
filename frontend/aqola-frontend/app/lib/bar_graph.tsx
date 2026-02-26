@@ -46,27 +46,27 @@ let response: BarChartResponse = {
           {
             bar_name: "excellent",
             value: rankingCounts[1] ?? 0,
-            color: "red"
+            color: "green"
           },
           {
             bar_name: "good",
             value: rankingCounts[2] ?? 0,
-            color: "blue"
+            color: "cyan"
           },
           {
             bar_name: "Needs Improvement",
             value: rankingCounts[3] ?? 0,
-            color: "green"
+            color: "blue"
           },
           {
             bar_name: "Inadequate",
             value: rankingCounts[4] ?? 0,
-            color: "teal"
+            color: "brown"
           },
           {
             bar_name: "Ungraded",
             value: (rankingCounts[0] ?? 0) + (rankingCounts[-1] ?? 0),
-            color: "cyan"
+            color: "grey"
           }
         ]
       }
