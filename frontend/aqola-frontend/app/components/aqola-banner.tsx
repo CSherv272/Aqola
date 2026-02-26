@@ -15,14 +15,20 @@ export default function Banner({ onChartSelect }: Props) {
         onClick={() => onChartSelect("line_over_time")}
         className="text-4xl text-cyan-400 m-10 font-sans bg-cyan-900 p-3 border rounded-2xl hover:bg-cyan-950"
       >
-        Line Graph
+        Crime By Type
       </button>
 
       <button
         onClick={() => onChartSelect("bar_frequency")}
         className="text-4xl text-cyan-400 m-10 font-sans bg-cyan-900 p-3 border rounded-2xl hover:bg-cyan-950"
       >
-        Bar Graph
+        Kent Crime Count
+      </button>
+      <button
+        onClick={() => onChartSelect("line_over_time_by_lsoa")}
+        className="text-4xl text-cyan-400 m-10 font-sans bg-cyan-900 p-3 border rounded-2xl hover:bg-cyan-950"
+      >
+        Crime By LSOA
       </button>
     </div>
   );

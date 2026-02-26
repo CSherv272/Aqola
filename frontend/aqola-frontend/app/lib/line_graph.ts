@@ -68,3 +68,45 @@ export const crime_rate_by_type_and_area = async (lsoa: string, crimeTypes? : st
 
   return response;
 };
+
+export const crime_rate_by_area = async (lsoas : string[]) : Promise<LineChartResponse> => {
+
+  const colours = ["brown", "white", "blue", "pink", "cyan", "purple", "grey", "lime", "orange", "red", "yellow", "maroon", "green", "teal"]
+  let lsoaSlug : string = "";
+
+    if (lsoas){
+    lsoaSlug = "?"
+    for (let lsoa of lsoas){
+      lsoaSlug += `lsoas=${lsoa}&`
+    }
+    lsoaSlug = lsoaSlug.substring(0, lsoaSlug.length-1)
+  }
+
+  const apiResponse = await api.get(`/crime/crime-rate/${lsoaSlug}`);
+  const crimeCountData = apiResponse.data;
+
+  let lines: { line_name: string; coords: [Date, number][]; color: string }[] = [];
+
+for (const [index, [lsoa, coords]] of Object.entries(crimeCountData).entries()) {
+  console.log("Color" + colours[index % colours.length])  
+  lines.push({
+      line_name: lsoa,
+      coords: (coords as [Date, number][]).map(([date, count]) => [new Date(date), count]),
+      color: colours[index % colours.length]
+    });
+  }
+
+  const response: LineChartResponse = {
+    chartType: "line",
+    type: "crime_data",
+    area: "postcode",
+    chart: {
+      lines,
+      title: "Crime Rate by Area",
+      xlabel: "Months",
+      ylabel: "Frequency",
+    },
+  };
+
+  return response;
+}

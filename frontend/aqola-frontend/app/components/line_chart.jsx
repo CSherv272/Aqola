@@ -1,4 +1,3 @@
-// components/linegraph.tsx
 "use client";
 
 import * as d3 from "d3";
@@ -12,7 +11,7 @@ export default function LineChart({
   data,
   // colours,
   width = 1000,
-  graphWidth = 700,
+  chartWidth = 700,
   height = 400,
   marginTop = 100,
   marginRight = 50,
@@ -20,7 +19,7 @@ export default function LineChart({
   marginLeft = 50,
   get_line_name,
 }) {
-  // Json passed in with x and y values for line graph
+  // Json passed in with x and y values for line chart
 
   let xVals = data.chart.lines
     .map((line) => line.coords.map((coord) => coord[0]))
@@ -33,17 +32,17 @@ export default function LineChart({
   const xLabel = useRef();
   const yLabel = useRef();
 
-  // create the x and y scales for the graph, using the max x and y values from the data input
+  // create the x and y scales for the chart, using the max x and y values from the data input
   const isDate = xVals[0] instanceof Date;
   console.log(isDate)
   const x = isDate
     ? d3.scaleTime(
       [d3.min(xVals), d3.max(xVals)],
-      [marginLeft, graphWidth - marginRight]
+      [marginLeft, chartWidth - marginRight]
     )
     : d3.scaleLinear(
       [d3.min(xVals), d3.max(xVals)],
-      [marginLeft, graphWidth - marginRight]
+      [marginLeft, chartWidth - marginRight]
     );
   const y = d3.scaleLinear(
     [0, d3.max([...yVals])],
@@ -64,9 +63,9 @@ export default function LineChart({
     d3.select(xLabel.current)
       .call(d3.axisBottom(x))
       .append("text")
-      .attr("x", graphWidth / 2)
+      .attr("x", chartWidth / 2)
       .attr("y", 35)
-      .attr("fill", "white")
+      .attr("fill", "teal")
       .attr("text-anchor", "middle")
       .text(data.chart.xlabel);
 
@@ -76,14 +75,14 @@ export default function LineChart({
       .attr("transform", "rotate(-90)")
       .attr("x", -height / 2)
       .attr("y", -35)
-      .attr("fill", "white")
+      .attr("fill", "teal")
       .attr("text-anchor", "middle")
       .text(data.chart.ylabel);
     d3.select(svg.current)
       .append("text")
-      .attr("x", graphWidth / 2)
+      .attr("x", chartWidth / 2)
       .attr("y", marginTop / 2)
-      .attr("fill", "white")
+      .attr("fill", "teal")
       .attr("text-anchor", "middle")
       .attr("font-size", "20px")
       .text(data.chart.title);
@@ -91,7 +90,7 @@ export default function LineChart({
 
   return (
     <svg ref={svg} width={width} height={height}>
-      {/* add the axis to the graph */}
+      {/* add the axis to the chart */}
       <g ref={xLabel} transform={`translate(0,${height - marginBottom})`} />
       <g ref={yLabel} transform={`translate(${marginLeft},0)`} />
 

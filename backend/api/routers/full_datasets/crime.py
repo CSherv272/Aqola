@@ -1,9 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from api.database import get_db
 from api.models.db_models import Crime
-from api.models.response_models.crime import UniqueTypesResponse, CrimeResponse, UniqueDatesResponse
+from api.models.response_models.crime import ListStringsResponse, CrimeResponse, ListDatesResponse, CrimeRateResponse
 from datetime import date
+from typing import List
+from sqlalchemy import func
+from collections import defaultdict
 
 router = APIRouter()
 
@@ -28,7 +31,7 @@ async def list_crime(db: Session = Depends(get_db), response_model=CrimeResponse
     ]
 
 @router.get("/types")
-async def list_crime_types(db: Session = Depends(get_db), response_model= UniqueTypesResponse):
+async def list_crime_types(db: Session = Depends(get_db), response_model= ListStringsResponse):
     crimeTypes = (
         db.query(Crime.crime_type)
         .distinct()
@@ -37,10 +40,10 @@ async def list_crime_types(db: Session = Depends(get_db), response_model= Unique
     
     crimeList = [ct[0] for ct in crimeTypes]
     
-    return UniqueTypesResponse(values=crimeList)
+    return ListStringsResponse(values=crimeList)
 
 @router.get("/months")
-async def list_crime_months(db: Session = Depends(get_db), response_model= UniqueDatesResponse):
+async def list_crime_months(db: Session = Depends(get_db), response_model= ListDatesResponse):
     crimeTypes = (
         db.query(Crime.date)
         .distinct()
@@ -49,5 +52,27 @@ async def list_crime_months(db: Session = Depends(get_db), response_model= Uniqu
     
     crimeList = [ct[0] for ct in crimeTypes]
     
-    return UniqueDatesResponse(values=crimeList)
+    return ListDatesResponse(values=crimeList)
+
+
+@router.get("/crime-rate")
+async def crime_rate(
+    lsoas: List[str] = Query(None),
+    db: Session = Depends(get_db)):
+
+    query = (db.query(Crime.lsoa_id, Crime.date, func.count().label("count"))
+        .filter(Crime.lsoa_id.in_(lsoas))
+        .group_by(Crime.date, Crime.lsoa_id)
+        .order_by(Crime.date)
+    )
+
+    results = query.all()
+
+    dataDict = defaultdict(list)
+
+    for result in results:
+        coords = [result.date, result.count]
+        dataDict[result.lsoa_id].append(coords)
+
+    return dataDict
 

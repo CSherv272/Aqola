@@ -11,7 +11,7 @@ import LineChart from "./components/line_chart";
 // import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
 import { ofsted_frequency_by_band } from "./lib/bar_graph"
-import { crime_rate_by_type_and_area } from "./lib/line_graph"
+import { crime_rate_by_type_and_area, crime_rate_by_area } from "./lib/line_graph"
 import { useState, useEffect } from "react";
 import { ChartType } from "./lib/frontend_models";
 
@@ -58,25 +58,18 @@ export default function Home() {
     setPostcode(response);
   };
 
-  // retrieves data through an api.ts function
-  const getData = async () => {
-    const response = await hello();
-    setData(response.message);
-    setShowLineChart(!showLineChart);
-  };
-
   // takes the id of the chart required and creates it
   // looks at app state for the values - to be conmpleted
   const handleChartSelection = async (chartType : ChartType) => {
     let selectedDataset = "crime"
-    let selectedLsoa = ["E01016024"]
+    let selectedLsoas = ["E01016024", "E01024040", "E01032810"]
     let selectedPcd = ["DA125JT"]
     let selectedCrimeTypes: string[] = ["Other theft", "Drugs"]
     console.log(chartType)
 
     switch (chartType){
       case "line_over_time":
-        let line_data = await crime_rate_by_type_and_area(selectedLsoa[0], selectedCrimeTypes)
+        let line_data = await crime_rate_by_type_and_area(selectedLsoas[0], selectedCrimeTypes)
         setLineChartData(line_data)
         setShowLineChart(!showLineChart)
         break;
@@ -84,6 +77,11 @@ export default function Home() {
         let bar_data = await ofsted_frequency_by_band(selectedPcd[0])
         setBarChartData(bar_data.chart)
         setShowBarChart(!showBarChart);
+        break;
+      case "line_over_time_by_lsoa":
+        let line_data_by_lsoa = await crime_rate_by_area(selectedLsoas)
+        setLineChartData(line_data_by_lsoa)
+        setShowLineChart(!showLineChart)
         break;
     }
   }
