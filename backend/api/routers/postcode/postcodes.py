@@ -8,7 +8,7 @@ import json
 from api.database import get_db
 from api.models.db_models import Postcode
 from api.models.response_models.postcode import PostcodeResponse, PostcodePolygonResponse
-from backend.api.models.response_models.polygon import GeometryModel
+from api.models.response_models.polygon import GeometryModel
 
 
 router = APIRouter()
