@@ -53,19 +53,22 @@ async def get_crime_by_lsoa(
 @router.get("/{lsoa}/crime/timeseries")
 async def crime_timeseries(
     lsoa: str,
+    crimeType: Optional[List[str]] = Query(None),
     db: Session = Depends(get_db)
 ):
-    results = (
-        db.query(
-            Crime.date,
-            Crime.crime_type,
-            func.count().label("count")
-        )
-        .filter(Crime.lsoa_id == lsoa)
-        .group_by(Crime.date, Crime.crime_type)
-        .order_by(Crime.date)
-        .all()
+    query = db.query(
+        Crime.date,
+        Crime.crime_type,
+        func.count().label("count")
     )
+
+    if crimeType:
+        query = query.filter(Crime.crime_type.in_(crimeType))
+    
+    query = query.filter(Crime.lsoa_id == lsoa)
+    query = query.group_by(Crime.date, Crime.crime_type)
+    query = query.order_by(Crime.date)
+    results = query.all()
 
     dataDict = defaultdict(list)
 

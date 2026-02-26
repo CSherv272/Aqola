@@ -9,8 +9,8 @@ import dynamic from "next/dynamic";
 import BarGraph from "./components/bargraph";
 // import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
-import { county_ofsted_frequency } from "./lib/bar_graph"
-import { postcode_time_frequency_crimetypes } from "./lib/line_graph"
+import { ofsted_frequency_by_band } from "./lib/bar_graph"
+import { crime_rate_by_type_and_area } from "./lib/line_graph"
 import { useState, useEffect } from "react";
 
 // import LineGraph from "./components/linegraph";
@@ -64,14 +64,14 @@ export default function Home() {
   };
 
   const handleDataBar = async () => {
-    let data = await county_ofsted_frequency("DA125JT")
+    let data = await ofsted_frequency_by_band("DA125JT")
     setBarGraphData(data.chart)
     setShowBarGraph(!showBarGraph);
   }
 
 
   const handleDataLine = async () => {
-    let data = await postcode_time_frequency_crimetypes("E01016024")
+    let data = await crime_rate_by_type_and_area("E01016024", ["Other theft", "Drugs"])
     setLineGraphData(data)
     console.log(data)
     setShowLineGraph(!showLineGraph)

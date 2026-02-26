@@ -13,7 +13,8 @@ export const get_bar_info = async () => {
   return response.data;
 };
 
-export const county_ofsted_frequency = async (area? : string): Promise<BarChartResponse> => {
+// Given an area (postcode, lsoa, or none) find the number of schools in each ofsted band 
+export const ofsted_frequency_by_band = async (area? : string): Promise<BarChartResponse> => {
   let apiResponse
 
   if (area && area.length > 7){

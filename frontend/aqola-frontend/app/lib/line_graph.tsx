@@ -10,8 +10,21 @@ export const api = axios.create({
   baseURL: "http://localhost:8000",
 });
 
-export const postcode_time_frequency_crimetypes = async (lsoa: string): Promise<LineChartResponse> => {
-  const apiResponse = await api.get(`/lsoas/${lsoa}/crime/timeseries`);
+// Gets crime rate for:
+//      specific lsoa (string) - required
+//      crime type (list of strings) - optional
+export const crime_rate_by_type_and_area = async (lsoa: string, crimeTypes? : string[]): Promise<LineChartResponse> => {
+  let crimeTypeSlug: string = "";
+  
+  if (crimeTypes){
+    crimeTypeSlug = "?"
+    for (let type of crimeTypes){
+      crimeTypeSlug += `crimeType=${type}&`
+    }
+    crimeTypeSlug = crimeTypeSlug.substring(0, crimeTypeSlug.length-1)
+  }
+  
+  const apiResponse = await api.get(`/lsoas/${lsoa}/crime/timeseries/${crimeTypeSlug}`);
   const crimeCountData = apiResponse.data;
 
   let lines: { line_name: string; coords: [Date, number][] }[] = [];
