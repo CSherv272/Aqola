@@ -21,7 +21,8 @@
 
 
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -48,7 +49,9 @@ body {
   min-height: 0;
 }
 
-.map-wrapper > div {height: 100%; }
+.map-wrapper>div {
+  height: 100%;
+}
 
 
 .data-select-wrapper {
@@ -87,7 +90,7 @@ body {
 
   background: rgba(60, 90, 100, 0.65);
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 
@@ -109,7 +112,7 @@ body {
   /* glass style background */
   background: rgba(60, 90, 100, 0.65);
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 
   z-index: 1001;
 
@@ -119,6 +122,10 @@ body {
 
 }
 
+/* 
+    display: flex;
+    align-items: center;
+    justify-content: center; */
 .nav-button {
   width: 60px;
   height: 60px;
@@ -137,6 +144,16 @@ body {
 
   transition: all 0.2s ease;
 
+}
+
+.nav-button i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-button i::before {
+  vertical-align: middle;
 }
 
 /* Buttons 
