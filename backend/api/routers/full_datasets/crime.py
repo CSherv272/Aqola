@@ -55,7 +55,7 @@ async def list_crime_months(db: Session = Depends(get_db), response_model= ListD
     return ListDatesResponse(values=crimeList)
 
 
-@router.get("/crime-rate")
+@router.get("/crime-rate-total")
 async def crime_rate(
     lsoas: List[str] = Query(None),
     db: Session = Depends(get_db)):
@@ -76,3 +76,22 @@ async def crime_rate(
 
     return dataDict
 
+@router.get("/crime-rate-lsoas")
+async def crime_rate(
+    lsoas: List[str] = Query(None),
+    db: Session = Depends(get_db)):
+
+    query = (db.query(Crime.lsoa_id, Crime.crime_type, func.count().label("count"))
+        .filter(Crime.lsoa_id.in_(lsoas))
+        .group_by(Crime.crime_type, Crime.lsoa_id)
+    )
+
+    results = query.all()
+
+    dataDict = defaultdict(list)
+
+    for result in results:
+        values = [result.crime_type, result.count]
+        dataDict[result.lsoa_id].append(values)
+
+    return dataDict

@@ -13,6 +13,8 @@ export const api = axios.create({
 // Gets crime rate for:
 //      specific lsoa (string) - required
 //      crime type (list of strings) - optional
+// returns a graph of crime rate over time in an lsoa
+// Each line represents a crime type
 export const crime_rate_by_type_and_area = async (lsoa: string, crimeTypes? : string[]): Promise<LineChartResponse> => {
   let crimeTypeSlug: string = "";
 
@@ -69,6 +71,9 @@ export const crime_rate_by_type_and_area = async (lsoa: string, crimeTypes? : st
   return response;
 };
 
+// Gets total crime rate over multiple lsoas
+// Returns a graph of total crime rate over time
+// Each line is an lsoa
 export const crime_rate_by_area = async (lsoas : string[]) : Promise<LineChartResponse> => {
 
   const colours = ["brown", "white", "blue", "pink", "cyan", "purple", "grey", "lime", "orange", "red", "yellow", "maroon", "green", "teal"]
@@ -82,7 +87,7 @@ export const crime_rate_by_area = async (lsoas : string[]) : Promise<LineChartRe
     lsoaSlug = lsoaSlug.substring(0, lsoaSlug.length-1)
   }
 
-  const apiResponse = await api.get(`/crime/crime-rate/${lsoaSlug}`);
+  const apiResponse = await api.get(`/crime/crime-rate-total/${lsoaSlug}`);
   const crimeCountData = apiResponse.data;
 
   let lines: { line_name: string; coords: [Date, number][]; color: string }[] = [];
