@@ -17,12 +17,15 @@ class Postcode(Base):
     latitude = Column(Float)
     longitude = Column(Float)
     centroid = Column(Geometry('POINT', srid=4326))
+    boundary = Column(Geometry('GEOMETRY', srid=4326))
     
     # # Foreign keys
     # lsoa_id = Column(String(20), ForeignKey('lsoas.id'))
     
     # # Relationships
     # zone = relationship("DisplayZone", back_populates="postcodes")
+
+
 
 class Lsoa(Base):
     __tablename__ = "lsoas"
