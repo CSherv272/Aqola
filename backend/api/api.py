@@ -10,10 +10,10 @@ from api.routers.full_datasets import crime as crime_full
 from api.routers.full_datasets import flood as flood_full
 from api.routers.full_datasets import school as school_full
 
-origins ={
+origins =[
     "http://localhost:3000",
     "localhost:3000"
-}
+]
 
 app = FastAPI(
     title="AQOLA API",
