@@ -6,7 +6,7 @@ from typing import List
 from api.database import get_db
 from api.models.db_models import Postcode
 from api.models.response_models.postcode import PostcodeResponse
-from api.models.db_models import SchoolData
+from api.models.db_models import School
 
 router = APIRouter()
 
@@ -58,8 +58,8 @@ async def get_postcode(postcode: str, db: Session = Depends(get_db)):
 async def get_schools_by_postcode(postcode: str, db: Session = Depends(get_db)):
     """Fetch all schools for a specific postcode for graph representation"""
     schools = (
-        db.query(SchoolData)
-        .filter(func.lower(SchoolData.postcode) == func.lower(postcode))
+        db.query(School)
+        .filter(func.lower(School.postcode) == func.lower(postcode))
         .all()
     )
 
