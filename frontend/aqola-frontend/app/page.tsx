@@ -6,6 +6,7 @@
 
 import dynamic from "next/dynamic";
 // import Banner from "./components/aqola-banner";
+import DataSelector from "./components/DataSelector";
 import BarGraph from "./components/bargraph";
 // import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
@@ -180,11 +181,28 @@ export default function Home() {
     "Other Theft": "teal",
     "All Crime": "navy",
     "Criminal Damage and Arson": "maroon",
+  };  
+  const navButtonPie = () => {
+  console.log("Pie chart clicked");
   };
 
+  const navButtonBar = () => {
+    console.log("Bar chart clicked");
+    showBar();
+    console.log(showBarGraph)
+    console.log("test");
+  };
+
+  const navButtonLine = () => {
+    console.log("Line graph clicked");
+    getData();
+  };
+
+
+
   return (
-    <div>
-      <Banner trigger={getData} barGraphTrigger={showBar} />{" "}
+    <div className = "page-container">
+      {/* <Banner trigger={getData} barGraphTrigger={showBar} />{" "} */}
       {/*trigger is button press*/}
       {showGraph && (
         <LineGraph
@@ -195,7 +213,36 @@ export default function Home() {
       )}{" "}
       {/*show and hide map*/}
       {showBarGraph && <BarGraph data={bar_graph_data_template} />}
-      <LeafletMap />
+
+      {/* Map wrapper */}
+      <div className="map-wrapper">
+        <LeafletMap />
+
+      </div>
+      
+      <DataSelector />
+      
+
+      {/* Bottom Navigation Overlay */}
+      <div className="bottom-nav">
+        
+
+        <button onClick={navButtonPie} className="nav-button"> <i className="fi fi-rs-chart-pie"/>    </button>
+        <button onClick={navButtonBar} className="nav-button"> <i className="fi fi-rs-stats"/> </button>
+        <button onClick={navButtonLine} className="nav-button"> <i className="fi fi-rs-chart-line-up"/> </button>
+      </div>
+
+      
+      {/* <div className="data-select-wrapper">
+          <label htmlFor="data" className="data-label">Dataset: </label> 
+          <select className="data-select" name="data" id="data">
+            <option value="Crime">Crime</option>
+            <option value="Schools">Schools</option>
+            <option value="Flood">Flood</option>
+          </select>
+      </div> */}
+      
+      
     </div>
   );
 }
