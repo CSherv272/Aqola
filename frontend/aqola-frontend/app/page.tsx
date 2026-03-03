@@ -61,14 +61,14 @@ export default function Home() {
 
   // takes the id of the chart required and creates it
   // looks at app state for the values - to be conmpleted
-  const handleChartSelection = async (chartType : ChartType) => {
+  const handleChartSelection = async (chartType: ChartType) => {
     let selectedDataset = "crime"
     let selectedLsoas = ["E01016024", "E01024040", "E01032810"]
     let selectedPcd = ["DA125JT"]
     let selectedCrimeTypes: string[] = ["Other theft", "Drugs"]
     console.log(chartType)
 
-    switch (chartType){
+    switch (chartType) {
       case "line_over_time":
         let line_data = await crime_rate_by_type_and_area(selectedLsoas[0], selectedCrimeTypes)
         setLineChartData(line_data)
@@ -191,27 +191,27 @@ export default function Home() {
   // };
 
   return (
-    <div className = "page-container">
+    <div className="page-container">
       {/* <Banner onChartSelect={handleChartSelection} /> */}
       {/*trigger is button press*/}
-      {showLineChart && lineChartData && <LineChart data={lineChartData} get_line_name={handleLineHover}/>}
+      {showLineChart && lineChartData && <LineChart data={lineChartData} get_line_name={handleLineHover} />}
       {showBarChart && barChartData && <BarChart data={barChartData} />}
-           {/* Map wrapper */}
+      {/* Map wrapper */}
       <div className="map-wrapper">
         <LeafletMap />
 
       </div>
-      
+
       <DataSelector />
-      
+
 
       {/* Bottom Navigation Overlay */}
       <div className="bottom-nav">
-        
 
-        <button onClick={() => handleChartSelection} className="nav-button"> <i className="fi fi-rs-chart-pie"/>    </button>
-        <button onClick={() => handleChartSelection} className="nav-button"> <i className="fi fi-rs-stats"/> </button>
-        <button onClick={() => handleChartSelection} className="nav-button"> <i className="fi fi-rs-chart-line-up"/> </button>
+
+        <button onClick={() => handleChartSelection} className="nav-button"> <i className="fi fi-rs-chart-pie" />    </button>
+        <button onClick={() => handleChartSelection("bar_frequency")} className="nav-button"> <i className="fi fi-rs-stats" /> </button>
+        <button onClick={() => handleChartSelection("line_over_time")} className="nav-button"> <i className="fi fi-rs-chart-line-up" /> </button>
       </div>
     </div>
   );
