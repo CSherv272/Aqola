@@ -16,6 +16,8 @@ import { useState, useEffect } from "react";
 // import LeafletMap from "./components/Map";
 // import Banner from "./components/aqola-banner";
 
+import { useAppStore } from "./store/appStore";
+
 //dynamically import banner from banner component
 const Banner = dynamic(() => import("./components/aqola-banner"), {
   ssr: false,
@@ -37,6 +39,8 @@ export default function Home() {
   //app state variables
   let [selectedPostcodes, setSelectedPostcodes] = useState([]);
   let [selectedDataSet, setSelectedDataSet] = useState("crime_data");
+
+  const selectedDataset = useAppStore((state) => state.selectedDataset);
 
   const handleLineHover = (newValue: string) => {
     setSelectedDataSet(newValue);
@@ -61,6 +65,7 @@ export default function Home() {
   };
 
   const showBar = async () => {
+    console.log("I am a bar graph and I am using " + selectedDataset);
     setShowBarGraph(!showBarGraph);
   };
 
@@ -181,15 +186,15 @@ export default function Home() {
     "Other Theft": "teal",
     "All Crime": "navy",
     "Criminal Damage and Arson": "maroon",
-  };  
+  };
   const navButtonPie = () => {
-  console.log("Pie chart clicked");
+    console.log("Pie chart clicked");
   };
 
   const navButtonBar = () => {
     console.log("Bar chart clicked");
     showBar();
-    console.log(showBarGraph)
+    console.log(showBarGraph);
     console.log("test");
   };
 
@@ -198,10 +203,8 @@ export default function Home() {
     getData();
   };
 
-
-
   return (
-    <div className = "page-container">
+    <div className="page-container">
       {/* <Banner trigger={getData} barGraphTrigger={showBar} />{" "} */}
       {/*trigger is button press*/}
       {showGraph && (
@@ -213,26 +216,26 @@ export default function Home() {
       )}{" "}
       {/*show and hide map*/}
       {showBarGraph && <BarGraph data={bar_graph_data_template} />}
-
       {/* Map wrapper */}
       <div className="map-wrapper">
         <LeafletMap />
-
       </div>
-      
       <DataSelector />
-      
-
       {/* Bottom Navigation Overlay */}
       <div className="bottom-nav">
-        
-
-        <button onClick={navButtonPie} className="nav-button"> <i className="fi fi-rs-chart-pie"/>    </button>
-        <button onClick={navButtonBar} className="nav-button"> <i className="fi fi-rs-stats"/> </button>
-        <button onClick={navButtonLine} className="nav-button"> <i className="fi fi-rs-chart-line-up"/> </button>
+        <button onClick={navButtonPie} className="nav-button">
+          {" "}
+          <i className="fi fi-rs-chart-pie" />{" "}
+        </button>
+        <button onClick={navButtonBar} className="nav-button">
+          {" "}
+          <i className="fi fi-rs-stats" />{" "}
+        </button>
+        <button onClick={navButtonLine} className="nav-button">
+          {" "}
+          <i className="fi fi-rs-chart-line-up" />{" "}
+        </button>
       </div>
-
-      
       {/* <div className="data-select-wrapper">
           <label htmlFor="data" className="data-label">Dataset: </label> 
           <select className="data-select" name="data" id="data">
@@ -241,8 +244,6 @@ export default function Home() {
             <option value="Flood">Flood</option>
           </select>
       </div> */}
-      
-      
     </div>
   );
 }
