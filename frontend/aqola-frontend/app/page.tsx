@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 // import Banner from "./components/aqola-banner";
 import BarChart from "./components/bar_chart";
 import LineChart from "./components/line_chart";
+import DataSelector from "./components/DataSelector";
 // import LineGraph from "./components/linegraph";
 import { hello, getPostcodeData } from "./lib/api";
 import { ofsted_frequency_by_band } from "./lib/bar_graph"
@@ -190,12 +191,28 @@ export default function Home() {
   // };
 
   return (
-    <div>
-      <Banner onChartSelect={handleChartSelection} />
+    <div className = "page-container">
+      {/* <Banner onChartSelect={handleChartSelection} /> */}
       {/*trigger is button press*/}
       {showLineChart && lineChartData && <LineChart data={lineChartData} get_line_name={handleLineHover}/>}
       {showBarChart && barChartData && <BarChart data={barChartData} />}
-      <LeafletMap />
+           {/* Map wrapper */}
+      <div className="map-wrapper">
+        <LeafletMap />
+
+      </div>
+      
+      <DataSelector />
+      
+
+      {/* Bottom Navigation Overlay */}
+      <div className="bottom-nav">
+        
+
+        <button onClick={() => handleChartSelection} className="nav-button"> <i className="fi fi-rs-chart-pie"/>    </button>
+        <button onClick={() => handleChartSelection} className="nav-button"> <i className="fi fi-rs-stats"/> </button>
+        <button onClick={() => handleChartSelection} className="nav-button"> <i className="fi fi-rs-chart-line-up"/> </button>
+      </div>
     </div>
   );
 }

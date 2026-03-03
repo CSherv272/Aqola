@@ -10,6 +10,7 @@ from api.routers.full_datasets import crime as crime_full
 from api.routers.full_datasets import flood as flood_full
 from api.routers.full_datasets import school as school_full
 from api.routers.full_datasets import database
+from api.routers.full_datasets import database
 
 origins =[
     "http://localhost:3000",
@@ -23,7 +24,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
