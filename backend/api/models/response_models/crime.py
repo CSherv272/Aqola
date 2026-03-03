@@ -1,15 +1,14 @@
 from pydantic import BaseModel
-from typing import Optional
 from decimal import Decimal
+from datetime import date
 
-class PostcodeResponse(BaseModel):
-    postcode: str
+class CrimeResponse(BaseModel):
+    crime_id: int
     lsoa_id: str
-    postcode_area: str
-    postcode_district: str
-    postcode_sector: str
+    date: date
     latitude: Decimal
     longitude: Decimal
+    crime_type: str
     
     class Config:
         from_attributes = True # Allows SQL Alchemy to convert to this.
