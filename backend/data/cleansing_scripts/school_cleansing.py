@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 def get_school_info_data(schools_dir):
     # Loops through year folders and finds school info CSVs
     all_schools_list = []
-    print(f"Scanning for school info in: {schools_dir}")
+    # print(f"Scanning for school info in: {schools_dir}")
 
     for year_folder in schools_dir.iterdir():
         if year_folder.is_dir() and re.search(r"\d{4}-\d{4}", year_folder.name):
@@ -17,7 +17,7 @@ def get_school_info_data(schools_dir):
             
             if matches:
                 info_file = matches[0]
-                print(f"  > Found School Info: {year_range} ({info_file.name})")
+                # print(f"  > Found School Info: {year_range} ({info_file.name})")
                 df = pd.read_csv(info_file)
                 df["year_range"] = year_range
                 all_schools_list.append(df)
@@ -27,7 +27,7 @@ def get_school_info_data(schools_dir):
 def get_ofsted_data(ofsted_dir):
     # Loops through Ofsted folder and extracts data with academic year mapping.
     ofsted_list = []
-    print(f"Scanning for Ofsted files in: {ofsted_dir}")
+    # print(f"Scanning for Ofsted files in: {ofsted_dir}")
 
     for file in ofsted_dir.glob("*.csv"):
         match = re.search(r"(\d{4})", file.name)
@@ -39,7 +39,7 @@ def get_ofsted_data(ofsted_dir):
             df_ofsted.columns = [c.strip() for c in df_ofsted.columns]
             
             if "URN" in df_ofsted.columns and "Overall effectiveness" in df_ofsted.columns:
-                print(f"  > Found Ofsted: {academic_year_range}")
+                # print(f"  > Found Ofsted: {academic_year_range}")
                 temp = df_ofsted[["URN", "Overall effectiveness"]].copy()
                 temp["year_range"] = academic_year_range
                 ofsted_list.append(temp)
@@ -51,7 +51,7 @@ def get_spatial_data(postcodes_csv_path):
     if not postcodes_csv_path.exists():
         return pd.DataFrame()
     
-    print(f"Loading Spatial Data: {postcodes_csv_path.name}")
+    # print(f"Loading Spatial Data: {postcodes_csv_path.name}")
     cols_to_use = ['postcode', 'lsoa_id', 'latitude', 'longitude', 'centroid']
     df_spatial = pd.read_csv(postcodes_csv_path, usecols=cols_to_use)
     
@@ -128,6 +128,7 @@ def merge_and_finalise(df_schools, df_ofsted, df_spatial):
             final_df[col] = None
     
     missing_by_year = final_df[final_df["ofsted_ranking"] == -1].groupby("year_range").size()
+    print("==============================================")
     print("Count of missing Ofsted data by year:")
     print(missing_by_year)
     
@@ -138,6 +139,7 @@ def export_to_csv(data, output_folder):
     # Exports finalised school data to output folder
     output_path = output_folder / "school_data.csv"
     data.to_csv(output_path, index=False)
+    print("-------------------------------------")
     print(f"SUCCESS: {output_path}")
     print(f"Total Rows: {len(data)}")
     print(f"Years found: {data['year_range'].unique()}")
@@ -158,13 +160,14 @@ def school_process():
     
     
     if postcodes_csv_path.exists():
-        print(f"Loading Postcode Lookup: {postcodes_csv_path.name}")
+        # print(f"Loading Postcode Lookup: {postcodes_csv_path.name}")
         df_spatial = raw_spatial_data
     else:
-        print(f"Warning: {postcodes_csv_path} not found. Spatial data will be empty.")
+        # print(f"Warning: {postcodes_csv_path} not found. Spatial data will be empty.")
         df_spatial = pd.DataFrame()
 
     if raw_schools.empty:
+        print("-------------------------------------")
         print("Error: No school data found.")
         return
 
@@ -192,3 +195,4 @@ def school_process():
 
 if __name__ == "__main__":
     school_process()
+    print("====================================")
