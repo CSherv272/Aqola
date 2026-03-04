@@ -4,23 +4,28 @@ from api.database import get_db
 from api.models.db_models import Crime
 from api.models.response_models.crime import ListStringsResponse, CrimeResponse, ListDatesResponse, CrimeRateResponse
 from datetime import date
-from typing import List
+from typing import List, Optional
 from sqlalchemy import func
 from collections import defaultdict
 
 router = APIRouter()
 
-@router.get("/")
-async def list_crime(db: Session = Depends(get_db), response_model=CrimeResponse):
+@router.get("/", response_model=List[CrimeResponse])
+async def list_crime(
+    lsoas: Optional[List[str]] = None,
+    db: Session = Depends(get_db)
+):
     """List all crime"""
-    crimes = (
-        db.query(Crime)
-        .all()
-    )
-    
+    query = db.query(Crime)
+
+    if lsoas:
+        query = query.filter(Crime.lsoa_id.in_(lsoas))
+
+    crimes = query.all()
+
     return [
         CrimeResponse(
-            crime_id = crime.crime_id,
+            crime_id=crime.crime_id,
             lsoa_id=crime.lsoa_id,
             date=crime.date,
             latitude=crime.latitude,
@@ -93,5 +98,33 @@ async def get_crime_rate_by_type(
     for result in results:
         values = [result.crime_type, result.count]
         dataDict[result.lsoa_id].append(values)
+
+    return dataDict
+
+@router.get("/lsoa-timeseries")
+async def crime_timeseries(
+    lsoa: str,
+    crimeType: Optional[List[str]] = Query(None),
+    db: Session = Depends(get_db)
+):
+    query = db.query(
+        Crime.date,
+        Crime.crime_type,
+        func.count().label("count")
+    )
+
+    if crimeType:
+        query = query.filter(Crime.crime_type.in_(crimeType))
+    
+    query = query.filter(Crime.lsoa_id == lsoa)
+    query = query.group_by(Crime.date, Crime.crime_type)
+    query = query.order_by(Crime.date)
+    results = query.all()
+
+    dataDict = defaultdict(list)
+
+    for result in results:
+        coords = [result.date, result.count]
+        dataDict[result.crime_type].append(coords)
 
     return dataDict
