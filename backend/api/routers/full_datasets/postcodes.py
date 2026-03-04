@@ -35,8 +35,8 @@ async def list_postcodes(
             postcode_area=p.postcode_area,
             postcode_district=p.postcode_district,
             postcode_sector=p.postcode_sector,
-            latitude=p.latitude,
-            longitude=p.longitude,
+            latitude=float(p.latitude),
+            longitude=float(p.longitude),
             centroid=p.centroid,
             boundary=p.boundary
         )
