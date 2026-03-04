@@ -192,14 +192,19 @@ export default function Home() {
 
   return (
     <div className="page-container">
-      {/* <Banner onChartSelect={handleChartSelection} /> */}
-      {/*trigger is button press*/}
-      {showLineChart && lineChartData && <LineChart data={lineChartData} get_line_name={handleLineHover} />}
-      {showBarChart && barChartData && <BarChart data={barChartData} />}
-      {/* Map wrapper */}
-      <div className="map-wrapper w-full h-full">
+      <div className="map-wrapper">
         <LeafletMap />
-
+        
+        {showLineChart && lineChartData && (
+          <div className="chart-overlay">
+            <LineChart data={lineChartData} get_line_name={handleLineHover} />
+          </div>
+        )}
+        {showBarChart && barChartData && (
+          <div className="chart-overlay">
+            <BarChart data={barChartData} />
+          </div>
+        )}
       </div>
 
       <DataSelector />
