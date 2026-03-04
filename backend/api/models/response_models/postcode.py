@@ -11,8 +11,8 @@ class PostcodeResponse(BaseModel):
     postcode_area: str
     postcode_district: str
     postcode_sector: str
-    latitude: Decimal
-    longitude: Decimal
+    latitude: float
+    longitude: float
     centroid: GeometryModel
     boundary: GeometryModel
     

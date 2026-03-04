@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from typing import List
+from typing import List, Optional
 from api.database import get_db
 from api.models.db_models import Flood
 from api.models.response_models.flood import FloodResponse
@@ -9,23 +9,22 @@ from api.models.response_models.flood import RiskBand
 
 router = APIRouter()
 
-
-# get flood data for a postcode
-@router.get("/{postcode}/flood", response_model=List[FloodResponse])
-async def get_flood_by_postcode(
-    postcode: str,
-    db: Session = Depends(get_db)
-):
-    # query for that lsoa
+@router.get("/")
+async def list_flood(
+    postcodes: Optional[List[str]] = Query(default=None),
+    db: Session = Depends(get_db)):
+    """List all flood data"""
     query = (
         db.query(Flood)
-        .filter(func.lower(Flood.postcode) == func.lower(postcode))
     )
 
-    pcdRecords = query.all()
+    if postcodes:
+        query = query.filter(Flood.postcode.in_(postcodes)) 
+    
+    floodData = query.all()
 
-    if not pcdRecords:
-        raise HTTPException(status_code=404, detail="No records found. Double check the postcode entered")
+    if not floodData:
+        raise HTTPException(status_code=404, detail="No records found. Double check the postcode(s) entered")
 
     return [
         FloodResponse(
@@ -36,21 +35,26 @@ async def get_flood_by_postcode(
             frs_count_low=floodRow.frs_count_low,
             frs_count_very_low=floodRow.frs_count_very_low,
         )
-        for floodRow in pcdRecords
+        for floodRow in floodData
     ]
 
-@router.get("/{postcode}/flood/riskband", response_model= RiskBand)
+# still only returns the top value, no matter how many postcodes inputted.
+# Needs changing, but frontend will need changing too
+@router.get("/risk-band", response_model= RiskBand)
 async def get_risk_band_by_postcode(
-    postcode: str,
+    postcodes: Optional[List[str]] = Query(default=None),
     db: Session = Depends(get_db)
 ):
     # query for that lsoa
     query = (
         db.query(Flood)
         .with_entities(Flood.postcode, Flood.frs_band)
-        .filter(func.lower(Flood.postcode) == func.lower(postcode))
+        .filter(Flood.postcode.in_(postcodes))
         
     )
+
+    if postcodes:
+        query = query.filter(Flood.postcode.in_(postcodes)) 
 
     pcdRecord = query.first()
 
