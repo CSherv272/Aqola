@@ -38,7 +38,7 @@ async def get_school_by_lsoa(
             gender = schoolRow.gender,
             year_range = schoolRow.year_range,
             ofsted_ranking = schoolRow.ofsted_ranking,
-            # centroid = Column(Geometry('POINT', srid=4326))
+            centroid = schoolRow.centroid,
             latitude = schoolRow.latitude,
             longitude = schoolRow.longitude
         )
