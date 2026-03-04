@@ -92,9 +92,7 @@ const recentSchools = schools.filter(
           <span>{school.postcode}</span>
           
           <span className="text-gray-500 font-medium">Ofsted:</span> 
-          <span className="font-bold text-blue-700">
             {school.ofsted_ranking ?? "N/A"}
-          </span>
           
           <span className="text-gray-500 font-medium">Gender:</span> 
           <span>{school.gender}</span>
@@ -102,17 +100,15 @@ const recentSchools = schools.filter(
           <span className="text-gray-500 font-medium">Year Range:</span> 
           <span>{school.year_range}</span>
           
-          <span className="text-gray-500 font-medium">Provisions:</span>
-          <span className="italic text-xs">
+          <span className="text-gray-500 font-medium">Education level:</span>
             {[
               school.is_primary && "Primary",
               school.is_secondary && "Secondary",
               school.is_post16 && "Post-16"
             ].filter(Boolean).join(", ") || "None"}
-          </span>
 
           <span className="text-gray-500 font-medium">LSOA ID:</span> 
-          <span className="text-[10px] self-center">{school.lsoa_id}</span>
+          <span className="text self-center">{school.lsoa_id}</span>
         </div>
       </div>
     </Popup>
