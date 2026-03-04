@@ -10,10 +10,9 @@ import BarChart from "./components/bar_chart";
 import LineChart from "./components/line_chart";
 import DataSelector from "./components/DataSelector";
 // import LineGraph from "./components/linegraph";
-import { hello, getPostcodeData } from "./lib/api";
 import { ofsted_frequency_by_band } from "./lib/bar_graph"
 import { crime_rate_by_type_and_area, crime_rate_by_area } from "./lib/line_graph"
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ChartType } from "./lib/frontend_models";
 
 // import LineGraph from "./components/linegraph";
@@ -32,14 +31,8 @@ const LeafletMap = dynamic(() => import("./components/maps/maps"), {
   loading: () => <p>Loading...</p>,
 });
 
-// const LineChart = dynamic(() => import("./components/linegraph"), {
-//   ssr: false,
-//   loading: () => <p>Loading...</p>,
-// });
-
 export default function Home() {
   //app state variables
-  let [selectedPostcodes, setSelectedPostcodes] = useState([]);
   let [selectedDataSet, setSelectedDataSet] = useState("crime_data");
 
   const handleLineHover = (newValue: string) => {
@@ -47,22 +40,14 @@ export default function Home() {
     console.log("selected dataset", selectedDataSet);
   };
 
-  const [data, setData] = useState([]);
   const [showLineChart, setShowLineChart] = useState(false);
   const [showBarChart, setShowBarChart] = useState(false);
   let [lineChartData, setLineChartData] = useState<any>(null)
   let [barChartData, setBarChartData] = useState<any>(null)
-  const [postcode, setPostcode] = useState([]);
-
-  const getPostcode = async () => {
-    const response = await getPostcodeData("CT27QS");
-    setPostcode(response);
-  };
 
   // takes the id of the chart required and creates it
   // looks at app state for the values - to be conmpleted
   const handleChartSelection = async (chartType: ChartType) => {
-    let selectedDataset = "crime"
     let selectedLsoas = ["E01016024", "E01024040", "E01032810"]
     let selectedPcd = ["DA125JT"]
     let selectedCrimeTypes: string[] = ["Other theft", "Drugs"]
@@ -87,19 +72,6 @@ export default function Home() {
     }
   }
 
-
-  // when data changes, update is printed to console
-  useEffect(() => {
-    console.log("your data", data);
-  }, [data]);
-
-  useEffect(() => {
-    const postcode_data = getPostcode();
-  }, []);
-
-  useEffect(() => {
-    console.log("your postcode data", postcode);
-  }, [postcode]);
 
   // const bar_chart_data_template = {
   //   groups: [
@@ -192,14 +164,19 @@ export default function Home() {
 
   return (
     <div className="page-container">
-      {/* <Banner onChartSelect={handleChartSelection} /> */}
-      {/*trigger is button press*/}
-      {showLineChart && lineChartData && <LineChart data={lineChartData} get_line_name={handleLineHover} />}
-      {showBarChart && barChartData && <BarChart data={barChartData} />}
-      {/* Map wrapper */}
       <div className="map-wrapper">
         <LeafletMap />
-
+        
+        {showLineChart && lineChartData && (
+          <div className="chart-overlay">
+            <LineChart data={lineChartData} get_line_name={handleLineHover} />
+          </div>
+        )}
+        {showBarChart && barChartData && (
+          <div className="chart-overlay">
+            <BarChart data={barChartData} />
+          </div>
+        )}
       </div>
 
       <DataSelector />

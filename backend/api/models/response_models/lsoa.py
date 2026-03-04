@@ -5,7 +5,7 @@ class LsoaResponse(BaseModel):
     lsoa_id: str
     area_name: str
     population: int
-    area_sq_km: Decimal
+    area_sq_km: float
     # boundary: 
     # centroid: 
 

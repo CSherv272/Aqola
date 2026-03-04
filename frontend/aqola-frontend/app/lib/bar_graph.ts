@@ -9,7 +9,7 @@ export const api = axios.create({
 });
 
 export const get_bar_info = async () => {
-  const response = await api.get("/lsoas/E01024135/school");
+  const response = await api.get("/school/?lsoas=E01024135");
   return response.data;
 };
 
@@ -18,13 +18,13 @@ export const ofsted_frequency_by_band = async (area? : string): Promise<BarChart
   let apiResponse
 
   if (area && area.length > 7){
-    apiResponse = await api.get<SchoolCounts>(`/lsoas/${area}/school/ofstedcount`)
+    apiResponse = await api.get<SchoolCounts>(`/school/ofsted-count/?lsoas=${area}`)
   }
   else if (area){
-    apiResponse = await api.get<SchoolCounts>(`/postcodes/${area}/school/ofstedcount`)
+    apiResponse = await api.get<SchoolCounts>(`/school/ofsted-count/?postcodes=${area}`)
   }
   else{
-    apiResponse = await api.get<SchoolCounts>("/school/ofstedcount")
+    apiResponse = await api.get<SchoolCounts>("/school/ofsted-count")
   }
   
   const scores = apiResponse.data
