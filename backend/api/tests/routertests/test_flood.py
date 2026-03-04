@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
-from api.routers.full_datasets.flood import router
+from backend.api.routers.flood import router
 
 app = FastAPI()
 app.include_router(router, prefix="/flood")

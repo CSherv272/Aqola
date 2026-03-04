@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routers.full_datasets import postcodes
-from api.routers.full_datasets import lsoas
-from api.routers.full_datasets import crime as crime_full
-from api.routers.full_datasets import flood as flood_full
-from api.routers.full_datasets import school as school_full
-from api.routers.full_datasets import database
+from api.routers import postcodes
+from api.routers import lsoas
+from api.routers import crime as crime_full
+from api.routers import flood as flood_full
+from api.routers import school as school_full
+from api.routers import database
 
 origins =[
     "http://localhost:3000",

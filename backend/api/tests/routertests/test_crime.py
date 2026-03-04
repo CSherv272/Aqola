@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
-from api.routers.full_datasets.crime import router
+from backend.api.routers.crime import router
 
 app = FastAPI()
 app.include_router(router, prefix="/crime")

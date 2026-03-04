@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
-from backend.api.routers.full_datasets.school import router
+from backend.api.routers.school import router
 
 app = FastAPI()
 app.include_router(router, prefix="/schools")

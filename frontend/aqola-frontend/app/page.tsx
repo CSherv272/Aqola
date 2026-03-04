@@ -197,7 +197,7 @@ export default function Home() {
       {showLineChart && lineChartData && <LineChart data={lineChartData} get_line_name={handleLineHover} />}
       {showBarChart && barChartData && <BarChart data={barChartData} />}
       {/* Map wrapper */}
-      <div className="map-wrapper">
+      <div className="map-wrapper w-full h-full">
         <LeafletMap />
 
       </div>
