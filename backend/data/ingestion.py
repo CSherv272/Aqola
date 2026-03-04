@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, inspect, text
 import pandas as pd
 from shapely import wkt
 import psycopg2
+from cleansing_scripts.data_cleansing import drop_missing_references_in_df
 
 engine = create_engine("postgresql://aqola_user:mysecretpassword@localhost:5432/aqola")
 
@@ -14,13 +15,18 @@ def initialise_db():
             conn.commit()
 
 # pushes a csv into a given table
-def ingest_table(filePath, tableName):
+def ingest_table(filePath, tableName, filtered_postcodes):
     inspector = inspect(engine)
     if tableName not in inspector.get_table_names():
         print(f"Table doesn't exist: {tableName}")
     else:
         try:
             data = pd.read_csv(filePath)
+            print(f"CSV Row Count: {data.shape[0]}")
+            
+            # drop all data with invalid lsoa/posctode refs
+            data = drop_missing_references_in_df(data, filtered_postcodes)
+
             # convert geometry if present as WKT
             if 'geometry' in data.columns:
                 data['geometry'] = data['geometry'].apply(wkt.loads)
@@ -48,4 +54,18 @@ def get_rows(numRows, table):
     cursor.execute(query)
     print("=====================================================")
     print(cursor.fetchall())
+    conn.close()
+
+def get_row_count(table):
+    conn = psycopg2.connect(
+        database = "aqola",
+        user = "aqola_user",
+        password="mysecretpassword",
+        host="localhost",
+        port = "5432"
+    )
+    cursor = conn.cursor()
+    query = f"SELECT COUNT(*) FROM {table};"
+    cursor.execute(query)
+    print(f"DB Row Count: {cursor.fetchall()}")
     conn.close()
