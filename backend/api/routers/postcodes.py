@@ -28,6 +28,9 @@ async def list_postcodes(
     
     results = query.all()
 
+    if not results:
+        raise HTTPException(status_code=404, detail="No records found. Double check the postcode(s) entered")
+
     return [
         PostcodeResponse(
             postcode=p.postcode,
@@ -62,13 +65,13 @@ async def list_postcodes(min_lat: float, max_lat: float, min_lng: float, max_lng
         )
         .all()
     )
-    print(f"Found {len(postcodes)} polygons")
 
+    if not postcodes:
+        raise HTTPException(status_code=404, detail="No records found. Double check the postcode(s) entered")
 
     postcode_polygons = []
 
     if len(postcodes) == 0:
-        print("No postcodes found within bounds")
         return postcode_polygons    
 
     for postcode_record in postcodes:
@@ -79,52 +82,52 @@ async def list_postcodes(min_lat: float, max_lat: float, min_lng: float, max_lng
     return postcode_polygons
 
 
-@router.get("/{postcode}", response_model=PostcodeResponse)
-async def get_postcode(postcode: str, db: Session = Depends(get_db)):
-    """Get postcode by postcode string"""
-    postcode_record = (
-        db.query(Postcode)
-        .filter(func.lower(Postcode.postcode) == func.lower(postcode))
-        .first()
-    )
+# @router.get("/{postcode}", response_model=PostcodeResponse)
+# async def get_postcode(postcode: str, db: Session = Depends(get_db)):
+#     """Get postcode by postcode string"""
+#     postcode_record = (
+#         db.query(Postcode)
+#         .filter(func.lower(Postcode.postcode) == func.lower(postcode))
+#         .first()
+#     )
 
-    if not postcode_record:
-        raise HTTPException(status_code=404, detail="Postcode not found")
+#     if not postcode_record:
+#         raise HTTPException(status_code=404, detail="Postcode not found")
 
-    return PostcodeResponse(
-        postcode=postcode_record.postcode,
-        lsoa_id=postcode_record.lsoa_id,
-        postcode_area=postcode_record.postcode_area,
-        postcode_district=postcode_record.postcode_district,
-        postcode_sector=postcode_record.postcode_sector,
-        latitude=postcode_record.latitude,
-        longitude=postcode_record.longitude,
-        centroid=postcode_record.centroid,
-        boundary=postcode_record.boundary
-    )
+#     return PostcodeResponse(
+#         postcode=postcode_record.postcode,
+#         lsoa_id=postcode_record.lsoa_id,
+#         postcode_area=postcode_record.postcode_area,
+#         postcode_district=postcode_record.postcode_district,
+#         postcode_sector=postcode_record.postcode_sector,
+#         latitude=postcode_record.latitude,
+#         longitude=postcode_record.longitude,
+#         centroid=postcode_record.centroid,
+#         boundary=postcode_record.boundary
+#     )
 
-@router.get("/{postcode}/geometry", response_model=PostcodePolygonResponse)
-async def get_postcode_polygon(postcode:str, db: Session = Depends(get_db)):
-    """Get postcode by postcode string"""
-    postcode_record = (
-        db.query(
-            Postcode.postcode,
-            ST_AsGeoJSON(Postcode.boundary).label("boundary")
-                 )
-        .filter(func.lower(Postcode.postcode) == func.lower(postcode))
-        .first()
-    )
+# @router.get("/{postcode}/geometry", response_model=PostcodePolygonResponse)
+# async def get_postcode_polygon(postcode:str, db: Session = Depends(get_db)):
+#     """Get postcode by postcode string"""
+#     postcode_record = (
+#         db.query(
+#             Postcode.postcode,
+#             ST_AsGeoJSON(Postcode.boundary).label("boundary")
+#                  )
+#         .filter(func.lower(Postcode.postcode) == func.lower(postcode))
+#         .first()
+#     )
 
-    if not postcode_record:
-        raise HTTPException(status_code=404, detail="Postcode not found")
+#     if not postcode_record:
+#         raise HTTPException(status_code=404, detail="Postcode not found")
     
-    boundary_json = json.loads(postcode_record.boundary)
-    boundary = GeometryModel(type=boundary_json["type"], coordinates=boundary_json["coordinates"])
+#     boundary_json = json.loads(postcode_record.boundary)
+#     boundary = GeometryModel(type=boundary_json["type"], coordinates=boundary_json["coordinates"])
 
 
     
 
-    return PostcodePolygonResponse(
-        postcode=postcode_record.postcode,
-        boundary=boundary
-    )
+#     return PostcodePolygonResponse(
+#         postcode=postcode_record.postcode,
+#         boundary=boundary
+#     )

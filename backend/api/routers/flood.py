@@ -23,6 +23,9 @@ async def list_flood(
     
     floodData = query.all()
 
+    if not floodData:
+        raise HTTPException(status_code=404, detail="No records found. Double check the postcode(s) entered")
+
     return [
         FloodResponse(
             postcode=floodRow.postcode,

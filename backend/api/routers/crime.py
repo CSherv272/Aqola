@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from api.database import get_db
 from api.models.db_models import Crime
@@ -22,6 +22,9 @@ async def list_crime(
         query = query.filter(Crime.lsoa_id.in_(lsoas))
 
     crimes = query.all()
+
+    if not crimes:
+        raise HTTPException(status_code=404, detail="No records found. Double check the lsoa(s) entered")
 
     return [
         CrimeResponse(
@@ -81,7 +84,7 @@ async def get_total_crime_rate(
 
     return dataDict
 
-@router.get("/crime-rate")
+@router.get("/crime-rate-by-type")
 async def get_crime_rate_by_type(
     lsoas: List[str] = Query(None),
     db: Session = Depends(get_db)):

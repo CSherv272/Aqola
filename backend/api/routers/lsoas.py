@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from api.database import get_db
 from sqlalchemy import func
@@ -24,6 +24,9 @@ async def list_lsoas(
         query = query.filter(Lsoa.lsoa_id.in_(lsoas))
 
     results = query.all()
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No records found. Double check the lsoa(s) entered")
 
     return [
         LsoaResponse(

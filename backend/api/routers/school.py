@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from api.database import get_db
 from api.models.db_models import School
@@ -27,6 +27,9 @@ async def list_schools(
         query = query.filter(School.postcode.in_(postcodes)) 
     
     results = query.all()
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No records found. Double check the postcode(s)/lsoa(s) entered")
 
     return [
         SchoolResponse(
@@ -66,6 +69,9 @@ async def get_school_ofsted_counts(
         query = query.filter(School.postcode.in_(postcodes)) 
 
     results = query.all()
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No records found. Double check the postcode(s)/lsoa(s) entered")
     
     return {
         "ofsted_rankings":[
