@@ -43,7 +43,7 @@ async def list_schools(
             gender = schoolRow.gender,
             year_range = schoolRow.year_range,
             ofsted_ranking = schoolRow.ofsted_ranking,
-            centroid = schoolRow.centroid,
+            #centroid = schoolRow.centroid, <-- Disabled: Pydantic cannot serialise raw Geometry objects without a custom validator. Use lat/lng instead.
             latitude = schoolRow.latitude,
             longitude = schoolRow.longitude
         )
