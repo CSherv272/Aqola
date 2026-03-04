@@ -12,12 +12,15 @@ import DataSelector from "./components/DataSelector";
 // import LineGraph from "./components/linegraph";
 import { ofsted_frequency_by_band } from "./lib/bar_graph"
 import { crime_rate_by_type_and_area, crime_rate_by_area } from "./lib/line_graph"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChartType } from "./lib/frontend_models";
 
 // import LineGraph from "./components/linegraph";
 // import LeafletMap from "./components/Map";
 // import Banner from "./components/aqola-banner";
+
+import { getSchools } from "./lib/api";
+import { School } from "./lib/api_models";
 
 //dynamically import banner from banner component
 const Banner = dynamic(() => import("./components/aqola-banner"), {
@@ -34,6 +37,23 @@ const LeafletMap = dynamic(() => import("./components/maps/maps"), {
 export default function Home() {
   //app state variables
   let [selectedDataSet, setSelectedDataSet] = useState("crime_data");
+
+// ADDED SCHOOL STATE
+  const [schools, setSchools] = useState<School[]>([]);
+
+  // ADDED FETCH LOGIC
+  useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        const data = await getSchools();
+        setSchools(data);
+        console.log("Manager: Schools data received!");
+      } catch (err) {
+        console.error("Failed to fetch schools:", err);
+      }
+    };
+    fetchSchools();
+  }, []);
 
   const handleLineHover = (newValue: string) => {
     setSelectedDataSet(newValue);
@@ -162,10 +182,11 @@ export default function Home() {
   //   },
   // };
 
+  console.log("Checking school data in page.tsx:", schools.length);
   return (
     <div className="page-container">
       <div className="map-wrapper">
-        <LeafletMap />
+        <LeafletMap schools={schools} />
         
         {showLineChart && lineChartData && (
           <div className="chart-overlay">
