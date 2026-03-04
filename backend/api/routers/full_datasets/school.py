@@ -34,10 +34,8 @@ async def list_schools(db: Session = Depends(get_db)):
         for schoolRow in schoolData
     ]
 
-from sqlalchemy import func
-
-@router.get("/ofstedcount")
-async def list_schools(db: Session = Depends(get_db)):
+@router.get("/ofsted-count")
+async def get_school_ofsted_counts(db: Session = Depends(get_db)):
     """Lists counts of schools by Ofsted ranking"""
     
     schoolData = (

@@ -10,7 +10,6 @@ from api.routers.full_datasets import crime as crime_full
 from api.routers.full_datasets import flood as flood_full
 from api.routers.full_datasets import school as school_full
 from api.routers.full_datasets import database
-from api.routers.full_datasets import database
 
 origins =[
     "http://localhost:3000",

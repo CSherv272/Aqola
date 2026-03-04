@@ -56,7 +56,7 @@ async def list_crime_months(db: Session = Depends(get_db), response_model= ListD
 
 
 @router.get("/crime-rate-total")
-async def crime_rate(
+async def get_total_crime_rate(
     lsoas: List[str] = Query(None),
     db: Session = Depends(get_db)):
 
@@ -77,7 +77,7 @@ async def crime_rate(
     return dataDict
 
 @router.get("/crime-rate-lsoas")
-async def crime_rate(
+async def get_crime_rate_by_type(
     lsoas: List[str] = Query(None),
     db: Session = Depends(get_db)):
 

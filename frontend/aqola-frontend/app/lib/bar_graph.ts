@@ -44,12 +44,12 @@ let response: BarChartResponse = {
         name: "Kent School Performance",
         bars: [
           {
-            bar_name: "excellent",
+            bar_name: "Outstanding",
             value: rankingCounts[1] ?? 0,
             color: "green"
           },
           {
-            bar_name: "good",
+            bar_name: "Good",
             value: rankingCounts[2] ?? 0,
             color: "cyan"
           },
