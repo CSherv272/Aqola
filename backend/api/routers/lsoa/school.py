@@ -44,3 +44,25 @@ async def get_school_by_lsoa(
         )
         for schoolRow in pcdRecords
     ]
+
+@router.get("/{lsoa}/school/ofstedcount")
+async def list_schools(
+    lsoa: str,
+    db: Session = Depends(get_db)):
+    """Lists counts of schools by Ofsted ranking"""
+    
+    schoolData = (
+        db.query(School.ofsted_ranking, func.count(School.ofsted_ranking))
+        .filter(func.lower(School.lsoa_id) == func.lower(lsoa))
+        .group_by(School.ofsted_ranking)
+        .all()
+    )
+
+    return {
+        "ofsted_rankings":[
+        {
+            "ranking": ranking,
+            "count": count
+        }
+        for ranking, count in schoolData
+    ]}

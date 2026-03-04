@@ -35,3 +35,25 @@ async def get_schools_by_postcode(postcode: str, db: Session = Depends(get_db)):
         }
         for s in schools
     ]
+
+@router.get("/{postcode}/school/ofstedcount")
+async def list_schools(
+    postcode: str,
+    db: Session = Depends(get_db)):
+    """Lists counts of schools by Ofsted ranking"""
+    
+    schoolData = (
+        db.query(School.ofsted_ranking, func.count(School.ofsted_ranking))
+        .filter(func.lower(School.postcode) == func.lower(postcode))
+        .group_by(School.ofsted_ranking)
+        .all()
+    )
+
+    return {
+        "ofsted_rankings":[
+        {
+            "ranking": ranking,
+            "count": count
+        }
+        for ranking, count in schoolData
+    ]}
