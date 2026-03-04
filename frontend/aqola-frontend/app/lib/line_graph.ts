@@ -43,7 +43,7 @@ export const crime_rate_by_type_and_area = async (lsoa: string, crimeTypes? : st
     crimeTypeSlug = crimeTypeSlug.substring(0, crimeTypeSlug.length-1)
   }
   
-  const apiResponse = await api.get(`/lsoas/${lsoa}/crime/timeseries/${crimeTypeSlug}`);
+  const apiResponse = await api.get(`/crime/timeseries/${crimeTypeSlug}&lsoas=${lsoa}`);
   const crimeCountData = apiResponse.data;
 
   let lines: { line_name: string; coords: [Date, number][]; color: string }[] = [];

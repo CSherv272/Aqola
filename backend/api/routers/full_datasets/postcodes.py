@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from typing import List
+from typing import List, Optional
 from geoalchemy2.functions import ST_AsGeoJSON, ST_Intersects, ST_MakeEnvelope
 import json
 
@@ -15,12 +15,18 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[PostcodeResponse])
-async def list_postcodes(db: Session = Depends(get_db)):
+async def list_postcodes(
+    postcodes: Optional[List[str]] = Query(None),
+    db: Session = Depends(get_db)):
     """List postcodes"""
-    postcodes = (
+    query = (
         db.query(Postcode)
-        .all()
     )
+
+    if postcodes:
+        query = query.filter(Postcode.postcode.in_(postcodes))
+    
+    results = query.all()
 
     return [
         PostcodeResponse(
@@ -34,7 +40,7 @@ async def list_postcodes(db: Session = Depends(get_db)):
             centroid=p.centroid,
             boundary=p.boundary
         )
-        for p in postcodes
+        for p in results
     ]
 
 @router.get("/geometry", response_model=List[PostcodePolygonResponse])

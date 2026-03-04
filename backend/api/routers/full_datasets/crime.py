@@ -81,7 +81,7 @@ async def get_total_crime_rate(
 
     return dataDict
 
-@router.get("/crime-rate-lsoas")
+@router.get("/crime-rate")
 async def get_crime_rate_by_type(
     lsoas: List[str] = Query(None),
     db: Session = Depends(get_db)):
@@ -101,9 +101,9 @@ async def get_crime_rate_by_type(
 
     return dataDict
 
-@router.get("/lsoa-timeseries")
+@router.get("/timeseries")
 async def crime_timeseries(
-    lsoa: str,
+    lsoas: Optional[List[str]] = Query(None),
     crimeType: Optional[List[str]] = Query(None),
     db: Session = Depends(get_db)
 ):
@@ -116,7 +116,9 @@ async def crime_timeseries(
     if crimeType:
         query = query.filter(Crime.crime_type.in_(crimeType))
     
-    query = query.filter(Crime.lsoa_id == lsoa)
+    if lsoas:
+        query = query.filter(Crime.lsoa_id.in_(lsoas))
+    
     query = query.group_by(Crime.date, Crime.crime_type)
     query = query.order_by(Crime.date)
     results = query.all()

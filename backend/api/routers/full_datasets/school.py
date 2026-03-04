@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from api.database import get_db
 from api.models.db_models import School
@@ -11,13 +11,23 @@ router = APIRouter()
 
 
 @router.get("/")
-async def list_schools(db: Session = Depends(get_db)):
+async def list_schools(
+    lsoas: Optional[List[str]] = Query(default=None),
+    postcodes: Optional[List[str]] = Query(default=None),
+    db: Session = Depends(get_db)):
     """Lists all school data"""
-    schoolData = (
+    query = (
         db.query(School)
-        .all()
     )
+
+    if lsoas:
+        query = query.filter(School.lsoa_id.in_(lsoas))
+
+    if postcodes:
+        query = query.filter(School.postcode.in_(postcodes)) 
     
+    results = query.all()
+
     return [
         SchoolResponse(
             urn = schoolRow.urn,
@@ -34,12 +44,13 @@ async def list_schools(db: Session = Depends(get_db)):
             latitude = schoolRow.latitude,
             longitude = schoolRow.longitude
         )
-        for schoolRow in schoolData
+        for schoolRow in results
     ]
 
 @router.get("/ofsted-count")
 async def get_school_ofsted_counts(
-    lsoas: Optional[List[str]] = None,
+    lsoas: Optional[List[str]] = Query(default=None),
+    postcodes: Optional[List[str]] = Query(default=None),
     db: Session = Depends(get_db)):
     """Lists counts of schools by Ofsted ranking"""
     
@@ -50,6 +61,9 @@ async def get_school_ofsted_counts(
 
     if lsoas:
         query = query.filter(School.lsoa_id.in_(lsoas))
+
+    if postcodes:
+        query = query.filter(School.postcode.in_(postcodes)) 
 
     results = query.all()
     

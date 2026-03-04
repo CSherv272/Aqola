@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 from fastapi import APIRouter, FastAPI
 
-from api.routers.postcode.postcodes import router
+from backend.api.routers.full_datasets.postcodes import router
 
 app = FastAPI()
 app.include_router(router, prefix="/postcodes")
