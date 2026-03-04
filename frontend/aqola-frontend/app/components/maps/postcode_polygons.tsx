@@ -1,8 +1,6 @@
 import { GeoJSON, useMapEvents } from "react-leaflet";
-import { PostcodeGeoJson } from "@/app/lib/types";
-import { Polygon } from "./polygon";
 import { getPostcodeBoundaries } from "@/app/lib/postcodes";
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { debounce } from "lodash";
 import { Feature, FeatureCollection } from "geojson";
 import { Layer } from "leaflet";
@@ -12,7 +10,6 @@ const MIN_ZOOM = 13; // Only show postcodes when zoomed in enough
 const PostcodePolygons = () => {
   const [boundaries, setBoundaries] = useState<FeatureCollection | null>(null);
   const [updateCount, setUpdateCount] = useState(0);
-  const [zoom, setZoom] = useState(0);
 
   const fetchBoundaries = useRef(
     debounce((bounds, currentZoom) => {

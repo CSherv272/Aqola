@@ -5,7 +5,7 @@ export default function DataSelector() {
   const selectedDataset = useAppStore((state) => state.selectedDataset);
   const setDataset = useAppStore((state) => state.setDataset);
 
-  const datasetSelector = (e) => {
+  const datasetSelector = (e: React.ChangeEvent<HTMLSelectElement>) => {
     console.log("Setting dataset to -> " + e.target.value);
     setDataset(e.target.value);
   };
@@ -18,7 +18,7 @@ export default function DataSelector() {
       <select
         name="data"
         id="data"
-        value={selectedDataset}
+        value={selectedDataset ?? ""}
         onChange={datasetSelector}
         className="data-select"
       >
