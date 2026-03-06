@@ -7,8 +7,8 @@ from api.models.response_models.flood import FloodResponse
 
 router = APIRouter()
 
-@router.get("/tablenames")
-async def table_names(db: Session = Depends(get_db)):
+@router.get("/table-names")
+async def get_table_names(db: Session = Depends(get_db)):
     """List all flood data"""
     inspector = inspect(db.bind)
     tables = inspector.get_table_names()
