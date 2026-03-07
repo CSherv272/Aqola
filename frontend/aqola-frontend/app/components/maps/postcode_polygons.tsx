@@ -13,14 +13,6 @@ const PostcodePolygons = () => {
 
   const fetchBoundaries = useRef(
     debounce((bounds, currentZoom) => {
-      console.log("fetchBoundaries called");
-      console.log("zoom:", currentZoom);
-      console.log("bounds:", {
-        min_lat: bounds.getSouth(),
-        max_lat: bounds.getNorth(),
-        min_lng: bounds.getWest(),
-        max_lng: bounds.getEast(),
-      });
       if (currentZoom < MIN_ZOOM) {
         setBoundaries(null);
         return;

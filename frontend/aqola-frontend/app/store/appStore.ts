@@ -1,19 +1,19 @@
-import { Polygon } from "leaflet";
+import { PolygonStore } from "../lib/types";
 import { create } from "zustand";
 
 type AppState = {
-  selectedPolygons: Polygon[];
-  selectedDataset: string | null;
+  selectedPolygons: PolygonStore[];
+  selectedDataset: string;
 
-  addPolygon: (polygon: Polygon) => void;
+  addPolygon: (polygon: PolygonStore) => void;
   clearPolygons: () => void;
   setDataset: (dataset: string) => void;
 };
 
 const useAppStore = create<AppState>((set) => ({
   selectedPolygons: [],
-  selectedDataset: null,
-  addPolygon: (polygon: Polygon) =>
+  selectedDataset: "Crime", // we default to crime dataset
+  addPolygon: (polygon: PolygonStore) =>
     set((state) => ({
       selectedPolygons: [...state.selectedPolygons, polygon],
     })),

@@ -41,6 +41,7 @@ export default function Home() {
   let [selectedDataSet, setSelectedDataSet] = useState("crime_data");
 
   const selectedDataset = useAppStore((state) => state.selectedDataset);
+  const selectedPolygons = useAppStore((state) => state.selectedPolygons);
 
   const handleLineHover = (newValue: string) => {
     setSelectedDataSet(newValue);
@@ -66,6 +67,7 @@ export default function Home() {
 
   const showBar = async () => {
     console.log("I am a bar graph and I am using " + selectedDataset);
+    console.log("I am using these: " + selectedPolygons);
     setShowBarGraph(!showBarGraph);
   };
 
