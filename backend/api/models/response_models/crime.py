@@ -12,3 +12,26 @@ class CrimeResponse(BaseModel):
     
     class Config:
         from_attributes = True # Allows SQL Alchemy to convert to this.
+
+
+class ListStringsResponse(BaseModel):
+    values: list[str]
+    
+    class Config:
+        from_attributes = True # Allows SQL Alchemy to convert to this.
+
+class ListDatesResponse(BaseModel):
+    values: list[date]
+    
+    class Config:
+        from_attributes = True # Allows SQL Alchemy to convert to this.
+
+# class TimeseriesResponse(BaseModel):
+    # line_name:[]
+
+class CrimeRateResponse(BaseModel):
+    area_name: str
+    date: date
+    count: int
+    class Config:
+        from_attributes = True # Allows SQL Alchemy to convert to this.

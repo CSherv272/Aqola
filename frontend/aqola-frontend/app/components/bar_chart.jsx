@@ -3,7 +3,7 @@
 import * as d3 from "d3";
 import { useRef, useEffect } from "react";
 
-export default function BarGraph({
+export default function BarChart({
   data,
   marginTop = 20,
   marginRight = 20,
