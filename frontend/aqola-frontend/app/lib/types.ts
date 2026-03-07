@@ -16,14 +16,8 @@ type PostcodePolygonResponse = {
   boundary: Polygon | MultiPolygon;
 };
 
-type PolygonStore = {
-  id: string;
-  data: PostcodeGeoJson;
-};
-
 export {
   type PostcodeGeoJson,
   type PostcodeResponse,
   type PostcodePolygonResponse,
-  type PolygonStore,
 };

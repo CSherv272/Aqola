@@ -1,0 +1,23 @@
+[
+  {
+    "id": "crime_by_type_over_time",
+    "label": "Crime Over Time",
+    "chartComponent": "line",
+    "dataset": "crime",
+    "apiCall": "crime_rate_by_type_and_area"
+  },
+  {
+    "id": "crime_by_area",
+    "label": "Crime by Area",
+    "chartComponent": "line",
+    "dataset": "crime",
+    "apiCall": "crime_rate_by_area"
+  },
+  {
+    "id": "school_ofsted_frequency",
+    "label": "Ofsted Ratings",
+    "chartComponent": "bar",
+    "dataset": "schools",
+    "apiCall": "ofsted_frequency_by_band"
+  }
+]

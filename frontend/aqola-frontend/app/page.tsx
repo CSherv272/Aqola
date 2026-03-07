@@ -41,7 +41,7 @@ export default function Home() {
   const [selectedDataSet, setSelectedDataSet] = useState("crime_data");
 
   const selectedDataset = useAppStore((state) => state.selectedDataset);
-  const selectedPolygons = useAppStore((state) => state.selectedPolygons);
+  const selectedAreas = useAppStore((state) => state.selectedAreas);
 
   const handleLineHover = (newValue: string) => {
     setSelectedDataSet(newValue);
@@ -60,6 +60,8 @@ export default function Home() {
     const selectedPcd = ["DA125JT"];
     const selectedCrimeTypes: string[] = ["Other theft", "Drugs"];
     console.log(chartType);
+    console.log("I am using -> " + selectedDataSet + " dataset");
+    console.log("I am using -> " + selectedAreas + " Areas for this graph");
 
     switch (chartType) {
       case "line_over_time":

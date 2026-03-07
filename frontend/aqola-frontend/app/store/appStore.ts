@@ -1,26 +1,42 @@
-import { PolygonStore } from "../lib/types";
 import { create } from "zustand";
 
-type AppState = {
-  selectedPolygons: PolygonStore[];
+type AppStore = {
+  selectedAreas: string[];
   selectedDataset: string;
 
-  addPolygon: (polygon: PolygonStore) => void;
-  clearPolygons: () => void;
+  addArea: (area: string) => void;
+  removeArea: (area: string) => void;
+  toggleArea: (area: string) => void;
+  clearAreas: () => void;
   setDataset: (dataset: string) => void;
 };
 
-const useAppStore = create<AppState>((set) => ({
-  selectedPolygons: [],
-  selectedDataset: "Crime", // we default to crime dataset
-  addPolygon: (polygon: PolygonStore) =>
+const useAppStore = create<AppStore>((set) => ({
+  selectedAreas: [],
+  selectedDataset: "Crime",
+
+  addArea: (area) =>
     set((state) => ({
-      selectedPolygons: [...state.selectedPolygons, polygon],
+      selectedAreas: state.selectedAreas.includes(area)
+        ? state.selectedAreas
+        : [...state.selectedAreas, area],
     })),
 
-  clearPolygons: () => set({ selectedPolygons: [] }),
+  removeArea: (area) =>
+    set((state) => ({
+      selectedAreas: state.selectedAreas.filter((a) => a !== area),
+    })),
 
-  setDataset: (dataset: string) => set({ selectedDataset: dataset }),
+  toggleArea: (area) =>
+    set((state) => ({
+      selectedAreas: state.selectedAreas.includes(area)
+        ? state.selectedAreas.filter((a) => a !== area)
+        : [...state.selectedAreas, area],
+    })),
+
+  clearAreas: () => set({ selectedAreas: [] }),
+
+  setDataset: (dataset) => set({ selectedDataset: dataset }),
 }));
 
 export { useAppStore };
