@@ -38,7 +38,7 @@ const LeafletMap = dynamic(() => import("./components/maps/maps"), {
 
 export default function Home() {
   //app state variables
-  let [selectedDataSet, setSelectedDataSet] = useState("crime_data");
+  const [selectedDataSet, setSelectedDataSet] = useState("crime_data");
 
   const selectedDataset = useAppStore((state) => state.selectedDataset);
   const selectedPolygons = useAppStore((state) => state.selectedPolygons);
@@ -50,20 +50,20 @@ export default function Home() {
 
   const [showLineChart, setShowLineChart] = useState(false);
   const [showBarChart, setShowBarChart] = useState(false);
-  let [lineChartData, setLineChartData] = useState<any>(null);
-  let [barChartData, setBarChartData] = useState<any>(null);
+  const [lineChartData, setLineChartData] = useState<any>(null);
+  const [barChartData, setBarChartData] = useState<any>(null);
 
   // takes the id of the chart required and creates it
   // looks at app state for the values - to be conmpleted
   const handleChartSelection = async (chartType: ChartType) => {
-    let selectedLsoas = ["E01016024", "E01024040", "E01032810"];
-    let selectedPcd = ["DA125JT"];
-    let selectedCrimeTypes: string[] = ["Other theft", "Drugs"];
+    const selectedLsoas = ["E01016024", "E01024040", "E01032810"];
+    const selectedPcd = ["DA125JT"];
+    const selectedCrimeTypes: string[] = ["Other theft", "Drugs"];
     console.log(chartType);
 
     switch (chartType) {
       case "line_over_time":
-        let line_data = await crime_rate_by_type_and_area(
+        const line_data = await crime_rate_by_type_and_area(
           selectedLsoas[0],
           selectedCrimeTypes,
         );
@@ -71,12 +71,12 @@ export default function Home() {
         setShowLineChart(!showLineChart);
         break;
       case "bar_frequency":
-        let bar_data = await ofsted_frequency_by_band(selectedPcd[0]);
+        const bar_data = await ofsted_frequency_by_band(selectedPcd[0]);
         setBarChartData(bar_data.chart);
         setShowBarChart(!showBarChart);
         break;
       case "line_over_time_by_lsoa":
-        let line_data_by_lsoa = await crime_rate_by_area(selectedLsoas);
+        const line_data_by_lsoa = await crime_rate_by_area(selectedLsoas);
         setLineChartData(line_data_by_lsoa);
         setShowLineChart(!showLineChart);
         break;
@@ -141,7 +141,7 @@ export default function Home() {
   //   ylabel: "Number of Houses at risk",
   // };
 
-  // let crime_data_template = {
+  // const crime_data_template = {
   //   chart_type: "line",
   //   type: "crime_data",
   //   area: "postcodes",
