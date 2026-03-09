@@ -17,6 +17,9 @@ import {
 } from "./lib/line_graph";
 import { useState } from "react";
 import { ChartType } from "./lib/frontend_models";
+import { ChartControls } from "./components/ChartControls";
+import { useChartOrchestrator } from "./lib/hooks/useChartOrchestrator";
+import { getChartDefinition } from "./lib/chartConfig";
 
 // import LineGraph from "./components/linegraph";
 // import LeafletMap from "./components/Map";
@@ -52,6 +55,32 @@ export default function Home() {
   const [showBarChart, setShowBarChart] = useState(false);
   const [lineChartData, setLineChartData] = useState<any>(null);
   const [barChartData, setBarChartData] = useState<any>(null);
+
+  // page.tsx
+  const { availableGraphs, activeChartId, chartData, triggerChart } =
+    useChartOrchestrator();
+
+  console.log("I've got charts!");
+  console.log(activeChartId);
+  console.log(chartData);
+
+  const renderChart = () => {
+    console.log("CHARTING! ->" + activeChartId + " : " + chartData);
+    if (!activeChartId || !chartData) return null;
+    const chart = getChartDefinition(activeChartId);
+    if (!chart) return null;
+
+    switch (chart.chartComponent) {
+      case "line":
+        return <LineChart data={chartData} />;
+      case "bar":
+        return (
+          <div className="chart-overlay">
+            {<BarChart data={chartData.chart} />}
+          </div>
+        );
+    }
+  };
 
   // takes the id of the chart required and creates it
   // looks at app state for the values - to be conmpleted
@@ -189,12 +218,11 @@ export default function Home() {
             <BarChart data={barChartData} />
           </div>
         )}
+        {renderChart()}
       </div>
-
       <DataSelector />
-
       {/* Bottom Navigation Overlay */}
-      <div className="bottom-nav">
+      {/* <div className="bottom-nav">
         <button onClick={() => handleChartSelection} className="nav-button">
           {" "}
           <i className="fi fi-rs-chart-pie" />{" "}
@@ -213,7 +241,12 @@ export default function Home() {
           {" "}
           <i className="fi fi-rs-chart-line-up" />{" "}
         </button>
-      </div>
+      </div> */}
+      <ChartControls
+        availableGraphs={availableGraphs}
+        activeChartId={activeChartId}
+        triggerChart={triggerChart}
+      />
     </div>
   );
 }
