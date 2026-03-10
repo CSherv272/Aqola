@@ -17,6 +17,9 @@ import {
 } from "./lib/line_graph";
 import { useState } from "react";
 import { ChartType } from "./lib/frontend_models";
+import { ChartControls } from "./components/ChartControls";
+import { useChartOrchestrator } from "./lib/hooks/useChartOrchestrator";
+import { getChartDefinition } from "./lib/chartConfig";
 
 // import LineGraph from "./components/linegraph";
 // import LeafletMap from "./components/Map";
@@ -38,9 +41,10 @@ const LeafletMap = dynamic(() => import("./components/maps/maps"), {
 
 export default function Home() {
   //app state variables
-  let [selectedDataSet, setSelectedDataSet] = useState("crime_data");
+  const [selectedDataSet, setSelectedDataSet] = useState("crime_data");
 
   const selectedDataset = useAppStore((state) => state.selectedDataset);
+  const selectedAreas = useAppStore((state) => state.selectedAreas);
 
   const handleLineHover = (newValue: string) => {
     setSelectedDataSet(newValue);
@@ -49,20 +53,48 @@ export default function Home() {
 
   const [showLineChart, setShowLineChart] = useState(false);
   const [showBarChart, setShowBarChart] = useState(false);
-  let [lineChartData, setLineChartData] = useState<any>(null);
-  let [barChartData, setBarChartData] = useState<any>(null);
+  const [lineChartData, setLineChartData] = useState<any>(null);
+  const [barChartData, setBarChartData] = useState<any>(null);
+
+  // page.tsx
+  const { availableGraphs, activeChartId, chartData, triggerChart } =
+    useChartOrchestrator();
+
+  console.log("I've got charts!");
+  console.log(activeChartId);
+  console.log(chartData);
+
+  const renderChart = () => {
+    console.log("CHARTING! ->" + activeChartId + " : " + chartData);
+    if (!activeChartId || !chartData) return null;
+    const chart = getChartDefinition(activeChartId);
+    if (!chart) return null;
+
+    switch (chart.chartComponent) {
+      case "line":
+        return <LineChart data={chartData} />;
+      case "bar":
+        return (
+          <div className="chart-overlay">
+            {<BarChart data={chartData.chart} />}
+          </div>
+        );
+    }
+  };
 
   // takes the id of the chart required and creates it
   // looks at app state for the values - to be conmpleted
   const handleChartSelection = async (chartType: ChartType) => {
-    let selectedLsoas = ["E01016024", "E01024040", "E01032810"];
-    let selectedPcd = ["DA125JT"];
-    let selectedCrimeTypes: string[] = ["Other theft", "Drugs"];
+    const selectedLsoas = ["E01016024", "E01024040", "E01032810"];
+    const selectedPcd = ["DA125JT"];
+    const selectedCrimeTypes: string[] = ["Other theft", "Drugs"];
     console.log(chartType);
+    console.log("I am using -> " + selectedDataSet + " dataset");
+    console.log("I am using -> " + selectedAreas + " Areas for this graph");
 
     switch (chartType) {
       case "line_over_time":
-        let line_data = await crime_rate_by_type_and_area(
+        const line_data = await crime_rate_by_type_and_area(
           selectedLsoas[0],
           selectedCrimeTypes,
         );
@@ -70,12 +102,12 @@ export default function Home() {
         setShowLineChart(!showLineChart);
         break;
       case "bar_frequency":
-        let bar_data = await ofsted_frequency_by_band(selectedPcd[0]);
+        const bar_data = await ofsted_frequency_by_band(selectedPcd[0]);
         setBarChartData(bar_data.chart);
         setShowBarChart(!showBarChart);
         break;
       case "line_over_time_by_lsoa":
-        let line_data_by_lsoa = await crime_rate_by_area(selectedLsoas);
+        const line_data_by_lsoa = await crime_rate_by_area(selectedLsoas);
         setLineChartData(line_data_by_lsoa);
         setShowLineChart(!showLineChart);
         break;
@@ -140,7 +172,7 @@ export default function Home() {
   //   ylabel: "Number of Houses at risk",
   // };
 
-  // let crime_data_template = {
+  // const crime_data_template = {
   //   chart_type: "line",
   //   type: "crime_data",
   //   area: "postcodes",
@@ -186,12 +218,11 @@ export default function Home() {
             <BarChart data={barChartData} />
           </div>
         )}
+        {renderChart()}
       </div>
-
       <DataSelector />
-
       {/* Bottom Navigation Overlay */}
-      <div className="bottom-nav">
+      {/* <div className="bottom-nav">
         <button onClick={() => handleChartSelection} className="nav-button">
           {" "}
           <i className="fi fi-rs-chart-pie" />{" "}
@@ -210,7 +241,12 @@ export default function Home() {
           {" "}
           <i className="fi fi-rs-chart-line-up" />{" "}
         </button>
-      </div>
+      </div> */}
+      <ChartControls
+        availableGraphs={availableGraphs}
+        activeChartId={activeChartId}
+        triggerChart={triggerChart}
+      />
     </div>
   );
 }
