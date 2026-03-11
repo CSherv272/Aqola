@@ -5,10 +5,11 @@ import {
   ofsted_frequency_by_band,
   flood_risk_frequency_by_postcode,
 } from "./bar_graph";
+import { chartData } from "./types";
 
 type DatasetKey = keyof typeof datasetConfig;
 
-const apiCallMap: Record<string, (areas: string[]) => Promise<any>> = {
+const apiCallMap: Record<string, (areas: string[]) => Promise<chartData>> = {
   crime_rate_by_type_and_area: (areas) =>
     crime_rate_by_type_and_area(areas[0], ["Other theft", "Drugs"]),
   crime_rate_by_area: (areas) => crime_rate_by_area(areas),
@@ -19,7 +20,6 @@ const apiCallMap: Record<string, (areas: string[]) => Promise<any>> = {
 
 const getAvailableCharts = (dataset: string) => {
   dataset = dataset.toLowerCase();
-  console.log("Checking this dataset graphs! -> " + dataset);
 
   const graphIds =
     (datasetConfig as Record<DatasetKey, string[]>)[dataset as DatasetKey] ??

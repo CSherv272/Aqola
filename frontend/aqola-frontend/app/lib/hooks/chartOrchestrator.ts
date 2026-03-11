@@ -1,7 +1,7 @@
 import { useAppStore } from "@/app/store/appStore";
 import { useState } from "react";
 import { getAvailableCharts, fetchChartData } from "../chartConfig";
-
+import { chartData } from "../types";
 const useChartOrchestrator = () => {
   // Reads from app store
   const selectedDataset = useAppStore((state) => state.selectedDataset);
@@ -10,7 +10,7 @@ const useChartOrchestrator = () => {
   // Internal state
   // NOTE: This is not in app store as the graphs being used is only used by page.tsx
   const [activeChartId, setActiveChartId] = useState("");
-  const [chartData, setChartData] = useState(null);
+  const [chartData, setChartData] = useState<chartData>(null);
 
   // Figure out the bottom bar buttons
   const availableGraphs = getAvailableCharts(selectedDataset);
@@ -25,8 +25,6 @@ const useChartOrchestrator = () => {
     }
 
     const data = await fetchChartData(chartId, selectedAreas);
-    console.log("GOT DATA!");
-    console.log(data);
     setChartData(data);
     setActiveChartId(chartId);
   };

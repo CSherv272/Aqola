@@ -6,7 +6,6 @@ export default function DataSelector() {
   const setDataset = useAppStore((state) => state.setDataset);
 
   const datasetSelector = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log("Setting dataset to -> " + e.target.value);
     setDataset(e.target.value);
   };
 

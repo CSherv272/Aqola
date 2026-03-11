@@ -18,7 +18,7 @@ import {
 import { useState } from "react";
 import { ChartType } from "./lib/frontend_models";
 import { ChartControls } from "./components/ChartControls";
-import { useChartOrchestrator } from "./lib/hooks/useChartOrchestrator";
+import { useChartOrchestrator } from "./lib/hooks/chartOrchestrator";
 import { getChartDefinition } from "./lib/chartConfig";
 
 // import LineGraph from "./components/linegraph";
@@ -43,36 +43,32 @@ export default function Home() {
   //app state variables
   const [selectedDataSet, setSelectedDataSet] = useState("crime_data");
 
-  const selectedDataset = useAppStore((state) => state.selectedDataset);
-  const selectedAreas = useAppStore((state) => state.selectedAreas);
+  // const selectedDataset = useAppStore((state) => state.selectedDataset);
+  // const selectedAreas = useAppStore((state) => state.selectedAreas);
 
   const handleLineHover = (newValue: string) => {
     setSelectedDataSet(newValue);
     console.log("selected dataset", selectedDataSet);
   };
 
-  const [showLineChart, setShowLineChart] = useState(false);
-  const [showBarChart, setShowBarChart] = useState(false);
-  const [lineChartData, setLineChartData] = useState<any>(null);
-  const [barChartData, setBarChartData] = useState<any>(null);
+  // const [showLineChart, setShowLineChart] = useState(false);
+  // const [showBarChart, setShowBarChart] = useState(false);
+  // const [lineChartData, setLineChartData] = useState<any>(null);
+  // const [barChartData, setBarChartData] = useState<any>(null);
 
   // page.tsx
   const { availableGraphs, activeChartId, chartData, triggerChart } =
     useChartOrchestrator();
 
-  console.log("I've got charts!");
-  console.log(activeChartId);
-  console.log(chartData);
-
   const renderChart = () => {
     console.log("CHARTING! ->" + activeChartId + " : " + chartData);
-    if (!activeChartId || !chartData) return null;
+    if (!activeChartId || !chartData || !chartData.chart) return null;
     const chart = getChartDefinition(activeChartId);
     if (!chart) return null;
 
     switch (chart.chartComponent) {
       case "line":
-        return <LineChart data={chartData} />;
+        return <LineChart data={chartData} get_line_name={handleLineHover} />;
       case "bar":
         return (
           <div className="chart-overlay">
@@ -84,35 +80,32 @@ export default function Home() {
 
   // takes the id of the chart required and creates it
   // looks at app state for the values - to be conmpleted
-  const handleChartSelection = async (chartType: ChartType) => {
-    const selectedLsoas = ["E01016024", "E01024040", "E01032810"];
-    const selectedPcd = ["DA125JT"];
-    const selectedCrimeTypes: string[] = ["Other theft", "Drugs"];
-    console.log(chartType);
-    console.log("I am using -> " + selectedDataSet + " dataset");
-    console.log("I am using -> " + selectedAreas + " Areas for this graph");
+  // const handleChartSelection = async (chartType: ChartType) => {
+  //   const selectedLsoas = ["E01016024", "E01024040", "E01032810"];
+  //   const selectedPcd = ["DA125JT"];
+  //   const selectedCrimeTypes: string[] = ["Other theft", "Drugs"];
 
-    switch (chartType) {
-      case "line_over_time":
-        const line_data = await crime_rate_by_type_and_area(
-          selectedLsoas[0],
-          selectedCrimeTypes,
-        );
-        setLineChartData(line_data);
-        setShowLineChart(!showLineChart);
-        break;
-      case "bar_frequency":
-        const bar_data = await ofsted_frequency_by_band(selectedPcd[0]);
-        setBarChartData(bar_data.chart);
-        setShowBarChart(!showBarChart);
-        break;
-      case "line_over_time_by_lsoa":
-        const line_data_by_lsoa = await crime_rate_by_area(selectedLsoas);
-        setLineChartData(line_data_by_lsoa);
-        setShowLineChart(!showLineChart);
-        break;
-    }
-  };
+  //   switch (chartType) {
+  //     case "line_over_time":
+  //       const line_data = await crime_rate_by_type_and_area(
+  //         selectedLsoas[0],
+  //         selectedCrimeTypes,
+  //       );
+  //       setLineChartData(line_data);
+  //       setShowLineChart(!showLineChart);
+  //       break;
+  //     case "bar_frequency":
+  //       const bar_data = await ofsted_frequency_by_band(selectedPcd[0]);
+  //       setBarChartData(bar_data.chart);
+  //       setShowBarChart(!showBarChart);
+  //       break;
+  //     case "line_over_time_by_lsoa":
+  //       const line_data_by_lsoa = await crime_rate_by_area(selectedLsoas);
+  //       setLineChartData(line_data_by_lsoa);
+  //       setShowLineChart(!showLineChart);
+  //       break;
+  //   }
+  // };
 
   // const bar_chart_data_template = {
   //   groups: [
@@ -208,7 +201,7 @@ export default function Home() {
       <div className="map-wrapper">
         <LeafletMap />
 
-        {showLineChart && lineChartData && (
+        {/* {showLineChart && lineChartData && (
           <div className="chart-overlay">
             <LineChart data={lineChartData} get_line_name={handleLineHover} />
           </div>
@@ -217,7 +210,7 @@ export default function Home() {
           <div className="chart-overlay">
             <BarChart data={barChartData} />
           </div>
-        )}
+        )} */}
         {renderChart()}
       </div>
       <DataSelector />

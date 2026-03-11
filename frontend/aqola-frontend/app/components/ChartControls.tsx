@@ -1,6 +1,15 @@
+type getAvailableChart = {
+  id: string;
+  label: string;
+  chartComponent: string;
+  dataset: string;
+  apiCall: string;
+  icon: string;
+};
+
 // ChartControls.tsx
 type ChartControlsProps = {
-  availableGraphs: ReturnType<typeof getAvailableCharts>;
+  availableGraphs: getAvailableChart[];
   activeChartId: string;
   triggerChart: (chartId: string) => void;
 };
