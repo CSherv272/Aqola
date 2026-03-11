@@ -41,23 +41,15 @@ const LeafletMap = dynamic(() => import("./components/maps/maps"), {
 
 export default function Home() {
   //app state variables
-  const [selectedDataSet, setSelectedDataSet] = useState("crime_data");
-
-  // const selectedDataset = useAppStore((state) => state.selectedDataset);
-  // const selectedAreas = useAppStore((state) => state.selectedAreas);
+  const [selectedDataSet, setSelectedDataSet] = useState("crime_data"); // Needs to be changed, to use actual app state
 
   const handleLineHover = (newValue: string) => {
     setSelectedDataSet(newValue);
     console.log("selected dataset", selectedDataSet);
   };
 
-  // const [showLineChart, setShowLineChart] = useState(false);
-  // const [showBarChart, setShowBarChart] = useState(false);
-  // const [lineChartData, setLineChartData] = useState<any>(null);
-  // const [barChartData, setBarChartData] = useState<any>(null);
-
   // page.tsx
-  const { availableGraphs, activeChartId, chartData, triggerChart } =
+  const { availableCharts, activeChartId, chartData, triggerChart } =
     useChartOrchestrator();
 
   const renderChart = () => {
@@ -77,166 +69,17 @@ export default function Home() {
         );
     }
   };
-
-  // takes the id of the chart required and creates it
-  // looks at app state for the values - to be conmpleted
-  // const handleChartSelection = async (chartType: ChartType) => {
-  //   const selectedLsoas = ["E01016024", "E01024040", "E01032810"];
-  //   const selectedPcd = ["DA125JT"];
-  //   const selectedCrimeTypes: string[] = ["Other theft", "Drugs"];
-
-  //   switch (chartType) {
-  //     case "line_over_time":
-  //       const line_data = await crime_rate_by_type_and_area(
-  //         selectedLsoas[0],
-  //         selectedCrimeTypes,
-  //       );
-  //       setLineChartData(line_data);
-  //       setShowLineChart(!showLineChart);
-  //       break;
-  //     case "bar_frequency":
-  //       const bar_data = await ofsted_frequency_by_band(selectedPcd[0]);
-  //       setBarChartData(bar_data.chart);
-  //       setShowBarChart(!showBarChart);
-  //       break;
-  //     case "line_over_time_by_lsoa":
-  //       const line_data_by_lsoa = await crime_rate_by_area(selectedLsoas);
-  //       setLineChartData(line_data_by_lsoa);
-  //       setShowLineChart(!showLineChart);
-  //       break;
-  //   }
-  // };
-
-  // const bar_chart_data_template = {
-  //   groups: [
-  //     {
-  //       name: "CT2 7QS",
-  //       bars: [
-  //         {
-  //           bar_name: "high_risk",
-  //           value: 30,
-  //           color: "red",
-  //         },
-  //         {
-  //           bar_name: "medium_risk",
-  //           value: 12,
-  //           color: "yellow",
-  //         },
-  //         {
-  //           bar_name: "low_risk",
-  //           value: 40,
-  //           color: "blue",
-  //         },
-  //         {
-  //           bar_name: "very_low_risk",
-  //           value: 50,
-  //           color: "green",
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       name: "CT2 7QB",
-  //       bars: [
-  //         {
-  //           bar_name: "high_risk",
-  //           value: 45,
-  //           color: "red",
-  //         },
-  //         {
-  //           bar_name: "medium_risk",
-  //           value: 64,
-  //           color: "yellow",
-  //         },
-  //         {
-  //           bar_name: "low_risk",
-  //           value: 20,
-  //           color: "blue",
-  //         },
-  //         {
-  //           bar_name: "very_low_risk",
-  //           value: 3,
-  //           color: "green",
-  //         },
-  //       ],
-  //     },
-  //   ],
-  //   title: "Flood data bargraph!",
-  //   xlabel: "Postcodes",
-  //   ylabel: "Number of Houses at risk",
-  // };
-
-  // const crime_data_template = {
-  //   chart_type: "line",
-  //   type: "crime_data",
-  //   area: "postcodes",
-  //   chart: {
-  //     lines: [
-  //       {
-  //         line_name: "Drugs",
-  //         coords: [
-  //           [0, 10],
-  //           [1, 20],
-  //           [2, 30],
-  //         ],
-  //         color: "blue",
-  //       },
-  //       {
-  //         line_name: "Robbery",
-  //         coords: [
-  //           [0, 5],
-  //           [1, 15],
-  //           [2, 25],
-  //         ],
-  //         color: "red",
-  //       },
-  //     ],
-  //     title: "Crime by Postcode",
-  //     xlabel: "Time (months)",
-  //     ylabel: "Number of Crimes",
-  //   },
-  // };
-
   return (
     <div className="page-container">
       <div className="map-wrapper">
         <LeafletMap />
 
-        {/* {showLineChart && lineChartData && (
-          <div className="chart-overlay">
-            <LineChart data={lineChartData} get_line_name={handleLineHover} />
-          </div>
-        )}
-        {showBarChart && barChartData && (
-          <div className="chart-overlay">
-            <BarChart data={barChartData} />
-          </div>
-        )} */}
         {renderChart()}
       </div>
       <DataSelector />
-      {/* Bottom Navigation Overlay */}
-      {/* <div className="bottom-nav">
-        <button onClick={() => handleChartSelection} className="nav-button">
-          {" "}
-          <i className="fi fi-rs-chart-pie" />{" "}
-        </button>
-        <button
-          onClick={() => handleChartSelection("bar_frequency")}
-          className="nav-button"
-        >
-          {" "}
-          <i className="fi fi-rs-stats" />{" "}
-        </button>
-        <button
-          onClick={() => handleChartSelection("line_over_time")}
-          className="nav-button"
-        >
-          {" "}
-          <i className="fi fi-rs-chart-line-up" />{" "}
-        </button>
-      </div> */}
+
       <ChartControls
-        availableGraphs={availableGraphs}
+        availableCharts={availableCharts}
         activeChartId={activeChartId}
         triggerChart={triggerChart}
       />

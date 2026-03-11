@@ -9,26 +9,26 @@ type getAvailableChart = {
 
 // ChartControls.tsx
 type ChartControlsProps = {
-  availableGraphs: getAvailableChart[];
+  availableCharts: getAvailableChart[];
   activeChartId: string;
   triggerChart: (chartId: string) => void;
 };
 
 const ChartControls = ({
-  availableGraphs,
+  availableCharts,
   activeChartId,
   triggerChart,
 }: ChartControlsProps) => {
   // no hook call here anymore
   return (
     <div className="bottom-nav">
-      {availableGraphs.map((graph) => (
+      {availableCharts.map((chart) => (
         <button
-          key={graph.id}
-          onClick={() => triggerChart(graph.id)}
-          className={`nav-button ${activeChartId === graph.id ? "active" : ""}`}
+          key={chart.id}
+          onClick={() => triggerChart(chart.id)}
+          className={`nav-button ${activeChartId === chart.id ? "active" : ""}`}
         >
-          <i className={graph.icon} />
+          <i className={chart.icon} />
         </button>
       ))}
     </div>
