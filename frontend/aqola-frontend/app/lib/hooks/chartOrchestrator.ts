@@ -1,0 +1,40 @@
+import { useAppStore } from "@/app/store/appStore";
+import { useState } from "react";
+import { getAvailableCharts, fetchChartData } from "../chartConfig";
+import { chartData } from "../types";
+const useChartOrchestrator = () => {
+  // Reads from app store
+  const selectedDataset = useAppStore((state) => state.selectedDataset);
+  const selectedAreas = useAppStore((state) => state.selectedAreas);
+
+  // Internal state
+  // NOTE: This is not in app store as the graphs being used is only used by page.tsx
+  const [activeChartId, setActiveChartId] = useState("");
+  const [chartData, setChartData] = useState<chartData>(null);
+
+  // Figure out the bottom bar buttons
+  const availableCharts = getAvailableCharts(selectedDataset);
+
+  // handles button press. API call and setting of chartdata needed.
+  const triggerChart = async (chartId: string) => {
+    if (activeChartId === chartId) {
+      setActiveChartId(""); // toggle off if already showing
+      setChartData(null);
+
+      return;
+    }
+
+    const data = await fetchChartData(chartId, selectedAreas);
+    setChartData(data);
+    setActiveChartId(chartId);
+  };
+
+  return {
+    availableCharts,
+    activeChartId,
+    chartData,
+    triggerChart,
+  };
+};
+
+export { useChartOrchestrator };
