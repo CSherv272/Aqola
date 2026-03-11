@@ -68,11 +68,15 @@ async def get_total_crime_rate(
     lsoas: List[str] = Query(None),
     db: Session = Depends(get_db)):
 
-    query = (db.query(Crime.lsoa_id, Crime.date, func.count().label("count"))
-        .filter(Crime.lsoa_id.in_(lsoas))
-        .group_by(Crime.date, Crime.lsoa_id)
+    
+    query = (
+        db.query(Crime.lsoa_id, Crime.date, func.count().label("count"))
+        .group_by(Crime.lsoa_id, Crime.date)
         .order_by(Crime.date)
     )
+
+    if lsoas:  # ← this guard MUST wrap the filter
+        query = query.filter(Crime.lsoa_id.in_(lsoas))
 
     results = query.all()
 
@@ -90,10 +94,13 @@ async def get_crime_rate_by_type(
     db: Session = Depends(get_db)):
 
     query = (db.query(Crime.lsoa_id, Crime.crime_type, func.count().label("count"))
-        .filter(Crime.lsoa_id.in_(lsoas))
+        
         .group_by(Crime.crime_type, Crime.lsoa_id)
     )
 
+    if lsoas:
+        query = query.filter(Crime.lsoa_id.in_(lsoas))
+        
     results = query.all()
 
     dataDict = defaultdict(list)
