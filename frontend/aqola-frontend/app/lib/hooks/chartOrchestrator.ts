@@ -13,7 +13,7 @@ const useChartOrchestrator = () => {
   const [chartData, setChartData] = useState<chartData>(null);
 
   // Figure out the bottom bar buttons
-  const availableGraphs = getAvailableCharts(selectedDataset);
+  const availableCharts = getAvailableCharts(selectedDataset);
 
   // handles button press. API call and setting of chartdata needed.
   const triggerChart = async (chartId: string) => {
@@ -30,7 +30,7 @@ const useChartOrchestrator = () => {
   };
 
   return {
-    availableGraphs,
+    availableCharts,
     activeChartId,
     chartData,
     triggerChart,

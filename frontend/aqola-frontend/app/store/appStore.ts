@@ -22,6 +22,7 @@ const useAppStore = create<AppStore>((set) => ({
         : [...state.selectedAreas, area],
     })),
 
+  // Performance improvement likely here
   removeArea: (area) =>
     set((state) => ({
       selectedAreas: state.selectedAreas.filter((a) => a !== area),
