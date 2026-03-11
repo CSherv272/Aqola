@@ -63,8 +63,6 @@ export default function Home() {
     fetchSchools();
   }, []);
 
-// ADDED SCHOOL STATE
-  const [schools, setSchools] = useState<School[]>([]);
 
   // ADDED FETCH LOGIC
   useEffect(() => {
