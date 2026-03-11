@@ -1,29 +1,27 @@
 import { GeoJSON, useMapEvents } from "react-leaflet";
-import { PostcodeGeoJson } from "@/app/lib/types";
-import { Polygon } from "./polygon";
 import { getPostcodeBoundaries } from "@/app/lib/postcodes";
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { debounce } from "lodash";
 import { Feature, FeatureCollection } from "geojson";
-import { Layer } from "leaflet";
+import { Layer, DomEvent } from "leaflet";
+import { useAppStore } from "@/app/store/appStore";
 
 const MIN_ZOOM = 13; // Only show postcodes when zoomed in enough
 
 const PostcodePolygons = () => {
   const [boundaries, setBoundaries] = useState<FeatureCollection | null>(null);
   const [updateCount, setUpdateCount] = useState(0);
-  const [zoom, setZoom] = useState(0);
+  const selectedAreas = useAppStore((state) => state.selectedAreas);
+  const toggleArea = useAppStore((state) => state.toggleArea);
+  const selectedAreasRef = useRef<string[]>([]);
+
+  // Keep ref in sync with store
+  useEffect(() => {
+    selectedAreasRef.current = selectedAreas;
+  }, [selectedAreas]);
 
   const fetchBoundaries = useRef(
     debounce((bounds, currentZoom) => {
-      console.log("fetchBoundaries called");
-      console.log("zoom:", currentZoom);
-      console.log("bounds:", {
-        min_lat: bounds.getSouth(),
-        max_lat: bounds.getNorth(),
-        min_lng: bounds.getWest(),
-        max_lng: bounds.getEast(),
-      });
       if (currentZoom < MIN_ZOOM) {
         setBoundaries(null);
         return;
@@ -52,9 +50,20 @@ const PostcodePolygons = () => {
     fetchBoundaries(map.getBounds(), map.getZoom());
   }, []);
 
+  const getStyle = (postcode: string) => {
+    const isSelected = selectedAreas.includes(postcode);
+    return {
+      fillColor: isSelected ? "#000000" : "#b9e0ea",
+      fillOpacity: isSelected ? 0.8 : 0.2,
+      weight: 0.5,
+    };
+  };
+
   const onEachFeature = (feature: Feature, layer: Layer) => {
-    if (feature.properties?.postcode) {
-      layer.bindTooltip(feature.properties.postcode, {
+    const postcode = feature.properties?.postcode;
+
+    if (postcode) {
+      layer.bindTooltip(postcode, {
         permanent: false, // only show on hover
         direction: "center",
         className: "postcode-tooltip",
@@ -62,20 +71,30 @@ const PostcodePolygons = () => {
     }
     layer.on({
       mouseover: (e) => {
-        const l = e.target;
-        l.setStyle({
+        if (selectedAreasRef.current.includes(postcode)) return;
+        e.target.setStyle({
           fillColor: "#89c4d4",
           fillOpacity: 0.8,
           weight: 0.5,
         });
       },
       mouseout: (e) => {
-        const l = e.target;
-        l.setStyle({
+        if (selectedAreasRef.current.includes(postcode)) return;
+        e.target.setStyle({
           fillColor: "#b9e0ea",
           fillOpacity: 0.2,
           weight: 0.5,
         });
+      },
+      click: (e) => {
+        DomEvent.stopPropagation(e);
+        const isSelected = selectedAreasRef.current.includes(postcode);
+        toggleArea(postcode);
+        e.target.setStyle(
+          isSelected
+            ? { fillColor: "#b9e0ea", fillOpacity: 0.2, weight: 0.5 }
+            : { fillColor: "#000000", fillOpacity: 0.8, weight: 0.5 },
+        );
       },
     });
   };
@@ -87,12 +106,11 @@ const PostcodePolygons = () => {
       <GeoJSON
         key={updateCount}
         data={boundaries}
-        style={{
-          fillColor: "#b9e0ea",
-          fillOpacity: 0.2,
-          color: "black",
-          weight: 0.5,
-        }}
+        style={(feature) =>
+          feature?.properties?.postcode
+            ? getStyle(feature.properties.postcode)
+            : {}
+        }
         onEachFeature={onEachFeature}
       />
     </>

@@ -10,10 +10,16 @@ import BarChart from "./components/bar_chart";
 import LineChart from "./components/line_chart";
 import DataSelector from "./components/DataSelector";
 // import LineGraph from "./components/linegraph";
-import { ofsted_frequency_by_band } from "./lib/bar_graph"
-import { crime_rate_by_type_and_area, crime_rate_by_area } from "./lib/line_graph"
+import { ofsted_frequency_by_band } from "./lib/bar_graph";
+import {
+  crime_rate_by_type_and_area,
+  crime_rate_by_area,
+} from "./lib/line_graph";
 import { useState, useEffect } from "react";
 import { ChartType } from "./lib/frontend_models";
+import { ChartControls } from "./components/ChartControls";
+import { useChartOrchestrator } from "./lib/hooks/chartOrchestrator";
+import { getChartDefinition } from "./lib/chartConfig";
 
 // import LineGraph from "./components/linegraph";
 // import LeafletMap from "./components/Map";
@@ -21,6 +27,8 @@ import { ChartType } from "./lib/frontend_models";
 
 import { getSchools } from "./lib/api";
 import { School } from "./lib/api_models";
+
+import { useAppStore } from "./store/appStore";
 
 //dynamically import banner from banner component
 const Banner = dynamic(() => import("./components/aqola-banner"), {
@@ -36,7 +44,24 @@ const LeafletMap = dynamic(() => import("./components/maps/maps"), {
 
 export default function Home() {
   //app state variables
-  let [selectedDataSet, setSelectedDataSet] = useState("crime_data");
+  const [selectedDataSet, setSelectedDataSet] = useState("crime_data"); // Needs to be changed, to use actual app state
+
+// ADDED SCHOOL STATE
+  const [schools, setSchools] = useState<School[]>([]);
+
+  // ADDED FETCH LOGIC
+  useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        const data = await getSchools();
+        setSchools(data);
+        console.log("Manager: Schools data received!");
+      } catch (err) {
+        console.error("Failed to fetch schools:", err);
+      }
+    };
+    fetchSchools();
+  }, []);
 
 // ADDED SCHOOL STATE
   const [schools, setSchools] = useState<School[]>([]);
@@ -60,157 +85,41 @@ export default function Home() {
     console.log("selected dataset", selectedDataSet);
   };
 
-  const [showLineChart, setShowLineChart] = useState(false);
-  const [showBarChart, setShowBarChart] = useState(false);
-  let [lineChartData, setLineChartData] = useState<any>(null)
-  let [barChartData, setBarChartData] = useState<any>(null)
+  // page.tsx
+  const { availableCharts, activeChartId, chartData, triggerChart } =
+    useChartOrchestrator();
 
-  // takes the id of the chart required and creates it
-  // looks at app state for the values - to be conmpleted
-  const handleChartSelection = async (chartType: ChartType) => {
-    let selectedLsoas = ["E01016024", "E01024040", "E01032810"]
-    let selectedPcd = ["DA125JT"]
-    let selectedCrimeTypes: string[] = ["Other theft", "Drugs"]
-    console.log(chartType)
+  const renderChart = () => {
+    console.log("CHARTING! ->" + activeChartId + " : " + chartData);
+    if (!activeChartId || !chartData || !chartData.chart) return null;
+    const chart = getChartDefinition(activeChartId);
+    if (!chart) return null;
 
-    switch (chartType) {
-      case "line_over_time":
-        let line_data = await crime_rate_by_type_and_area(selectedLsoas[0], selectedCrimeTypes)
-        setLineChartData(line_data)
-        setShowLineChart(!showLineChart)
-        break;
-      case "bar_frequency":
-        let bar_data = await ofsted_frequency_by_band(selectedPcd[0])
-        setBarChartData(bar_data.chart)
-        setShowBarChart(!showBarChart);
-        break;
-      case "line_over_time_by_lsoa":
-        let line_data_by_lsoa = await crime_rate_by_area(selectedLsoas)
-        setLineChartData(line_data_by_lsoa)
-        setShowLineChart(!showLineChart)
-        break;
+    switch (chart.chartComponent) {
+      case "line":
+        return <LineChart data={chartData} get_line_name={handleLineHover} />;
+      case "bar":
+        return (
+          <div className="chart-overlay">
+            {<BarChart data={chartData.chart} />}
+          </div>
+        );
     }
-  }
-
-
-  // const bar_chart_data_template = {
-  //   groups: [
-  //     {
-  //       name: "CT2 7QS",
-  //       bars: [
-  //         {
-  //           bar_name: "high_risk",
-  //           value: 30,
-  //           color: "red",
-  //         },
-  //         {
-  //           bar_name: "medium_risk",
-  //           value: 12,
-  //           color: "yellow",
-  //         },
-  //         {
-  //           bar_name: "low_risk",
-  //           value: 40,
-  //           color: "blue",
-  //         },
-  //         {
-  //           bar_name: "very_low_risk",
-  //           value: 50,
-  //           color: "green",
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       name: "CT2 7QB",
-  //       bars: [
-  //         {
-  //           bar_name: "high_risk",
-  //           value: 45,
-  //           color: "red",
-  //         },
-  //         {
-  //           bar_name: "medium_risk",
-  //           value: 64,
-  //           color: "yellow",
-  //         },
-  //         {
-  //           bar_name: "low_risk",
-  //           value: 20,
-  //           color: "blue",
-  //         },
-  //         {
-  //           bar_name: "very_low_risk",
-  //           value: 3,
-  //           color: "green",
-  //         },
-  //       ],
-  //     },
-  //   ],
-  //   title: "Flood data bargraph!",
-  //   xlabel: "Postcodes",
-  //   ylabel: "Number of Houses at risk",
-  // };
-
-  // let crime_data_template = {
-  //   chart_type: "line",
-  //   type: "crime_data",
-  //   area: "postcodes",
-  //   chart: {
-  //     lines: [
-  //       {
-  //         line_name: "Drugs",
-  //         coords: [
-  //           [0, 10],
-  //           [1, 20],
-  //           [2, 30],
-  //         ],
-  //         color: "blue",
-  //       },
-  //       {
-  //         line_name: "Robbery",
-  //         coords: [
-  //           [0, 5],
-  //           [1, 15],
-  //           [2, 25],
-  //         ],
-  //         color: "red",
-  //       },
-  //     ],
-  //     title: "Crime by Postcode",
-  //     xlabel: "Time (months)",
-  //     ylabel: "Number of Crimes",
-  //   },
-  // };
-
-  console.log("Checking school data in page.tsx:", schools.length);
+  };
   return (
     <div className="page-container">
       <div className="map-wrapper">
         <LeafletMap schools={schools} />
-        
-        {showLineChart && lineChartData && (
-          <div className="chart-overlay">
-            <LineChart data={lineChartData} get_line_name={handleLineHover} />
-          </div>
-        )}
-        {showBarChart && barChartData && (
-          <div className="chart-overlay">
-            <BarChart data={barChartData} />
-          </div>
-        )}
-      </div>
 
+        {renderChart()}
+      </div>
       <DataSelector />
 
-
-      {/* Bottom Navigation Overlay */}
-      <div className="bottom-nav">
-
-
-        <button onClick={() => handleChartSelection} className="nav-button"> <i className="fi fi-rs-chart-pie" />    </button>
-        <button onClick={() => handleChartSelection("bar_frequency")} className="nav-button"> <i className="fi fi-rs-stats" /> </button>
-        <button onClick={() => handleChartSelection("line_over_time")} className="nav-button"> <i className="fi fi-rs-chart-line-up" /> </button>
-      </div>
+      <ChartControls
+        availableCharts={availableCharts}
+        activeChartId={activeChartId}
+        triggerChart={triggerChart}
+      />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { Feature, Polygon, MultiPolygon } from "geojson";
+import { BarChartResponse, LineChartResponse } from "./frontend_models";
 
 type PostcodeProperties = {
   postcode: string;
@@ -16,8 +17,11 @@ type PostcodePolygonResponse = {
   boundary: Polygon | MultiPolygon;
 };
 
+type chartData = BarChartResponse | LineChartResponse | null;
+
 export {
   type PostcodeGeoJson,
   type PostcodeResponse,
   type PostcodePolygonResponse,
+  type chartData,
 };
