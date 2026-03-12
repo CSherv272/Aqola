@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { School, SchoolCounts } from "./api_models";
 import type { BarChartResponse } from "./frontend_models";
+import { getPostcodeBoundaries } from "./postcodes";
 
 // method naming convention <area>_<xlabel>_<ylabel>_<bars>
 
@@ -86,7 +87,33 @@ export const ofsted_frequency_by_band = async (
 
 export const flood_risk_frequency_by_postcode = async (
   postcodes: string[],
-): Promise<BarChartResponse> => {
+): 
+
+  Promise<BarChartResponse> => {
+  
+  if (postcodes.length == 0){
+    return (
+    {
+      chartType: "bar",
+      type: "flood_data",
+      area: "postcode",
+
+      chart: {
+        groups: [{
+          name: "null",
+          bars: [{
+            bar_name: "none",
+            value: 0,
+            color: "black",
+          }]
+        }],
+        title: "Kent Postcode Flood Risks",
+        xlabel: "Postcodes",
+        ylabel: "Frequency",
+      }
+    })
+  }
+
   const response = await api.get(`/flood`, {
     params: {
       postcodes: postcodes,
