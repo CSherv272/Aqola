@@ -43,7 +43,8 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import { PostcodePolygons } from "./postcode_polygons";
-import { School } from "../../lib/api_models"; 
+import { School } from "../../lib/api_models";
+import { useAppStore } from "../../store/appStore";
 
 // Interface ensures page.tsx can send the school array
 interface MapProps {
@@ -51,6 +52,9 @@ interface MapProps {
 }
 
 export default function Map({ schools }: MapProps) {
+
+  const selectedDataset = useAppStore((state) => state.selectedDataset);
+  
   // default center for the Kent/Canterbury area
   const position: [number, number] = [51.2787, 1.0789];
 
@@ -73,7 +77,7 @@ const recentSchools = schools.filter(
       <PostcodePolygons />
 
       {/*Map markers for most recent schools */}
-      {recentSchools.map((school) => (
+      {selectedDataset === "Schools" && recentSchools.map((school) => (
   <Marker 
     key={school.urn} 
     position={[school.latitude, school.longitude]}
