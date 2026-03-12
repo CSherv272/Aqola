@@ -4,6 +4,7 @@ import L from "leaflet";
 import { Marker, Popup } from "react-leaflet";
 import { School } from "../../lib/api_models";
 import { useAppStore } from "../../store/appStore";
+import { remove } from "lodash";
 
 // Marker icon colour red state when selected
 const redIcon = new L.Icon({
@@ -35,8 +36,7 @@ interface SchoolMarkersProps {
   // To use AppState
   const selectedDataset = useAppStore((state) => state.selectedDataset);
   const selectedAreas = useAppStore((state) => state.selectedAreas);
-  const clearAreas = useAppStore((state) => state.clearAreas);
-  const addArea = useAppStore((state) => state.addArea);
+  const toggleArea = useAppStore((state) => state.toggleArea);
 
   if (selectedDataset !== "Schools") return null;
 
@@ -62,8 +62,7 @@ interface SchoolMarkersProps {
             zIndexOffset={isSelected ? 1000 : 0}
             eventHandlers={{
               click: () => {
-                clearAreas();
-                addArea(urnString);
+                toggleArea(urnString);
               },
             }}
           >
