@@ -38,6 +38,7 @@
 
 "use client";
 
+import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -46,19 +47,42 @@ import { PostcodePolygons } from "./postcode_polygons";
 import { School } from "../../lib/api_models";
 import { useAppStore } from "../../store/appStore";
 
+// Marker icon colour red state when selected
+const redIcon = new L.Icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+// Marker icon colour blue state default
+const blueIcon = new L.Icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
 // Interface ensures page.tsx can send the school array
 interface MapProps {
   schools: School[];
 }
 
 export default function Map({ schools }: MapProps) {
-
+  // To use AppState
   const selectedDataset = useAppStore((state) => state.selectedDataset);
+  const selectedAreas = useAppStore((state) => state.selectedAreas);
+  const clearAreas = useAppStore((state) => state.clearAreas);
+  const addArea = useAppStore((state) => state.addArea);
   
-  // default center for the Kent/Canterbury area
+// default center for the Kent/Canterbury area
   const position: [number, number] = [51.2787, 1.0789];
 
-const recentSchools = schools.filter(
+  const recentSchools = schools.filter(
     (school) => school.year_range === "2024-2025"
   );
 
@@ -75,13 +99,27 @@ const recentSchools = schools.filter(
       />
       
       <PostcodePolygons />
+      
+      {selectedDataset === "Schools" && recentSchools.map((school) => {
+        const urnString = String(school.urn);
+        
+        //  Check if this marker is in the AppState
+        const isSelected = selectedAreas.includes(urnString);
 
-      {/*Map markers for most recent schools */}
-      {selectedDataset === "Schools" && recentSchools.map((school) => (
-  <Marker 
-    key={school.urn} 
-    position={[school.latitude, school.longitude]}
-  >
+        return (
+          <Marker 
+            key={school.urn} 
+            position={[school.latitude, school.longitude]}
+            // 3. Visual proof that the state is working
+            icon={isSelected ? redIcon : blueIcon}
+            eventHandlers={{
+              click: () => {
+                // Update the AppState when clicked
+                clearAreas(); 
+                addArea(urnString); 
+              }
+            }}
+          >
     <Popup>
       <div className="text-black p-1" style={{ minWidth: '220px' }}>
         <h3 className="font-bold text-lg border-b border-gray-200 mb-2 pb-1">
@@ -96,7 +134,9 @@ const recentSchools = schools.filter(
           <span>{school.postcode}</span>
           
           <span className="text-gray-500 font-medium">Ofsted:</span> 
-            {school.ofsted_ranking ?? "N/A"}
+            {school.ofsted_ranking === 0 || school.ofsted_ranking === -1
+            ? "Not judged"
+            : school.ofsted_ranking ?? "N/A"}
           
           <span className="text-gray-500 font-medium">Gender:</span> 
           <span>{school.gender}</span>
@@ -113,11 +153,12 @@ const recentSchools = schools.filter(
 
           <span className="text-gray-500 font-medium">LSOA ID:</span> 
           <span className="text self-center">{school.lsoa_id}</span>
-        </div>
-      </div>
-    </Popup>
-  </Marker>
-))}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
     </MapContainer>
   );
 }
