@@ -14,6 +14,7 @@ router = APIRouter()
 async def list_schools(
     lsoas: Optional[List[str]] = Query(default=None),
     postcodes: Optional[List[str]] = Query(default=None),
+    urns: Optional[List[str]] = Query(default=None),
     db: Session = Depends(get_db)):
     """Lists all school data"""
     query = (
@@ -24,7 +25,10 @@ async def list_schools(
         query = query.filter(School.lsoa_id.in_(lsoas))
 
     if postcodes:
-        query = query.filter(School.postcode.in_(postcodes)) 
+        query = query.filter(School.postcode.in_(postcodes))
+        
+    if urns:
+        query = query.filter(School.urn.in_(urns))
     
     results = query.all()
 
