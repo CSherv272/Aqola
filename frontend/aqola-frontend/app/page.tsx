@@ -15,11 +15,12 @@ import {
   crime_rate_by_type_and_area,
   crime_rate_by_area,
 } from "./lib/line_graph";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChartType } from "./lib/frontend_models";
 import { ChartControls } from "./components/ChartControls";
 import { useChartOrchestrator } from "./lib/hooks/chartOrchestrator";
 import { getChartDefinition } from "./lib/chartConfig";
+
 
 // import LineGraph from "./components/linegraph";
 // import LeafletMap from "./components/Map";
@@ -43,9 +44,13 @@ const LeafletMap = dynamic(() => import("./components/maps/maps"), {
 });
 
 export default function Home() {
+  const selectedAreas = useAppStore((state) => state.selectedAreas);
+  const selectedDataset = useAppStore((state) => state.selectedDataset);
+  const clearAreas = useAppStore((state) => state.clearAreas);
+   const { availableCharts, activeChartId, chartData, triggerChart } =
+    useChartOrchestrator();
   //app state variables
   const [selectedDataSet, setSelectedDataSet] = useState("crime_data"); // Needs to be changed, to use actual app state
-
 // ADDED SCHOOL STATE
   const [schools, setSchools] = useState<School[]>([]);
 
@@ -63,29 +68,50 @@ export default function Home() {
     fetchSchools();
   }, []);
 
+// Smarter Watcher using Refs to track changes
+  const prevAreasRef = useRef(selectedAreas);
+  const prevDatasetRef = useRef(selectedDataset);
 
-  // ADDED FETCH LOGIC
   useEffect(() => {
-    const fetchSchools = async () => {
-      try {
-        const data = await getSchools();
-        setSchools(data);
-        console.log("Manager: Schools data received!");
-      } catch (err) {
-        console.error("Failed to fetch schools:", err);
+    const datasetChanged = prevDatasetRef.current !== selectedDataset;
+    const areasChanged = prevAreasRef.current !== selectedAreas;
+
+    // SCENARIO A: User switched datasets (e.g., Schools -> Crime)
+    if (datasetChanged) {
+      if (selectedDataset.toLowerCase() !== "schools") {
+        clearAreas(); // Wipe the red map pins
       }
-    };
-    fetchSchools();
-  }, []);
+      // If a chart is currently open, toggle it off so it doesn't bleed over
+      if (activeChartId) {
+        triggerChart(activeChartId); 
+      }
+    } 
+    // SCENARIO B: User is clicking map pins on the Schools tab
+    else if (areasChanged && selectedDataset.toLowerCase() === "schools") {
+      if (selectedAreas.length > 0) {
+        // Pin selected: Open timeline ONLY if it isn't already open!
+        // (This fixes the every-other-click bug)
+        if (activeChartId !== "individual_school_ofsted_timeline") {
+          triggerChart("individual_school_ofsted_timeline");
+        }
+      } else {
+        // Pin deselected: Close the timeline if it's currently showing
+        if (activeChartId === "individual_school_ofsted_timeline") {
+          triggerChart("individual_school_ofsted_timeline"); // Toggles it off
+        }
+      }
+    }
+
+    // Update refs for the next render
+    prevAreasRef.current = selectedAreas;
+    prevDatasetRef.current = selectedDataset;
+  }, [selectedAreas, selectedDataset, activeChartId, triggerChart, clearAreas]);
+
 
   const handleLineHover = (newValue: string) => {
     setSelectedDataSet(newValue);
     console.log("selected dataset", selectedDataSet);
   };
-
-  // page.tsx
-  const { availableCharts, activeChartId, chartData, triggerChart } =
-    useChartOrchestrator();
 
   const renderChart = () => {
     console.log("CHARTING! ->" + activeChartId + " : " + chartData);

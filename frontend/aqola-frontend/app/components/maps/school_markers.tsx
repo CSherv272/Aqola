@@ -36,7 +36,8 @@ interface SchoolMarkersProps {
   // To use AppState
   const selectedDataset = useAppStore((state) => state.selectedDataset);
   const selectedAreas = useAppStore((state) => state.selectedAreas);
-  const toggleArea = useAppStore((state) => state.toggleArea);
+  const clearAreas = useAppStore((state) => state.clearAreas);
+  const addArea = useAppStore((state) => state.addArea);
 
   if (selectedDataset !== "Schools") return null;
 
@@ -62,7 +63,14 @@ interface SchoolMarkersProps {
             zIndexOffset={isSelected ? 1000 : 0}
             eventHandlers={{
               click: () => {
-                toggleArea(urnString);
+                if (isSelected) {
+                  // If it's already red, deselect it and reset the map
+                  clearAreas(); 
+                } else {
+                  // If it's blue, clear any other selections and select this one
+                  clearAreas();
+                  addArea(urnString); 
+                }
               },
             }}
           >
