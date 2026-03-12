@@ -76,7 +76,7 @@ export default function Map({ schools }: MapProps) {
   // To use AppState
   const selectedDataset = useAppStore((state) => state.selectedDataset);
   const selectedAreas = useAppStore((state) => state.selectedAreas);
-  const clearAreas = useAppStore((state) => state.clearAreas);
+  const removeAreas = useAppStore((state) => state.clearAreas);
   const addArea = useAppStore((state) => state.addArea);
   
 // default center for the Kent/Canterbury area
@@ -110,12 +110,12 @@ export default function Map({ schools }: MapProps) {
           <Marker 
             key={school.urn} 
             position={[school.latitude, school.longitude]}
-            // 3. Visual proof that the state is working
+            // Visual proof that the state is working
             icon={isSelected ? redIcon : blueIcon}
             eventHandlers={{
               click: () => {
                 // Update the AppState when clicked
-                clearAreas(); 
+                removeAreas(); 
                 addArea(urnString); 
               }
             }}
