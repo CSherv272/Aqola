@@ -40,30 +40,29 @@ async def list_flood(
 
 # still only returns the top value, no matter how many postcodes inputted.
 # Needs changing, but frontend will need changing too
-@router.get("/risk-band", response_model= RiskBand)
+@router.get("/risk-band", response_model= List[RiskBand])
 async def get_risk_band_by_postcode(
     postcodes: Optional[List[str]] = Query(default=None),
     db: Session = Depends(get_db)
 ):
     # query for that lsoa
     query = (
-        db.query(Flood)
-        .with_entities(Flood.postcode, Flood.frs_band)
-        .filter(Flood.postcode.in_(postcodes))
-        
+        db.query(Flood.postcode, Flood.frs_band)   
     )
 
     if postcodes:
         query = query.filter(Flood.postcode.in_(postcodes)) 
 
-    pcdRecord = query.first()
+    pcdRecords = query.all()
 
-    if not pcdRecord:
+    if not pcdRecords:
         raise HTTPException(status_code=404, detail="No records found. Double check the postcode entered")
-
-    return (
-        RiskBand(
-            postcode=pcdRecord.postcode,
-            frs_band=pcdRecord.frs_band
-        )
-    )
+    
+    return [
+            RiskBand(
+                postcode=record.postcode,
+                frs_band=record.frs_band
+            ) 
+            for record in pcdRecords 
+            if record.frs_band is not None  # Use 'is not None' in Python
+        ]

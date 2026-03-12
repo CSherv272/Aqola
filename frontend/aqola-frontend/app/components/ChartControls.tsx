@@ -27,8 +27,10 @@ const ChartControls = ({
           key={chart.id}
           onClick={() => triggerChart(chart.id)}
           className={`nav-button ${activeChartId === chart.id ? "active" : ""}`}
+          title={chart.id}
         >
           <i className={chart.icon} />
+          {/* <title>{chart.id}</title> */}
         </button>
       ))}
     </div>
