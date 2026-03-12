@@ -9,6 +9,8 @@ export function Window({ title, children }) {
   return (
     <Rnd
       default={{ x: 100, y: 100, width: 400, height: 300 }}
+      dragHandleClassName="rnd-window"
+      scale={1}
     //   minWidth={200}
     //   minHeight={150}
       bounds="parent"
@@ -16,7 +18,7 @@ export function Window({ title, children }) {
     >
       {/* Title bar */}
       <div className="window-titlebar">
-        <span>{title}</span>
+        {/* <span>{title}</span> */}
         <button onClick={() => setVisible(false)}>✕</button>
       </div>
       {/* Content */}
