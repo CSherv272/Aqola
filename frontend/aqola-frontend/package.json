@@ -19,7 +19,9 @@
     "next": "16.1.1",
     "react": "rc",
     "react-dom": "rc",
+    "react-draggable": "^4.5.0",
     "react-leaflet": "next",
+    "react-rnd": "^10.5.3",
     "zustand": "^5.0.11"
   },
   "devDependencies": {

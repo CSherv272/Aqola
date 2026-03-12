@@ -5,27 +5,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-// import Banner from "./components/aqola-banner";
 import BarChart from "./components/bar_chart";
 import LineChart from "./components/line_chart";
 import DataSelector from "./components/DataSelector";
-// import LineGraph from "./components/linegraph";
-import { ofsted_frequency_by_band } from "./lib/bar_graph";
-import {
-  crime_rate_by_type_and_area,
-  crime_rate_by_area,
-} from "./lib/line_graph";
 import { useState } from "react";
-import { ChartType } from "./lib/frontend_models";
 import { ChartControls } from "./components/ChartControls";
 import { useChartOrchestrator } from "./lib/hooks/chartOrchestrator";
 import { getChartDefinition } from "./lib/chartConfig";
-
-// import LineGraph from "./components/linegraph";
-// import LeafletMap from "./components/Map";
-// import Banner from "./components/aqola-banner";
-
-import { useAppStore } from "./store/appStore";
+import { Window } from "./components/dragBox";
 
 //dynamically import banner from banner component
 const Banner = dynamic(() => import("./components/aqola-banner"), {
@@ -53,7 +40,7 @@ export default function Home() {
     useChartOrchestrator();
 
   const renderChart = () => {
-    console.log("CHARTING! ->" + activeChartId + " : " + chartData);
+    // console.log("CHARTING! ->" + activeChartId + " : " + chartData);
     if (!activeChartId || !chartData || !chartData.chart) return null;
     const chart = getChartDefinition(activeChartId);
     if (!chart) return null;
@@ -69,13 +56,21 @@ export default function Home() {
         );
     }
   };
+  
   return (
     <div className="page-container">
       <div className="map-wrapper">
         <LeafletMap />
 
-        {renderChart()}
+        {activeChartId && <Window>
+          {renderChart()}
+          {/* <div>hello there</div> */}
+        </Window>}
+        
       </div>
+
+
+      
       <DataSelector />
 
       <ChartControls

@@ -199,3 +199,69 @@ body {
 .postcode-tooltip::before {
   display: none;
 }
+
+
+.rnd-window {
+  position: absolute !important;
+  z-index: 2000;
+  background: rgba(15, 30, 40, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  /* overflow: hidden; */
+}
+
+.window-content {
+  position: absolute !important;
+  z-index: 2000;
+  background: rgba(15, 30, 40, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  /* overflow: hidden; */
+}
+
+.window-titlebar {
+  position: absolute !important;
+  z-index: 2001;
+  background: rgba(15, 30, 40, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  /* overflow: hidden; */
+}
+
+/* .window-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(30, 50, 60, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: move;
+}
+
+.window-titlebar span {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.window-titlebar button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 4px;
+} */
+
+.window-titlebar button:hover {
+  color: #ff6b6b;
+}
+
+.window-content {
+  padding: 8px;
+  color: white;
+  overflow: auto;
+  height: calc(100% - 37px);
+  /* full height minus titlebar */
+}

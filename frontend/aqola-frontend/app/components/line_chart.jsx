@@ -89,7 +89,12 @@ export default function LineChart({
   }, []);
 
   return (
-    <svg ref={svg} width={width} height={height}>
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      style={{ width: '100%', height: '100%', display: 'block' }}
+      preserveAspectRatio="xMidYMid meet"
+      >
+      
       {/* add the axis to the chart */}
       <g ref={xLabel} transform={`translate(0,${height - marginBottom})`} />
       <g ref={yLabel} transform={`translate(${marginLeft},0)`} />
