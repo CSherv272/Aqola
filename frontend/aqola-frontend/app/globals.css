@@ -184,34 +184,29 @@ body {
 .rnd-window {
   display: flex;
   flex-direction: column;
-  position: absolute;
-  z-index: 2000;
-  background: rgba(15, 30, 40, 0.85) ;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  /* overflow: hidden; */
-}
-
-.window-content {
-  position: absolute;
-  z-index: 2001;
-  background: rgba(15, 30, 40, 0.85) ;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
   width: 100%;
   height: 100%;
-  /* overflow: hidden; */
+  overflow: hidden;
+  border-radius: 8px;
 }
 
 .window-titlebar {
-  position: absolute;
-  z-index: 2002;
-  background: rgba(15, 30, 40, 0.85) ;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  height: 50px;
-  width: auto
-  /* overflow: hidden; */
+  flex-shrink: 0;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: grab;
+  background: rgba(15, 30, 40, 0.95);
+  border-radius: 8px 8px 0 0;
+}
+
+.window-content {
+  flex: 1;
+  overflow: auto;
+  background: rgba(15, 30, 40, 0.85);
 }
 
 .window-titlebar button {

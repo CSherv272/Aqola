@@ -5,7 +5,7 @@ interface WindowProps {
   children: ReactNode
 }
 
-export function Window({children} : WindowProps) {
+export function Window({ children }: WindowProps) {
   const [visible, setVisible] = useState(true);
 
   if (!visible) return null;
@@ -13,7 +13,6 @@ export function Window({children} : WindowProps) {
   return (
     <Rnd
       default={{ x: 100, y: 100, width: 600, height: 380 }}
-      dragHandleClassName="window-titlebar"
       bounds="parent"
       style={{
         zIndex: 1500,
@@ -24,13 +23,27 @@ export function Window({children} : WindowProps) {
         borderRadius: "8px",
         backdropFilter: "blur(10px)",
         overflow: "hidden",
-        position:'absolute'
+        width: "100%",
+        height: "100%"
       }}
     >
-      <div className="window-titlebar">
-        <button onClick={() => setVisible(false)}>✕</button>
+      <div style={{ 
+        flexShrink: 0, 
+        height: "36px", 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "flex-end",
+        padding: "0 8px",
+        borderBottom: "1px solid rgba(255,255,255,0.1)",
+        cursor: "grab",
+        width: "100%",
+      }}>
+        <button onClick={() => setVisible(false)} style={{
+          background: "none", border: "none", color: "white", 
+          cursor: "pointer", fontSize: "16px"
+        }}>✕</button>
       </div>
-      <div className={'window-content'}>
+      <div style={{ flex: 1, overflow: "auto", zIndex: 2000, width:"99%", height:"95%", marginTop: "5%", position: "absolute" }}>
         {children}
       </div>
     </Rnd>
