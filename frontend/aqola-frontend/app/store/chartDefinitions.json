@@ -24,6 +24,14 @@
     "icon": "fi fi-rs-stats"
   },
   {
+  "id": "individual_school_ofsted_timeline",
+  "label": "Ofsted History",
+  "chartComponent": "line",
+  "dataset": "schools",
+  "apiCall": "get_school_ofsted_history",
+  "icon": "fi fi-rs-chart-line-up"
+  },
+  {
     "id": "flood_risk_frequency",
     "label": "Flood Risks",
     "chartComponent": "bar",

@@ -2,6 +2,7 @@ import { stringify } from "querystring";
 import type { Crime, CrimeTypes, UniqueMonths } from "./api_models"
 import type { LineChartResponse } from "./frontend_models"
 import axios from "axios";
+import type { School } from "./api_models"
 
 // method naming convention <area>_<xlabel>_<ylabel>_<lines>
 
@@ -115,3 +116,51 @@ for (const [index, [lsoa, coords]] of Object.entries(crimeCountData).entries()) 
 
   return response;
 }
+
+export const get_school_ofsted_history = async (urn: string): Promise<LineChartResponse> => {
+  if (!urn) {
+    return {
+      chartType: "line",
+      type: "school_data",
+      area: "school",
+      chart: {
+        lines: [],
+        title: "Please select a school on the map",
+        xlabel: "Year",
+        ylabel: "Ofsted Ranking",
+      },
+    };
+  }
+
+  const apiResponse = await api.get("/school/", { 
+    params: { urns: urn } 
+  });
+  
+  const schoolRecords: School[] = apiResponse.data;
+
+  // Filter out invalid/unjudged rankings BEFORE mapping
+  const coords: [Date, number][] = schoolRecords
+    .filter(s => s.ofsted_ranking > 0 && s.ofsted_ranking <= 4)
+    .map(s => {
+      const startYear = s.year_range.split('-')[0]; 
+      return [new Date(`${startYear}-01-01`), s.ofsted_ranking] as [Date, number];
+    }).sort((a, b) => a[0].getTime() - b[0].getTime()); 
+
+  const schoolName = schoolRecords[0]?.school_name || "Unknown School";
+
+  return {
+    chartType: "line",
+    type: "school_data",
+    area: "school",
+    chart: {
+      lines: [{
+        line_name: "Ofsted Grade",
+        coords: coords,
+        color: "#dc2626"
+      }],
+      title: `Ofsted Rating History: ${schoolName}`,
+      xlabel: "Year",
+      ylabel: "Ofsted Ranking",
+    },
+  };
+};

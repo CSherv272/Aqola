@@ -6,6 +6,7 @@ import {
   flood_risk_frequency_by_postcode,
 } from "./bar_graph";
 import { chartData } from "./types";
+import { get_school_ofsted_history } from "./line_graph";
 
 type DatasetKey = keyof typeof datasetConfig;
 
@@ -25,6 +26,8 @@ const apiCallMap: Record<string, (areas: string[]) => Promise<chartData>> = {
   //NOTE Only this one works for now!
   flood_risk_frequency_by_postcode: (areas) =>
     flood_risk_frequency_by_postcode(areas),
+
+  get_school_ofsted_history: (areas) => get_school_ofsted_history(areas[0]),
 };
 
 // Gets available charts from datasetConfig.json
