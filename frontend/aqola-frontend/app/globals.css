@@ -41,26 +41,6 @@ body {
   overflow: hidden;
 }
 
-.chart-overlay {
-  position: absolute;
-  display: flex;
-  /* bottom: 120px; */
-  /* top: 0px; */
-  /* sits above the bottom nav */
-  max-height: 50%;
-  width: auto;
-  /* left: 50%; */
-  /* transform: translateX(-50%); */
-  z-index: 1000;
-  background: rgba(15, 30, 40, 0.75);
-  backdrop-filter: blur(16px);
-  border-radius: 16px;
-  /* padding: 16px; */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-  justify-content: center;
-  align-items: center;
-}
 
 /* Parent container for overlay positioning */
 .map-wrapper {
@@ -198,4 +178,52 @@ body {
 /* Remove the default tooltip arrow */
 .postcode-tooltip::before {
   display: none;
+}
+
+
+.rnd-window {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 2000;
+  background: rgba(15, 30, 40, 0.85) ;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  /* overflow: hidden; */
+}
+
+.window-content {
+  position: absolute;
+  z-index: 2001;
+  background: rgba(15, 30, 40, 0.85) ;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  /* overflow: hidden; */
+}
+
+.window-titlebar {
+  position: absolute;
+  z-index: 2002;
+  background: rgba(15, 30, 40, 0.85) ;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  height: 50px;
+  width: auto
+  /* overflow: hidden; */
+}
+
+.window-titlebar button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.window-titlebar button:hover {
+  color: #ff6b6b;
 }

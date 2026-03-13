@@ -5,7 +5,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-// import Banner from "./components/aqola-banner";
 import BarChart from "./components/bar_chart";
 import LineChart from "./components/line_chart";
 import DataSelector from "./components/DataSelector";
@@ -20,15 +19,9 @@ import { ChartType } from "./lib/frontend_models";
 import { ChartControls } from "./components/ChartControls";
 import { useChartOrchestrator } from "./lib/hooks/chartOrchestrator";
 import { getChartDefinition } from "./lib/chartConfig";
-
-
-// import LineGraph from "./components/linegraph";
-// import LeafletMap from "./components/Map";
-// import Banner from "./components/aqola-banner";
-
+import { Window } from "./components/dragBox";
 import { getSchools } from "./lib/api";
 import { School } from "./lib/api_models";
-
 import { useAppStore } from "./store/appStore";
 
 //dynamically import banner from banner component
@@ -114,7 +107,7 @@ export default function Home() {
   };
 
   const renderChart = () => {
-    console.log("CHARTING! ->" + activeChartId + " : " + chartData);
+    // console.log("CHARTING! ->" + activeChartId + " : " + chartData);
     if (!activeChartId || !chartData || !chartData.chart) return null;
     const chart = getChartDefinition(activeChartId);
     if (!chart) return null;
@@ -122,25 +115,33 @@ export default function Home() {
     switch (chart.chartComponent) {
       case "line":
         return (
-          <div className={"chart-overlay"}>
-            <LineChart data={chartData} get_line_name={handleLineHover} />;
-          </div>
+          // <div className={"chart-overlay"}>
+            <LineChart data={chartData} get_line_name={handleLineHover} />
+          // </div>
         )
       case "bar":
         return (
-          <div className="chart-overlay">
-            {<BarChart data={chartData.chart} />}
-          </div>
+          // <div className="chart-overlay">
+            <BarChart data={chartData.chart} />
+          // </div>
         );
     }
   };
+  
   return (
     <div className="page-container">
       <div className="map-wrapper">
         <LeafletMap schools={schools} />
 
-        {renderChart()}
+        {activeChartId && <Window>
+          {renderChart()}
+          {/* <div>hello there</div> */}
+        </Window>}
+        
       </div>
+
+
+      
       <DataSelector />
 
       <ChartControls
