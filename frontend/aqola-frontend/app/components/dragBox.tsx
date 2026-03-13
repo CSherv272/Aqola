@@ -1,7 +1,7 @@
 import { Rnd } from 'react-rnd';
 import { useState } from 'react';
 
-export function Window({ title, children }) {
+export function Window({ children }) {
   const [visible, setVisible] = useState(true);
   
   if (!visible) return null;
