@@ -115,15 +115,15 @@ export default function Home() {
     switch (chart.chartComponent) {
       case "line":
         return (
-          <div className={"chart-overlay"}>
-            <LineChart data={chartData} get_line_name={handleLineHover} />;
-          </div>
+          // <div className={"chart-overlay"}>
+            <LineChart data={chartData} get_line_name={handleLineHover} />
+          // </div>
         )
       case "bar":
         return (
-          <div className="chart-overlay">
-            {<BarChart data={chartData.chart} />}
-          </div>
+          // <div className="chart-overlay">
+            <BarChart data={chartData.chart} />
+          // </div>
         );
     }
   };

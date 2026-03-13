@@ -1,28 +1,35 @@
 import { Rnd } from 'react-rnd';
 import { useState } from 'react';
+import { useAppStore } from "./store/appStore";
+import { useChartOrchestrator } from "./lib/hooks/chartOrchestrator";
+
 
 export function Window({ children }) {
   const [visible, setVisible] = useState(true);
-  
+
   if (!visible) return null;
 
   return (
     <Rnd
-      default={{ x: 100, y: 100, width: 400, height: 300 }}
-      dragHandleClassName="rnd-window"
-      scale={1}
-    //   minWidth={200}
-    //   minHeight={150}
+      default={{ x: 100, y: 100, width: 600, height: 380 }}
+      dragHandleClassName="window-titlebar"
       bounds="parent"
-      className="rnd-window"
+      style={{
+        zIndex: 1500,
+        display: "flex",
+        flexDirection: "column",
+        background: "rgba(15, 30, 40, 0.85)",
+        border: "1px solid rgba(255, 255, 255, 0.2)",
+        borderRadius: "8px",
+        backdropFilter: "blur(10px)",
+        overflow: "hidden",
+        position:'absolute'
+      }}
     >
-      {/* Title bar */}
       <div className="window-titlebar">
-        {/* <span>{title}</span> */}
         <button onClick={() => setVisible(false)}>✕</button>
       </div>
-      {/* Content */}
-      <div className="window-content">
+      <div className={'window-content'}>
         {children}
       </div>
     </Rnd>
