@@ -1,16 +1,16 @@
 CREATE EXTENSION IF NOT EXISTS postgis;
-
 -- Drop child tables first (those that reference others)
-DROP TABLE IF EXISTS school_data;  -- References both postcodes and lsoas
-DROP TABLE IF EXISTS crime_data;   -- References lsoas
+DROP TABLE IF EXISTS school_data;
+DROP TABLE IF EXISTS flood_data;
+DROP TABLE IF EXISTS crime_data;
 
-DROP TABLE IF EXISTS flood_data;   -- References postcodes
-DROP TABLE IF EXISTS postcodes;    -- References lsoas
+-- Drop secondary parent tables
+DROP TABLE IF EXISTS postcodes;
 
-
--- Drop parent tables last
+-- Drop base parent tables last
+DROP TABLE IF EXISTS statistical_areas;
 DROP TABLE IF EXISTS lsoas;
-
+DROP TABLE IF EXISTS display_zones;
 
 CREATE TABLE IF NOT EXISTS lsoas (
     lsoa_id VARCHAR(20) PRIMARY KEY,
@@ -68,7 +68,6 @@ CREATE TABLE IF NOT EXISTS school_data (
     longitude DECIMAL(9,6),
     PRIMARY KEY (urn, year_range)
 );
-
 
 
 -- INSERT INTO lsoas (lsoa_id, area_name, population, area_sq_km, boundary, centroid)

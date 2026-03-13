@@ -35,6 +35,7 @@ export default function LineChart({
   // create the x and y scales for the chart, using the max x and y values from the data input
   const isDate = xVals[0] instanceof Date;
   console.log(isDate)
+  const isSchoolData = data.type === "school_data";
   const x = isDate
     ? d3.scaleTime(
       [d3.min(xVals), d3.max(xVals)],
@@ -45,7 +46,7 @@ export default function LineChart({
       [marginLeft, chartWidth - marginRight]
     );
   const y = d3.scaleLinear(
-    [0, d3.max([...yVals])],
+    isSchoolData ? [4, 1] : [0, d3.max([...yVals])],
     [height - marginBottom, marginTop],
   );
 
@@ -55,13 +56,22 @@ export default function LineChart({
     .x((d) => x(d[0]))
     .y((d) => y(d[1]));
 
-  // create the x & y axis, title, and x & y labels using d3
+ // create the x & y axis, title, and x & y labels using d3
   useEffect(() => {
-    (d3.select(xLabel.current).call(d3.axisBottom(x)), [xLabel, x]);
-    (d3.select(yLabel.current).call(d3.axisLeft(y)), [yLabel, y]);
+    // Wipe the slate completely clean
+    d3.select(xLabel.current).selectAll("*").remove();
+    d3.select(yLabel.current).selectAll("*").remove();
+    d3.select(svg.current).selectAll(".chart-title").remove();
 
+    // Define the exact axes 
+    const xAxis = d3.axisBottom(x);
+    const yAxis = isSchoolData 
+      ? d3.axisLeft(y).tickValues([1, 2, 3, 4]).tickFormat(d3.format("d")) // Strict 1,2,3,4
+      : d3.axisLeft(y);
+
+    // Draw X Axis
     d3.select(xLabel.current)
-      .call(d3.axisBottom(x))
+      .call(xAxis)
       .append("text")
       .attr("x", chartWidth / 2)
       .attr("y", 35)
@@ -69,24 +79,29 @@ export default function LineChart({
       .attr("text-anchor", "middle")
       .text(data.chart.xlabel);
 
+    // Draw Y Axis
     d3.select(yLabel.current)
-      .call(d3.axisLeft(y))
+      .call(yAxis)
       .append("text")
       .attr("transform", "rotate(-90)")
       .attr("x", -height / 2)
-      .attr("y", -35)
+      .attr("y", -35) 
       .attr("fill", "teal")
       .attr("text-anchor", "middle")
-      .text(data.chart.ylabel);
+      .text(isSchoolData ? "Ofsted Ranking" : data.chart.ylabel);
+
+    // Draw Title
     d3.select(svg.current)
       .append("text")
+      .attr("class", "chart-title")
       .attr("x", chartWidth / 2)
       .attr("y", marginTop / 2)
       .attr("fill", "teal")
       .attr("text-anchor", "middle")
       .attr("font-size", "20px")
       .text(data.chart.title);
-  }, []);
+
+  }, [x, y, data, chartWidth, height, isSchoolData, marginLeft, marginTop]);
 
   return (
     <svg
