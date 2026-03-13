@@ -80,20 +80,20 @@ export default function Home() {
       // }
     // } 
     // // SCENARIO B: User is clicking map pins on the Schools tab
-    // else if (areasChanged && selectedDataset.toLowerCase() === "schools") {
-    //   if (selectedAreas.length > 0) {
-    //     // Pin selected: Open timeline ONLY if it isn't already open!
-    //     // (This fixes the every-other-click bug)
-    //     if (activeChartId !== "individual_school_ofsted_timeline") {
-    //       triggerChart("individual_school_ofsted_timeline");
-    //     }
+    else if (areasChanged && selectedDataset.toLowerCase() === "schools") {
+      if (selectedAreas.length > 0) {
+        // Pin selected: Open timeline ONLY if it isn't already open!
+        // (This fixes the every-other-click bug)
+        if (activeChartId !== "individual_school_ofsted_timeline") {
+          triggerChart("individual_school_ofsted_timeline");
+        }
     //   } else {
     //     // Pin deselected: Close the timeline if it's currently showing
     //     if (activeChartId === "individual_school_ofsted_timeline") {
     //       triggerChart("individual_school_ofsted_timeline"); // Toggles it off
     //     }
     //   }
-    }
+    }}}
 
     // Update refs for the next render
     prevAreasRef.current = selectedAreas;

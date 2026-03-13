@@ -117,8 +117,8 @@ for (const [index, [lsoa, coords]] of Object.entries(crimeCountData).entries()) 
   return response;
 }
 
-export const get_school_ofsted_history = async (urn: string): Promise<LineChartResponse> => {
-  if (!urn) {
+export const get_school_ofsted_history = async (urn: string[]): Promise<LineChartResponse> => {
+  if (!urn || urn.length === 0) {
     return {
       chartType: "line",
       type: "school_data",
@@ -132,33 +132,51 @@ export const get_school_ofsted_history = async (urn: string): Promise<LineChartR
     };
   }
 
-  const apiResponse = await api.get("/school/", { 
-    params: { urns: urn } 
-  });
-  
+  const colours = ["#dc2626", "#2563eb", "#16a34a", "#d97706", "#9333ea", "#0891b2", "#db2777"];
+
+  const urnSlug = "?" + urn.map(u => `urns=${u}`).join("&");
+  const apiResponse = await api.get(`/school/${urnSlug}`);
+
+  console.log("unr: " + urn)
+
   const schoolRecords: School[] = apiResponse.data;
 
-  // Filter out invalid/unjudged rankings BEFORE mapping
-  const coords: [Date, number][] = schoolRecords
-    .filter(s => s.ofsted_ranking > 0 && s.ofsted_ranking <= 4)
-    .map(s => {
-      const startYear = s.year_range.split('-')[0]; 
-      return [new Date(`${startYear}-01-01`), s.ofsted_ranking] as [Date, number];
-    }).sort((a, b) => a[0].getTime() - b[0].getTime()); 
+  // Group records by URN (falling back to school_name if urn isn't on the model)
+  const recordsByUrn = schoolRecords.reduce<Record<string, School[]>>((acc, record) => {
+    const key = (record as any).urn ?? record.school_name;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(record);
+    return acc;
+  }, {});
 
-  const schoolName = schoolRecords[0]?.school_name || "Unknown School";
+  const lines = Object.values(recordsByUrn).map((records, i) => {
+    const coords: [Date, number][] = records
+      .filter(s => s.ofsted_ranking > 0 && s.ofsted_ranking <= 4)
+      .map(s => {
+        const startYear = s.year_range.split("-")[0];
+        return [new Date(`${startYear}-01-01`), s.ofsted_ranking] as [Date, number];
+      })
+      .sort((a, b) => a[0].getTime() - b[0].getTime());
+
+    return {
+      line_name: records[0]?.school_name || "Unknown School",
+      coords,
+      color: colours[i % colours.length],
+    };
+  });
+
+  const title =
+    lines.length === 1
+      ? `Ofsted Rating History: ${lines[0].line_name}`
+      : "Ofsted Rating History: School Comparison";
 
   return {
     chartType: "line",
     type: "school_data",
     area: "school",
     chart: {
-      lines: [{
-        line_name: "Ofsted Grade",
-        coords: coords,
-        color: "#dc2626"
-      }],
-      title: `Ofsted Rating History: ${schoolName}`,
+      lines,
+      title,
       xlabel: "Year",
       ylabel: "Ofsted Ranking",
     },

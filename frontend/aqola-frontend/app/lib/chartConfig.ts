@@ -27,7 +27,7 @@ const apiCallMap: Record<string, (areas: string[]) => Promise<chartData>> = {
   flood_risk_frequency_by_postcode: (areas) =>
     flood_risk_frequency_by_postcode(areas),
 
-  get_school_ofsted_history: (areas) => get_school_ofsted_history(areas[0]),
+  get_school_ofsted_history: (areas) => get_school_ofsted_history(areas),
 };
 
 // Gets available charts from datasetConfig.json
