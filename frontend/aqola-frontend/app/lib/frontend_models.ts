@@ -24,7 +24,8 @@ export type LineChartResponse = {
   chart: {
     lines: {
       line_name: string,
-      coords: [Date, number][]
+      coords: [Date, number][],
+      color: string
     }[],
     title: string,
     xlabel: string;

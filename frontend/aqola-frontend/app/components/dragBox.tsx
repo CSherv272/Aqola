@@ -1,10 +1,11 @@
 import { Rnd } from 'react-rnd';
-import { useState } from 'react';
-import { useAppStore } from "./store/appStore";
-import { useChartOrchestrator } from "./lib/hooks/chartOrchestrator";
+import { useState, ReactNode } from 'react';
 
+interface WindowProps {
+  children: ReactNode
+}
 
-export function Window({ children }) {
+export function Window({children} : WindowProps) {
   const [visible, setVisible] = useState(true);
 
   if (!visible) return null;
