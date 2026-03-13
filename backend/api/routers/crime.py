@@ -7,6 +7,8 @@ from datetime import date
 from typing import List, Optional
 from sqlalchemy import func
 from collections import defaultdict
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 router = APIRouter()
 
@@ -68,11 +70,15 @@ async def get_total_crime_rate(
     lsoas: List[str] = Query(None),
     db: Session = Depends(get_db)):
 
-    query = (db.query(Crime.lsoa_id, Crime.date, func.count().label("count"))
-        .filter(Crime.lsoa_id.in_(lsoas))
-        .group_by(Crime.date, Crime.lsoa_id)
+    
+    query = (
+        db.query(Crime.lsoa_id, Crime.date, func.count().label("count"))
+        .group_by(Crime.lsoa_id, Crime.date)
         .order_by(Crime.date)
     )
+
+    if lsoas:  # ← this guard MUST wrap the filter
+        query = query.filter(Crime.lsoa_id.in_(lsoas))
 
     results = query.all()
 
@@ -90,10 +96,13 @@ async def get_crime_rate_by_type(
     db: Session = Depends(get_db)):
 
     query = (db.query(Crime.lsoa_id, Crime.crime_type, func.count().label("count"))
-        .filter(Crime.lsoa_id.in_(lsoas))
+        
         .group_by(Crime.crime_type, Crime.lsoa_id)
     )
 
+    if lsoas:
+        query = query.filter(Crime.lsoa_id.in_(lsoas))
+        
     results = query.all()
 
     dataDict = defaultdict(list)
@@ -126,10 +135,48 @@ async def crime_timeseries(
     query = query.order_by(Crime.date)
     results = query.all()
 
-    dataDict = defaultdict(list)
+    results = query.all()
+
+    dataDict = defaultdict(dict)
+
+    min_date = None
+    max_date = None
+
+    # fill in missing 0s
+    def generate_months(start, end):
+        months = []
+        current = start.replace(day=1)
+
+        while current <= end:
+            months.append(current)
+            current += relativedelta(months=1)
+
+        return months
 
     for result in results:
-        coords = [result.date, result.count]
-        dataDict[result.crime_type].append(coords)
+        date = result.date
+        crime_type = result.crime_type
+        count = result.count
 
-    return dataDict
+        dataDict[crime_type][date] = count
+
+        if not min_date or date < min_date:
+            min_date = date
+        if not max_date or date > max_date:
+            max_date = date
+
+        months = generate_months(min_date, max_date)
+
+        finalDict = {}
+
+        for crime_type, values in dataDict.items():
+            coords = []
+
+            for month in months:
+                count = values.get(month, 0)
+                coords.append([month, count])
+
+            finalDict[crime_type] = coords
+
+    return finalDict
+

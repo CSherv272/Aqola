@@ -97,8 +97,9 @@ export default function BarChart({
                 key={key}
                 id=""
                 fill={bar.color}
-                className="hover:saturate-300 focus:outline-2 transition-transform duration-300"
-              />
+                className="hover:saturate-300 focus:outline-2 transition-transform duration-300">
+                <title>{bar.bar_name}</title>
+              </rect>
             ))}
           </g>
         ))}

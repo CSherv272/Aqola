@@ -18,7 +18,7 @@ type DatasetKey = keyof typeof datasetConfig;
 const apiCallMap: Record<string, (areas: string[]) => Promise<chartData>> = {
   // Allow this to be selected
   crime_rate_by_type_and_area: (areas) =>
-    crime_rate_by_type_and_area(areas[0], ["Other theft", "Drugs"]),
+    crime_rate_by_type_and_area("E01023987", ["Anti-social behaviour","Bicycle theft","Burglary","Criminal damage and arson","Other theft","Robbery","Shoplifting","Theft from the person","Violence and sexual offences"]), // areas[0]
 
   crime_rate_by_area: (areas) => crime_rate_by_area(areas),
   ofsted_frequency_by_band: (areas) => ofsted_frequency_by_band(areas[0]),

@@ -121,7 +121,11 @@ export default function Home() {
 
     switch (chart.chartComponent) {
       case "line":
-        return <LineChart data={chartData} get_line_name={handleLineHover} />;
+        return (
+          <div className={"chart-overlay"}>
+            <LineChart data={chartData} get_line_name={handleLineHover} />;
+          </div>
+        )
       case "bar":
         return (
           <div className="chart-overlay">
