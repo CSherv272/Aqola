@@ -133,7 +133,10 @@ export default function Home() {
       <div className="map-wrapper">
         <LeafletMap schools={schools} />
 
-        {activeChartId && <Window>
+        {activeChartId && <Window
+          triggerChart={triggerChart}
+          activeChartId={activeChartId}
+          >
           {renderChart()}
           {/* <div>hello there</div> */}
         </Window>}
