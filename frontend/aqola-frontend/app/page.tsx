@@ -74,11 +74,6 @@ export default function Home() {
       if (selectedDataset.toLowerCase() !== "schools") {
         clearAreas(); // Wipe the red map pins
       }
-      // If a chart is currently open, toggle it off so it doesn't bleed over
-      // if (activeChartId) {
-      //   triggerChart(activeChartId); 
-      // }
-    // } 
     // // SCENARIO B: User is clicking map pins on the Schools tab
     else if (areasChanged && selectedDataset.toLowerCase() === "schools") {
       if (selectedAreas.length > 0) {
@@ -87,12 +82,6 @@ export default function Home() {
         if (activeChartId !== "individual_school_ofsted_timeline") {
           triggerChart("individual_school_ofsted_timeline");
         }
-    //   } else {
-    //     // Pin deselected: Close the timeline if it's currently showing
-    //     if (activeChartId === "individual_school_ofsted_timeline") {
-    //       triggerChart("individual_school_ofsted_timeline"); // Toggles it off
-    //     }
-    //   }
     }}}
 
     // Update refs for the next render
