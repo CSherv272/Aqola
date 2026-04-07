@@ -13,6 +13,7 @@ const useChartOrchestrator = () => {
 
   const availableCharts = getAvailableCharts(selectedDataset);
 
+  // Updates the currently active chart when selectedAreas changes, but only for the individual school timeline
   useEffect(() => {
     const updateLiveChart = async () => {
       // Only live-update the timeline
