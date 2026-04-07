@@ -9,12 +9,14 @@ type AppStore = {
   toggleArea: (area: string) => void;
   clearAreas: () => void;
   setDataset: (dataset: string) => void;
+  getDataset: () => string;
   loadGraphState: (graphState: StateDefinition) => void;
   addGraph: (graphName: string) => void;
   removeGraph: (graphName: string) => void;
   findGraphFromName: (graphName: string) => StateDefinition | undefined;
   focusGraph: (graphName: string) => void;
   updateGraphState: (graphName: string, newState: Partial<StateDefinition>) => void;
+  getFocusedGraph: () => StateDefinition | undefined;
 };
 
 const useAppStore = create<AppStore>((set, get) => ({
@@ -38,6 +40,8 @@ const useAppStore = create<AppStore>((set, get) => ({
     selectedDataset: dataset,
     selectedAreas: [],
   }),
+
+  getDataset: () => get().selectedDataset,
 
   // Loads a graph state from openGraphs into the main app state
   loadGraphState: (graphState) => set({
@@ -81,6 +85,10 @@ const useAppStore = create<AppStore>((set, get) => ({
           selectedDataset: get().selectedDataset }
         } : g),
   })),
+
+  getFocusedGraph: () => {
+    return get().openGraphs[0];
+  }
 }));
 
 export { useAppStore };

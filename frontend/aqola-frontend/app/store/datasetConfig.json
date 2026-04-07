@@ -1,5 +1,14 @@
 {
-  "crime": ["crime_by_type_over_time", "crime_by_area"],
-  "schools": ["school_ofsted_frequency","individual_school_ofsted_timeline"],
-  "flood": ["flood_risk_frequency"]
+  "crime": {
+    "graphs": ["crime_by_type_over_time", "crime_by_area"],
+    "areaType": "lsoa"
+  },
+  "schools": {
+    "graphs": ["school_ofsted_frequency", "individual_school_ofsted_timeline"],
+    "areaType": "urn"
+  },
+  "flood": {
+    "graphs": ["flood_risk_frequency"],
+    "areaType": "postcode"
+  }
 }
