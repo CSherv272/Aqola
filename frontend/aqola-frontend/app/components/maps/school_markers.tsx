@@ -37,7 +37,7 @@ interface SchoolMarkersProps {
   const selectedDataset = useAppStore((state) => state.selectedDataset);
   const selectedAreas = useAppStore((state) => state.selectedAreas);
   const clearAreas = useAppStore((state) => state.clearAreas);
-  const addArea = useAppStore((state) => state.addArea);
+  const toggleArea = useAppStore((state) => state.toggleArea);
   const removeArea = useAppStore((state) => state.removeArea);
 
   if (selectedDataset !== "Schools") return null;
@@ -72,7 +72,7 @@ interface SchoolMarkersProps {
                 } else {
                   // If it's blue, clear any other selections and select this one
                   // clearAreas();
-                  addArea(urnString); 
+                  toggleArea(urnString); 
                 }
               },
             }}
