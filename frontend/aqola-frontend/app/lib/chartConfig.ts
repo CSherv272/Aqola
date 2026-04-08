@@ -54,13 +54,11 @@ const fetchChartData = async (chartId: string | undefined, selectedAreas: string
   if (!chart) throw new Error(`Unkown Chart id: ${chartId}`);
 
   //Find relevant function
-  console.log("API Call stuff: " + chart.apiCall)
   const apiFn = apiCallMap[chart.apiCall];
   if (!apiFn) throw new Error(`No API function mapped for: ${chart.apiCall}`);
 
   //Run function
   const val = await apiFn(selectedAreas)
-  console.log(val)
   return await apiFn(selectedAreas);
 };
 
