@@ -7,6 +7,7 @@ import {
 } from "./bar_graph";
 import { chartData } from "./types";
 import { get_school_ofsted_history } from "./line_graph";
+import { api } from "./api";
 
 type DatasetKey = keyof typeof datasetConfig;
 
@@ -37,26 +38,34 @@ const getAvailableCharts = (dataset: string) => {
   const graphIds =
     (datasetConfig as Record<DatasetKey, Record< "graphs", string[]>>)[dataset as DatasetKey] ??
     { graphs: [] };
-    console.log("available graph ids for dataset", dataset, ":", graphIds);
+    // console.log("available graph ids for dataset", dataset, ":", graphIds);
   return chartDefinitions.filter((g) => graphIds.graphs.includes(g.id)) ?? null;
 };
 
 
 // returns data for the specfic chart entered.
-const fetchChartData = async (chartId: string, selectedAreas: string[]) => {
+const fetchChartData = async (chartId: string | undefined, selectedAreas: string[] | undefined) => {
+  if (chartId === undefined || selectedAreas === undefined){
+    return null
+  }
+  
   //Find relevant chart
   const chart = chartDefinitions.find((c) => c.id === chartId);
   if (!chart) throw new Error(`Unkown Chart id: ${chartId}`);
 
   //Find relevant function
+  console.log("API Call stuff: " + chart.apiCall)
   const apiFn = apiCallMap[chart.apiCall];
   if (!apiFn) throw new Error(`No API function mapped for: ${chart.apiCall}`);
 
   //Run function
+  const val = await apiFn(selectedAreas)
+  console.log(val)
   return await apiFn(selectedAreas);
 };
 
-const getChartDefinition = (chartId: string) => {
+const getChartDefinition = (chartId: string | undefined) => {
+  if (chartId === undefined) return null;
   const chart = chartDefinitions.find((c) => c.id === chartId);
   if (!chart) return null;
   return chart;
