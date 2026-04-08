@@ -9,13 +9,14 @@ type AppStore = {
   toggleArea: (area: string) => void;
   clearAreas: () => void;
   setDataset: (dataset: string) => void;
-  loadGraphState: (graphState: StateDefinition) => void;
+  loadChartState: (graphState: StateDefinition) => void;
   addGraph: (graphName: string) => void;
-  removeGraph: (graphName: string) => void;
-  findGraphFromName: (graphName: string) => StateDefinition | undefined;
-  focusGraph: (graphName: string) => void;
-  updateGraphState: (graphName: string, newState: Partial<StateDefinition>) => void;
-  getFocusedGraph: () => StateDefinition | undefined;
+  removeChart: (graphName: string) => void;
+  findChartFromName: (graphName: string) => StateDefinition | undefined;
+  focusChart: (graphName: string) => void;
+  updateChartState: (graphName: string, newState: Partial<StateDefinition>) => void;
+  getFocusedChart: () => StateDefinition | undefined;
+  getCharts: () => StateDefinition[];
 };
 
 const useAppStore = create<AppStore>((set, get) => ({
@@ -41,7 +42,7 @@ const useAppStore = create<AppStore>((set, get) => ({
   }),
 
   // Loads a graph state from openGraphs into the main app state
-  loadGraphState: (graphState) => set({
+  loadChartState: (graphState) => set({
     selectedAreas: graphState.selectedAreas,
     selectedDataset: graphState.selectedDataset,
   }),
@@ -56,24 +57,24 @@ const useAppStore = create<AppStore>((set, get) => ({
   })),
   
   // Removes a graph from openGraphs by name
-  removeGraph: (graphName) => set((state) => ({
+  removeChart: (graphName) => set((state) => ({
     openGraphs: state.openGraphs.filter((g) => g.graphName !== graphName),
   })),
 
   // Finds a graph in openGraphs by name
-  findGraphFromName: (graphName) => {
+  findChartFromName: (graphName) => {
     return get().openGraphs.find((g) => g.graphName === graphName);
   },
 
   // Puts the "focused" graph to the front of the openGraphs array
-  focusGraph: (graphName) => set((state) => {
+  focusChart: (graphName) => set((state) => {
     const graphToFocus = state.openGraphs.find((g) => g.graphName === graphName);
     if (!graphToFocus) return state;
     return { openGraphs: [graphToFocus, ...state.openGraphs.filter((g) => g.graphName !== graphName)] };
   }),
 
   // Updates the state of a graph in openGraphs by name
-  updateGraphState: (graphName) => set((state) => ({
+  updateChartState: (graphName) => set((state) => ({
     openGraphs: state.openGraphs.map((g) =>
       g.graphName === graphName ? { ...g, 
         ...{
@@ -83,8 +84,12 @@ const useAppStore = create<AppStore>((set, get) => ({
         } : g),
   })),
 
-  getFocusedGraph: () => {
+  getFocusedChart: () => {
     return get().openGraphs[0];
+  },
+
+  getCharts: () => {
+    return get().openGraphs;
   }
 }));
 
