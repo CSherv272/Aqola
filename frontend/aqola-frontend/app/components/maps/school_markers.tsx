@@ -37,7 +37,7 @@ interface SchoolMarkersProps {
   const selectedAreas = useAppStore((state) => state.selectedAreas);
   const toggleArea = useAppStore((state) => state.toggleArea);
 
-  if (selectedDataset !== "Schools") return null;
+  if (selectedDataset !== "schools") return null;
 
   const recentSchools = schools.filter(
     (school) => school.year_range === "2024-2025"

@@ -17,14 +17,14 @@ export default function DataSelector() {
       <select
         name="data"
         id="data"
-        value={selectedDataset ?? ""} // Maybe not default to "" ???
+        value={selectedDataset ?? "crime"} // Maybe not default to "" ???
         onChange={datasetSelector}
         className="data-select"
       >
         {/* These options should be set from the keys in the datasetConfig json */}
-        <option value="Crime">Crime</option>
-        <option value="Schools">Schools</option>
-        <option value="Flood">Flood Risk</option>
+        <option value="crime">Crime</option>
+        <option value="schools">Schools</option>
+        <option value="flood">Flood Risk</option>
       </select>
     </div>
   );

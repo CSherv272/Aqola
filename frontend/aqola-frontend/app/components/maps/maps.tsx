@@ -5,13 +5,13 @@
 "use client";
 
 import { MapContainer, TileLayer } from "react-leaflet";
-import "../leaflet/dist/leaflet.css";
+// import "../leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import { PostcodePolygons } from "./postcode_polygons";
 import { SchoolMarkers } from "./school_markers";
 import { School } from "../../lib/api_models";
-import MapOrchestrator from "../../lib/hooks/mapOrchestrator"
+import MapOrchestrator from "./mapOrchestrator"
 
 // interface MapProps {
 //   schools: School[];

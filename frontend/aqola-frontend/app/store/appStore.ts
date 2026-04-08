@@ -9,7 +9,6 @@ type AppStore = {
   toggleArea: (area: string) => void;
   clearAreas: () => void;
   setDataset: (dataset: string) => void;
-  getDataset: () => string;
   loadGraphState: (graphState: StateDefinition) => void;
   addGraph: (graphName: string) => void;
   removeGraph: (graphName: string) => void;
@@ -40,8 +39,6 @@ const useAppStore = create<AppStore>((set, get) => ({
     selectedDataset: dataset,
     selectedAreas: [],
   }),
-
-  getDataset: () => get().selectedDataset,
 
   // Loads a graph state from openGraphs into the main app state
   loadGraphState: (graphState) => set({

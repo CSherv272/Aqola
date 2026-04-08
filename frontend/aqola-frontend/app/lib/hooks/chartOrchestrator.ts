@@ -17,10 +17,8 @@ const useChartOrchestrator = () => {
   useEffect(() => {
     const updateLiveChart = async () => {
       // Only live-update the timeline
-      if (activeChartId === "individual_school_ofsted_timeline" && selectedAreas.length > 0) {
-        const data = await fetchChartData(activeChartId, selectedAreas);
-        setCurrentChartData(data);
-      }
+      const data = await fetchChartData(activeChartId, selectedAreas);
+      setCurrentChartData(data);
     };
     updateLiveChart();
   }, [selectedAreas, activeChartId]);
