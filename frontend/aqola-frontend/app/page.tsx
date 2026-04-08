@@ -32,29 +32,29 @@ export default function Home() {
   const prevAreasRef = useRef(selectedAreas);
   const prevDatasetRef = useRef(selectedDataset);
 
-  useEffect(() => {
-    const datasetChanged = prevDatasetRef.current !== selectedDataset;
-    const areasChanged = prevAreasRef.current !== selectedAreas;
+  // useEffect(() => {
+  //   const datasetChanged = prevDatasetRef.current !== selectedDataset;
+  //   const areasChanged = prevAreasRef.current !== selectedAreas;
 
-    // SCENARIO A: User switched datasets (e.g., Schools -> Crime)
-    if (datasetChanged) {
-      if (selectedDataset.toLowerCase() !== "schools") {
-        clearAreas(); // Wipe the red map pins
-      }
-    // // SCENARIO B: User is clicking map pins on the Schools tab
-    else if (areasChanged && selectedDataset.toLowerCase() === "schools") {
-      if (selectedAreas.length > 0) {
-        // Pin selected: Open timeline ONLY if it isn't already open!
-        // (This fixes the every-other-click bug)
-        if (activeChartId !== "individual_school_ofsted_timeline") {
-          triggerChart("individual_school_ofsted_timeline");
-        }
-    }}}
+  //   // SCENARIO A: User switched datasets (e.g., Schools -> Crime)
+  //   if (datasetChanged) {
+  //     if (selectedDataset.toLowerCase() !== "schools") {
+  //       clearAreas(); // Wipe the red map pins
+  //     }
+  //   // // SCENARIO B: User is clicking map pins on the Schools tab
+  //   else if (areasChanged && selectedDataset.toLowerCase() === "schools") {
+  //     if (selectedAreas.length > 0) {
+  //       // Pin selected: Open timeline ONLY if it isn't already open!
+  //       // (This fixes the every-other-click bug)
+  //       if (activeChartId !== "individual_school_ofsted_timeline") {
+  //         triggerChart("individual_school_ofsted_timeline");
+  //       }
+  //   }}}
 
-    // Update refs for the next render
-    prevAreasRef.current = selectedAreas;
-    prevDatasetRef.current = selectedDataset;
-  }, [selectedAreas, selectedDataset, activeChartId]);
+  //   // Update refs for the next render
+  //   prevAreasRef.current = selectedAreas;
+  //   prevDatasetRef.current = selectedDataset;
+  // }, [selectedAreas, selectedDataset, activeChartId]);
 
 
   const handleLineHover = (newValue: string) => {

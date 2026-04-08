@@ -32,8 +32,15 @@ const apiCallMap: Record<string, (areas: string[]) => Promise<chartData>> = {
 
 // Gets available charts from datasetConfig.json
 const getAvailableCharts = (dataset: string) => {
-  return datasetConfig[dataset.toLowerCase() as DatasetKey]?.graphs ?? [];
+  dataset = dataset.toLowerCase();
+
+  const graphIds =
+    (datasetConfig as Record<DatasetKey, Record< "graphs", string[]>>)[dataset as DatasetKey] ??
+    { graphs: [] };
+    console.log("available graph ids for dataset", dataset, ":", graphIds);
+  return chartDefinitions.filter((g) => graphIds.graphs.includes(g.id)) ?? null;
 };
+
 
 // returns data for the specfic chart entered.
 const fetchChartData = async (chartId: string, selectedAreas: string[]) => {
