@@ -12,6 +12,8 @@ const useChartOrchestrator = () => {
   const getCharts = useAppStore((state) => state.getCharts);
   const findChartFromName = useAppStore((state) => state.findChartFromName);
   const focusChart = useAppStore((state) => state.focusChart);
+  const removeChart = useAppStore((state) => state.removeChart);
+  const getFocusedChart = useAppStore((state) => state.getFocusedChart);
  
   const [activeChartId, setActiveChartId] = useState("");
   const [currentChartData, setCurrentChartData] = useState<chartData>(null);
@@ -29,17 +31,22 @@ const useChartOrchestrator = () => {
     updateLiveChart();
   }, [selectedAreas, activeChartId]);
 
+  const closeChart = (chartId: string) => {
+    setCurrentChartData(null);
+    removeChart(activeChartId)
+    setActiveChartId(getFocusedChart()?.graphName ?? "");
+  }
+
   // will need to change the close button to new function
   // Update/Create chart based on ID
   const triggerChart = async (chartId: string) => {
-    console.log("Chart id: " + chartId)
     const data = await fetchChartData(chartId, selectedAreas);
     setCurrentChartData(data);
     setActiveChartId(chartId);
     
     // if not in the stack, add the graph
     // else, focus graph
-    if (findChartFromName(chartId) === undefined){ addGraph(chartId); console.log("Chart id found!")}
+    if (findChartFromName(chartId) === undefined){ addGraph(chartId);}
     else { focusChart(chartId) }
   };
 
@@ -48,7 +55,10 @@ const useChartOrchestrator = () => {
     activeChartId,
     chartData: currentChartData,
     triggerChart,
+    closeChart,
   };
+
+
 };
 
 export { useChartOrchestrator };

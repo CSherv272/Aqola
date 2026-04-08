@@ -37,15 +37,13 @@ export default function Home() {
       <div className="map-wrapper">
         <LeafletMap />
 
-        {activeChartId && <Window
+        {/* {activeChartId && <Window
           triggerChart={triggerChart}
           activeChartId={activeChartId}
           >
-          {/* {renderCharts()} */}
           {<Charts />}
-          {/* <div>hello there</div> */}
-        </Window>}
-        
+        </Window>} */}
+        <Charts />
       </div>
 
 
