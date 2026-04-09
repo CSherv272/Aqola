@@ -3,9 +3,11 @@ import { useState, ReactNode } from 'react';
 
 interface WindowProps {
   children: ReactNode
+  triggerChart: (chartId: string) => void;
+  activeChartId: string;
 }
 
-export function Window({ children }: WindowProps) {
+export function Window({ children, triggerChart, activeChartId }: WindowProps) {
   const [visible, setVisible] = useState(true);
 
   if (!visible) return null;
@@ -38,7 +40,7 @@ export function Window({ children }: WindowProps) {
         cursor: "grab",
         width: "100%",
       }}>
-        <button onClick={() => setVisible(false)} style={{
+        <button onClick={() => triggerChart(activeChartId)} style={{
           background: "none", border: "none", color: "white", 
           cursor: "pointer", fontSize: "16px"
         }}>✕</button>

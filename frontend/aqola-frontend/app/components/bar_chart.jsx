@@ -9,8 +9,8 @@ export default function BarChart({
   marginRight = 20,
   marginBottom = 30,
   marginLeft = 60,
-  width = 840,
-  height = 600,
+  width = 700,
+  height =400,
 }) {
   const gx = useRef();
   const gy = useRef();
@@ -70,7 +70,10 @@ export default function BarChart({
   );
 
   return (
-    <svg width={width} height={height}>
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      preserveAspectRatio="xMidYMid meet"
+    >
       <g transform={`translate(${marginLeft}, ${marginTop})`}>
         {/* Create the lines going across the background */}
         {yScale.ticks().map((tickValue) => (
