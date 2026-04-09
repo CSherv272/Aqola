@@ -14,7 +14,7 @@ type AppStore = {
   removeChart: (graphName: string) => void;
   findChartFromName: (graphName: string) => StateDefinition | undefined;
   focusChart: (graphName: string) => void;
-  updateChartState: (graphName: string, newState: Partial<StateDefinition>) => void;
+  updateChartState: (graphName: string) => void;
   getFocusedChart: () => StateDefinition | undefined;
   getCharts: () => StateDefinition[];
 };

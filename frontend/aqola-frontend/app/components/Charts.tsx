@@ -3,9 +3,10 @@ import { fetchChartData, getChartDefinition } from "../lib/chartConfig";
 import { StateDefinition } from "../store/stateDefinition";
 import LineChart from "./line_chart"
 import BarChart from "./bar_chart"
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useChartOrchestrator } from "../lib/hooks/chartOrchestrator";
 import { Window } from "./dragBox";
+import { update } from "lodash";
 
 const handleLineHover = (newValue: string) => {
     console.log("rahh");
@@ -13,23 +14,26 @@ const handleLineHover = (newValue: string) => {
 
 export default function Charts() {
     const getCharts = useAppStore((state) => state.getCharts);
+    const selectedAreas = useAppStore((state) => state.selectedAreas);
     const charts = getCharts() as StateDefinition[];
     const [chartElements, setChartElements] = useState<React.ReactNode[]>([]);
-    const { closeChart } = useChartOrchestrator();
+    const { closeChart, updateLiveChart } = useChartOrchestrator();
 
+    // Whenever the charts in the stack change, we need to rebuild the chart elements
     useEffect(() => {
         async function buildCharts() {
+            console.log("Building charts with selected areas: ", selectedAreas);
             const elements = await Promise.all(
                 charts.map(async (chart) => {
                     const data = await fetchChartData(chart?.graphName, chart?.selectedAreas);
                     const chartDef = getChartDefinition(chart?.graphName);
 
                     if (chartDef?.chartComponent === "line") {
-                        return <Window triggerChart={closeChart} activeChartId={chart.graphName}>
+                        return <Window triggerChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName}>
                                     <LineChart key={chart.graphName} data={data} get_line_name={handleLineHover} />
                                 </Window>
                     } else if (chartDef?.chartComponent === "bar") {
-                        return <Window triggerChart={closeChart} activeChartId={chart.graphName}>
+                        return <Window triggerChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName}>
                                     <BarChart key={chart.graphName} data={data?.chart} />
                                 </Window>
                     }
@@ -39,7 +43,7 @@ export default function Charts() {
         }
 
         buildCharts();
-    }, [charts]);
+    }, [charts, selectedAreas]); // Rebuild charts whenever the stack changes or selected areas change (for live updates)
 
     return <>{chartElements}</>;
 }

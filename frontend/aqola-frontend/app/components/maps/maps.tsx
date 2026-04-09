@@ -8,14 +8,7 @@ import { MapContainer, TileLayer } from "react-leaflet";
 // import "../leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import { PostcodePolygons } from "./postcode_polygons";
-import { SchoolMarkers } from "./school_markers";
-import { School } from "../../lib/api_models";
 import MapOrchestrator from "./mapOrchestrator"
-
-// interface MapProps {
-//   schools: School[];
-// }
 
 export default function Map() {
   // default center for the Kent/Canterbury area
@@ -34,12 +27,6 @@ export default function Map() {
       />
 
       <MapOrchestrator />
-      {/* <PostcodePolygons /> */}
-      
-      {/* Pass the schools array to the containerised markers. 
-          The markers component handles its own display logic internally.
-      */}
-      {/* <SchoolMarkers schools={schools} /> */}
       
     </MapContainer>
   );
