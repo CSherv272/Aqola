@@ -28,21 +28,10 @@ export default function Home() {
   const { availableCharts, activeChartId, chartData, triggerChart } = useChartOrchestrator();
   const [selectedDataSet, setSelectedDataSet] = useState("crime_data"); // Needs to be changed, to use actual app state
 
-// Smarter Watcher using Refs to track changes
-  const prevAreasRef = useRef(selectedAreas);
-  const prevDatasetRef = useRef(selectedDataset);
-
   return (
     <div className="page-container">
       <div className="map-wrapper">
         <LeafletMap />
-
-        {/* {activeChartId && <Window
-          triggerChart={triggerChart}
-          activeChartId={activeChartId}
-          >
-          {<Charts />}
-        </Window>} */}
         <Charts />
       </div>
 
