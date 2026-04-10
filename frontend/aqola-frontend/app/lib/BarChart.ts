@@ -84,6 +84,59 @@ export const ofsted_frequency_by_band = async (
   return response;
 };
 
+// Given an area, find the number of schools in each ofsted band, broken down by year
+export const ofsted_frequency_yearly = async (
+  area?: string,
+): Promise<BarChartResponse> => {
+  let apiResponse;
+
+  if (area && area.length > 7) {
+    apiResponse = await api.get(`/school/ofsted-count-yearly/?lsoas=${area}`);
+  } else if (area) {
+    apiResponse = await api.get(`/school/ofsted-count-yearly/?postcodes=${area}`);
+  } else {
+    apiResponse = await api.get("/school/ofsted-count-yearly");
+  }
+
+  const rawData = apiResponse.data.yearly_rankings;
+
+  const uniqueYears = Array.from(new Set(rawData.map((d: any) => d.year_range))).sort();
+
+  const groups = uniqueYears.map((year: any) => {
+    
+    const yearData = rawData.filter((d: any) => d.year_range === year);
+
+    const rankingCounts = Object.fromEntries(
+      yearData.map((row: any) => [row.ranking, row.count])
+    );
+
+    return {
+      name: year as string, // This becomes the label on the X-axis (e.g., "2012-2013")
+      bars: [
+        { bar_name: "Outstanding", value: rankingCounts[1] ?? 0, color: "green" },
+        { bar_name: "Good", value: rankingCounts[2] ?? 0, color: "cyan" },
+        { bar_name: "Needs Improvement", value: rankingCounts[3] ?? 0, color: "blue" },
+        { bar_name: "Inadequate", value: rankingCounts[4] ?? 0, color: "brown" },
+        { bar_name: "Ungraded", value: (rankingCounts[0] ?? 0) + (rankingCounts[-1] ?? 0), color: "grey" },
+      ],
+    };
+  });
+
+  const response: BarChartResponse = {
+    chartType: "bar",
+    type: "kent_ofsted_yearly", 
+    area: area ? "local" : "county",
+    chart: {
+      groups: groups, // Pass in array of yearly groups
+      title: "Ofsted Rankings Over Time",
+      xlabel: "Academic Year",
+      ylabel: "Number of Schools",
+    },
+  };
+
+  return response;
+};
+
 export const flood_risk_frequency_by_postcode = async (
   postcodes: string[],
 ): 

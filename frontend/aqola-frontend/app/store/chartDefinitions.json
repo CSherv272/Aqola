@@ -24,6 +24,14 @@
     "icon": "fi fi-rs-stats"
   },
   {
+    "id": "school_ofsted_frequency_yearly",
+    "label": "Ofsted Ratings Yearly",
+    "chartComponent": "bar",
+    "dataset": "schools",
+    "apiCall": "ofsted_frequency_yearly",
+    "icon": "fi fi-rs-stats"
+  },
+  {
   "id": "individual_school_ofsted_timeline",
   "label": "Ofsted History",
   "chartComponent": "line",

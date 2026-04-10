@@ -1,73 +1,29 @@
 import datasetConfig from "../store/datasetConfig.json";
 import chartDefinitions from "../store/chartDefinitions.json";
-import { crime_rate_by_type_and_area, crime_rate_by_area } from "./LineChart";
+import { crime_rate_by_type_and_area, crime_rate_by_area } from "./line_graph";
 import {
   ofsted_frequency_by_band,
+  ofsted_frequency_yearly,
   flood_risk_frequency_by_postcode,
-} from "./BarChart";
-import { ChartData } from "./ChartModels";
-import { get_school_ofsted_history } from "./LineChart";
+} from "./bar_graph";
+import { chartData } from "./types";
+import { get_school_ofsted_history } from "./line_graph";
 
 type DatasetKey = keyof typeof datasetConfig;
-
-// type describes exactly what needs to be shown at what zoom level.
-type AreaLayer = {
-  areaType: "lsoa" | "postcode" | "urn";
-  minZoom: number;
-  maxZoom?: number;
-};
-
-type DatasetConfig = {
-  graphs: string[];
-  areaLayers: AreaLayer[];
-};
-
-const DATASET_CONFIG = datasetConfig as Record<string, DatasetConfig>;
-
-// Gets a Area Layer based on zoom and dataset.
-const resolveAreaType = (
-  datasetKey: string,
-  currentZoom: number,
-): AreaLayer | null => {
-  const config = DATASET_CONFIG[datasetKey];
-  if (!config) return null;
-
-  // Start from length to start with the most specific map features first.
-  for (let i = config.areaLayers.length - 1; i >= 0; i--) {
-    const layer = config.areaLayers[i];
-
-    //Infinity here so that if max zoom isn't given this still works.
-    const max = layer.maxZoom ?? Infinity;
-
-    if (currentZoom >= layer.minZoom && currentZoom < max) {
-      return layer;
-    }
-  }
-  return null; // This means they've zoomed out too far, or not set zoom properly
-};
 
 // Maps the apiCall part of the chart info to the actual API function
 // Every chart will need a new line here to get the data needed to populate the chart.
 
 // apiCall (in the json) : (params) => actual_function_in_frontend(params);
 
-const apiCallMap: Record<string, (areas: string[]) => Promise<ChartData>> = {
+const apiCallMap: Record<string, (areas: string[]) => Promise<chartData>> = {
   // Allow this to be selected
   crime_rate_by_type_and_area: (areas) =>
-    crime_rate_by_type_and_area("E01023987", [
-      "Anti-social behaviour",
-      "Bicycle theft",
-      "Burglary",
-      "Criminal damage and arson",
-      "Other theft",
-      "Robbery",
-      "Shoplifting",
-      "Theft from the person",
-      "Violence and sexual offences",
-    ]), // areas[0]
+    crime_rate_by_type_and_area("E01023987", ["Anti-social behaviour","Bicycle theft","Burglary","Criminal damage and arson","Other theft","Robbery","Shoplifting","Theft from the person","Violence and sexual offences"]), // areas[0]
 
   crime_rate_by_area: (areas) => crime_rate_by_area(areas),
   ofsted_frequency_by_band: (areas) => ofsted_frequency_by_band(areas[0]),
+  ofsted_frequency_yearly: (areas) => ofsted_frequency_yearly(areas[0]),
 
   //NOTE Only this one works for now!
   flood_risk_frequency_by_postcode: (areas) =>
@@ -80,21 +36,14 @@ const apiCallMap: Record<string, (areas: string[]) => Promise<ChartData>> = {
 const getAvailableCharts = (dataset: string) => {
   dataset = dataset.toLowerCase();
 
-  const graphIds = (
-    datasetConfig as Record<DatasetKey, Record<"graphs", string[]>>
-  )[dataset as DatasetKey] ?? { graphs: [] };
-  return chartDefinitions.filter((g) => graphIds.graphs.includes(g.id)) ?? null;
+  const graphIds =
+    (datasetConfig as Record<DatasetKey, string[]>)[dataset as DatasetKey] ??
+    [];
+  return chartDefinitions.filter((g) => graphIds.includes(g.id));
 };
 
-// Runs data fetch for inputted chart id
-const fetchChartData = async (
-  chartId: string | undefined,
-  selectedAreas: string[] | undefined,
-) => {
-  if (chartId === undefined || selectedAreas === undefined) {
-    return null;
-  }
-
+// returns data for the specfic chart entered.
+const fetchChartData = async (chartId: string, selectedAreas: string[]) => {
   //Find relevant chart
   const chart = chartDefinitions.find((c) => c.id === chartId);
   if (!chart) throw new Error(`Unkown Chart id: ${chartId}`);
@@ -107,19 +56,10 @@ const fetchChartData = async (
   return await apiFn(selectedAreas);
 };
 
-// Retrieve the chart definition given an ID, from the chartDefinition JSON
-const getChartDefinition = (chartId: string | undefined) => {
-  if (chartId === undefined) return null;
+const getChartDefinition = (chartId: string) => {
   const chart = chartDefinitions.find((c) => c.id === chartId);
   if (!chart) return null;
   return chart;
 };
 
-export {
-  getAvailableCharts,
-  fetchChartData,
-  getChartDefinition,
-  resolveAreaType,
-  type DatasetKey,
-  type AreaLayer,
-};
+export { getAvailableCharts, fetchChartData, getChartDefinition };
