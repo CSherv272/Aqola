@@ -5,9 +5,9 @@ import { useRef, useEffect } from "react";
 
 export default function BarChart({
   data,
-  marginTop = 20,
+  marginTop = 60,
   marginRight = 20,
-  marginBottom = 30,
+  marginBottom = 40,
   marginLeft = 60,
   width = 700,
   height =400,
@@ -19,7 +19,7 @@ export default function BarChart({
   const innerWidth = width - marginLeft - marginRight;
   const innerHeight = height - marginTop - marginBottom;
 
-  // subgroups are the labels of the bars IN the bar graph groups (i.e. high risk, low risk)
+  // subgroups are the labels of the bars IN the bar graph groups (i.e. high {data.chart.title}risk, low risk)
   const subgroups = d3.map(data.groups[0].bars, (bar) => bar.bar_name);
   // groups are the labels of bar groups (in this case postcodes)
   const groups = d3.map(data.groups, (group) => group.name);
@@ -71,6 +71,41 @@ export default function BarChart({
       viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="xMidYMid meet"
     >
+      {/* Chart Title */}
+      <text
+        x={width / 2}
+        y={marginTop / 2 + 5}
+        textAnchor="middle"
+        fontSize="18px"
+        fill="white"
+        fontWeight="bold"
+      >
+        {data.title}
+      </text>
+
+      {/*  X-Axis Label */}
+      <text
+        x={width / 2}
+        y={height - 5}
+        textAnchor="middle"
+        fontSize="14px"
+        fill="lightgrey"
+      >
+        {data.xlabel}
+      </text>
+
+      {/*  Y-Axis Label */}
+      <text
+        transform="rotate(-90)"
+        x={-(height / 2)}
+        y={15}
+        textAnchor="middle"
+        fontSize="14px"
+        fill="lightgrey"
+      >
+        {data.ylabel}
+      </text>
+      
       <g transform={`translate(${marginLeft}, ${marginTop})`}>
         {/* Create the lines going across the background */}
         {yScale.ticks().map((tickValue) => (
