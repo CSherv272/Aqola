@@ -154,7 +154,9 @@ export const school_gender_demographics_by_phase = async (
 
   const rawData = apiResponse.data["gender-demographics"];
 
-  const uniquePhases = Array.from(new Set(rawData.map((d: any) => d.phase)));
+  const phaseOrder = ["Primary", "Secondary", "16 to 18"];
+  const uniquePhases = Array.from(new Set<string>(rawData.map((d: any) => d.phase as string)))
+    .sort((a, b) => phaseOrder.indexOf(a) - phaseOrder.indexOf(b));
 
   const genderColours: Record<string, string> = {
     "Boys": "#3b82f6",   // Blue
