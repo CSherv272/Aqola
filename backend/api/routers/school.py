@@ -126,7 +126,7 @@ async def get_school_ofsted_counts_yearly(
     }
     
 @router.get("/gender-demographics-count")
-async def get_school_demographics(
+async def get_school_gender_demographics(
     lsoas: Optional[List[str]] = Query(default=None),
     postcodes: Optional[List[str]] = Query(default=None),
     db: Session = Depends(get_db)):
