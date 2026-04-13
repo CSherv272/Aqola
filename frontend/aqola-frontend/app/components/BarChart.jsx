@@ -33,7 +33,7 @@ export default function BarChart({
 
   //Create the data scale for the y axis
   const yScale = d3
-    .scaleLinear()
+    .scaleSqrt() // changed to sqrt from linear to show non mixed demographics more proportionally
     .domain([
       0,
       d3.max(data.groups, (group) => d3.max(group.bars, (bar) => bar.value)),
