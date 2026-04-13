@@ -2,8 +2,7 @@ import { useAppStore } from "@/app/store/appStore";
 import { useState, useEffect, useRef } from "react";
 import { getAvailableCharts, fetchChartData } from "../chartConfig";
 import { chartData } from "../types";
-import { get, set } from "lodash";
-// import { StateDefinition } from "@/app/store/appStore";
+import { StateDefinition } from "@/app/store/stateDefinition";
 
 const useChartOrchestrator = () => {
   const selectedDataset = useAppStore((state) => state.selectedDataset);
@@ -18,27 +17,43 @@ const useChartOrchestrator = () => {
   const updateChartState = useAppStore((state) => state.updateChartState);
  
   const [activeChartId, setActiveChartId] = useState("");
-  const [currentChartData, setCurrentChartData] = useState<chartData>(null);
+  // const [currentChartData, setCurrentChartData] = useState<chartData>(null);
+  const isDatasetChanging = useRef(false);
 
   const availableCharts = getAvailableCharts(selectedDataset);
+  const charts = getCharts() as StateDefinition[];
 
-  // Updates the currently active chart when selectedAreas changes
+// Update current chart and selected areas when dataset changes
+  useEffect(() => {
+    isDatasetChanging.current = true;
+    clearAreas();
+    // setCurrentChartData(null);
+    setActiveChartId("");
+    isDatasetChanging.current = false;
+  }, [selectedDataset]);
+
+
+    // Updates the currently active chart when selectedAreas changes
   const updateLiveChart = async () => {
-    const data = await fetchChartData(activeChartId, selectedAreas);
-    setCurrentChartData(data);
-    updateChartState(activeChartId);
+    console.log("Updating live chart for: " + activeChartId);
+    // const data = await fetchChartData(activeChartId, selectedAreas);
+    // setCurrentChartData(data);
+    if(findChartFromName(activeChartId)?.selectedDataset == selectedDataset){
+      updateChartState(activeChartId);
+    }
   };
-
 
   // Live update of the currently active chart whenever selected areas change
   useEffect(() => {
+    if (isDatasetChanging.current) {console.log("skipping live update"); return;} // skip live update if we're in the middle of a dataset change, to avoid conflicts
+    console.log(getCharts());
     if (activeChartId === getFocusedChart()?.graphName) {
       updateLiveChart();
     }
   }, [selectedAreas]);
 
   const closeChart = (chartId: string) => {
-    setCurrentChartData(null);
+    // setCurrentChartData(null);
     removeChart(chartId);
     setActiveChartId(getFocusedChart()?.graphName ?? "");
   }
@@ -50,8 +65,8 @@ const useChartOrchestrator = () => {
     if (findChartFromName(chartId) === undefined){ addGraph(chartId); console.log("Added chart: ", chartId);}
     else { focusChart(chartId);} 
     
-    const data = await fetchChartData(chartId, selectedAreas);
-    setCurrentChartData(data);
+    // const data = await fetchChartData(chartId, selectedAreas);
+    // setCurrentChartData(data);
     setActiveChartId(chartId);
   };
 
@@ -59,7 +74,7 @@ const useChartOrchestrator = () => {
     availableCharts,
     activeChartId,
     setActiveChartId,
-    chartData: currentChartData,
+    // chartData: currentChartData,
     triggerChart,
     closeChart,
     updateLiveChart,

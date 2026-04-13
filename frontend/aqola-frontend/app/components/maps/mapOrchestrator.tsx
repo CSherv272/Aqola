@@ -31,10 +31,10 @@ const MapOrchestrator = () => {
 
     switch(selectedDataset) {
         case "schools":
-            console.log("Schools dataset selected - fetching and displaying school markers.");
+            // console.log("Schools dataset selected - fetching and displaying school markers.");
             return <SchoolMarkers schools={schools} />;
         case "crime":
-            console.log("Crime dataset selected - but no map layer implemented yet!");
+            // console.log("Crime dataset selected - but no map layer implemented yet!");
             return null; // needs to be lsoa polygons
         case "flood":
             return <PostcodePolygons />;
