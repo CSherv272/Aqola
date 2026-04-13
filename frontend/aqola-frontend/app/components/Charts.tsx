@@ -43,7 +43,7 @@ export default function Charts() {
         }
 
         buildCharts();
-    }, [charts, selectedAreas]); // Rebuild charts whenever the stack changes or selected areas change (for live updates)
+    }, [charts]); // Rebuild charts whenever the stack changes or selected areas change (for live updates)
 
     return <>{chartElements}</>;
 }
