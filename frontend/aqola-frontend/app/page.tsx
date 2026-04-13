@@ -25,7 +25,7 @@ export default function Home() {
   const selectedAreas = useAppStore((state) => state.selectedAreas);
   const selectedDataset = useAppStore((state) => state.selectedDataset);
   const clearAreas = useAppStore((state) => state.clearAreas);
-  const { availableCharts, activeChartId, chartData, triggerChart } = useChartOrchestrator();
+  const { availableCharts, activeChartId, triggerChart } = useChartOrchestrator();
   const [selectedDataSet, setSelectedDataSet] = useState("crime_data"); // Needs to be changed, to use actual app state
 
   return (

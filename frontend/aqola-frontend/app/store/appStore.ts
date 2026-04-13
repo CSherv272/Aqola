@@ -17,6 +17,7 @@ type AppStore = {
   updateChartState: (graphName: string) => void;
   getFocusedChart: () => StateDefinition | undefined;
   getCharts: () => StateDefinition[];
+  addAreas: (areas: string[]) => void;
 };
 
 const useAppStore = create<AppStore>((set, get) => ({
@@ -30,6 +31,11 @@ const useAppStore = create<AppStore>((set, get) => ({
       selectedAreas: state.selectedAreas.includes(area)
         ? state.selectedAreas.filter((a) => a !== area)
         : [...state.selectedAreas, area],
+    })),
+
+  addAreas: (areas)=>
+    set((state) => ({
+      selectedAreas: [...state.selectedAreas, ...areas.filter((a) => !state.selectedAreas.includes(a))],
     })),
 
   // Empties the selectedAreas array
@@ -79,7 +85,7 @@ const useAppStore = create<AppStore>((set, get) => ({
       g.graphName === graphName ? { ...g, 
         ...{
           graphName: graphName,
-          selectedAreas: get().selectedAreas,
+          selectedAreas: [...get().selectedAreas, ...g.selectedAreas],
           selectedDataset: get().selectedDataset }
         } : g),
   })),

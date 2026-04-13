@@ -1,5 +1,5 @@
 import { useAppStore } from "@/app/store/appStore";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import { getAvailableCharts, fetchChartData } from "../chartConfig";
 import { chartData } from "../types";
 import { StateDefinition } from "@/app/store/stateDefinition";
@@ -9,6 +9,7 @@ const useChartOrchestrator = () => {
   const selectedAreas = useAppStore((state) => state.selectedAreas);
   const clearAreas = useAppStore((state) => state.clearAreas);
   const addGraph = useAppStore((state) => state.addGraph);
+  const addAreas = useAppStore((state) => state.addAreas);
   const getCharts = useAppStore((state) => state.getCharts);
   const findChartFromName = useAppStore((state) => state.findChartFromName);
   const focusChart = useAppStore((state) => state.focusChart);
@@ -19,9 +20,7 @@ const useChartOrchestrator = () => {
   const [activeChartId, setActiveChartId] = useState("");
   // const [currentChartData, setCurrentChartData] = useState<chartData>(null);
   const isDatasetChanging = useRef(false);
-
   const availableCharts = getAvailableCharts(selectedDataset);
-  const charts = getCharts() as StateDefinition[];
 
 // Update current chart and selected areas when dataset changes
   useEffect(() => {
@@ -32,6 +31,11 @@ const useChartOrchestrator = () => {
     isDatasetChanging.current = false;
   }, [selectedDataset]);
 
+
+  // Update selected areas when active chart updates
+  useEffect(() => {
+    addAreas(findChartFromName(activeChartId)?.selectedAreas ?? []);
+  }, [activeChartId]);
 
     // Updates the currently active chart when selectedAreas changes
   const updateLiveChart = async () => {
@@ -52,10 +56,12 @@ const useChartOrchestrator = () => {
     }
   }, [selectedAreas]);
 
+  // Removes chart from stack, and refocuses, clears currently selected areas
   const closeChart = (chartId: string) => {
     // setCurrentChartData(null);
     removeChart(chartId);
     setActiveChartId(getFocusedChart()?.graphName ?? "");
+    clearAreas();
   }
 
   // Create/Focus chart based on ID
@@ -63,7 +69,10 @@ const useChartOrchestrator = () => {
     // if not in the stack, add the graph
     // else, focus graph
     if (findChartFromName(chartId) === undefined){ addGraph(chartId); console.log("Added chart: ", chartId);}
-    else { focusChart(chartId);} 
+    else { 
+      focusChart(chartId);
+      // set appstore selected areas to match the chart's
+    } 
     
     // const data = await fetchChartData(chartId, selectedAreas);
     // setCurrentChartData(data);
