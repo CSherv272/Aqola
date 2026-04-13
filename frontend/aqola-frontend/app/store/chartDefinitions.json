@@ -32,6 +32,14 @@
     "icon": "fi fi-rs-stats"
   },
   {
+    "id": "school_gender_demographics",
+    "label": "School Gender Demographics",
+    "chartComponent": "bar",
+    "dataset": "schools",
+    "apiCall": "school_gender_demographics_by_phase",
+    "icon": "fi fi-rs-stats" 
+  },
+  {
   "id": "individual_school_ofsted_timeline",
   "label": "Ofsted History",
   "chartComponent": "line",
