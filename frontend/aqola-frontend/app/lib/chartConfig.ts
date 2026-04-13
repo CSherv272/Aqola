@@ -4,6 +4,7 @@ import { crime_rate_by_type_and_area, crime_rate_by_area } from "./line_graph";
 import {
   ofsted_frequency_by_band,
   ofsted_frequency_yearly,
+  school_gender_demographics_by_phase,
   flood_risk_frequency_by_postcode,
 } from "./bar_graph";
 import { chartData } from "./types";
@@ -24,6 +25,7 @@ const apiCallMap: Record<string, (areas: string[]) => Promise<chartData>> = {
   crime_rate_by_area: (areas) => crime_rate_by_area(areas),
   ofsted_frequency_by_band: (areas) => ofsted_frequency_by_band(areas[0]),
   ofsted_frequency_yearly: (areas) => ofsted_frequency_yearly(areas[0]),
+school_gender_demographics_by_phase: (areas) => school_gender_demographics_by_phase(areas[0]),
 
   //NOTE Only this one works for now!
   flood_risk_frequency_by_postcode: (areas) =>

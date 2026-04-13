@@ -1,5 +1,5 @@
 {
   "crime": ["crime_by_type_over_time", "crime_by_area"],
-  "schools": ["school_ofsted_frequency","school_ofsted_frequency_yearly","individual_school_ofsted_timeline"],
+  "schools": ["school_ofsted_frequency","school_ofsted_frequency_yearly","individual_school_ofsted_timeline","school_gender_demographics"],
   "flood": ["flood_risk_frequency"]
 }

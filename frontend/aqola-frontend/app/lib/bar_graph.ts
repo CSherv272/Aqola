@@ -138,6 +138,61 @@ export const ofsted_frequency_yearly = async (
   return response;
 };
 
+// Given an area, find the demographics of schools broken down by phase and gender
+export const school_gender_demographics_by_phase = async (
+  area?: string,
+): Promise<BarChartResponse> => {
+  let apiResponse;
+
+  if (area && area.length > 7) {
+    apiResponse = await api.get(`/school/gender-demographics-count/?lsoas=${area}`);
+  } else if (area) {
+    apiResponse = await api.get(`/school/gender-demographics-count/?postcodes=${area}`);
+  } else {
+    apiResponse = await api.get("/school/gender-demographics-count");
+  }
+
+  const rawData = apiResponse.data["gender-demographics"];
+
+  const uniquePhases = Array.from(new Set(rawData.map((d: any) => d.phase)));
+
+  const genderColours: Record<string, string> = {
+    "Boys": "#3b82f6",   // Blue
+    "Girls": "#ec4899",  // Pink
+    "Mixed": "#a855f7"   // Purple
+  };
+
+  const groups = uniquePhases.map((phase: any) => {
+    
+    const phaseData = rawData.filter((d: any) => d.phase === phase);
+
+    const bars = phaseData.map((d: any) => ({
+      bar_name: d.gender,
+      value: d.count,
+      color: genderColours[d.gender] || "grey" 
+    }));
+
+    return {
+      name: phase as string, 
+      bars: bars,            
+    };
+  });
+
+  const response: BarChartResponse = {
+    chartType: "bar",
+    type: "school_demographics", 
+    area: area ? "local" : "county",
+    chart: {
+      groups: groups, 
+      title: "School Gender Demographics by Phase",
+      xlabel: "Education Phase",
+      ylabel: "Number of Schools",
+    },
+  };
+
+  return response;
+};
+
 export const flood_risk_frequency_by_postcode = async (
   postcodes: string[],
 ): 
