@@ -22,10 +22,13 @@ export default function Charts() {
     useEffect(() => {
         async function buildCharts() {
             const elements = await Promise.all(
+                // For each chart in the app state stack
                 charts.map(async (chart) => {
+                    // Get corresponding data
                     const data = await fetchChartData(chart?.graphName, chart?.selectedAreas);
                     const chartDef = getChartDefinition(chart?.graphName);
 
+                    // Create either line or bar chart
                     if (chartDef?.chartComponent === "line") {
                         return <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart}>
                                     <LineChart key={chart.graphName} data={data} get_line_name={handleLineHover} />

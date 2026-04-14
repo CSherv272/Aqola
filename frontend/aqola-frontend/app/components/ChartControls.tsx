@@ -19,7 +19,6 @@ const ChartControls = ({
   activeChartId,
   triggerChart,
 }: ChartControlsProps) => {
-  // no hook call here anymore
   return (
     <div className="bottom-nav">
       {availableCharts.map((chart) => (
@@ -30,7 +29,6 @@ const ChartControls = ({
           title={chart.id}
         >
           <i className={chart.icon} />
-          {/* <title>{chart.id}</title> */}
         </button>
       ))}
     </div>
