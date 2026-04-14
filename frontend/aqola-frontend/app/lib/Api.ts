@@ -10,11 +10,6 @@ export const hello = async () => {
   return response.data;
 };
 
-// export const hola = async () => {
-//     const response = await api.get("http://localhost:8000/")
-//     return response;
-// }
-
 export const getSchools = async (): Promise<School[]> => {
     const response = await api.get("/school/");
     return response.data;

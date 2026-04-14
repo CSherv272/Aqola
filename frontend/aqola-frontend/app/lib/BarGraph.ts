@@ -1,7 +1,6 @@
 import axios from "axios";
 import type { School, SchoolCounts } from "./ApiModels";
 import type { BarChartResponse } from "./ChartModels";
-import { getPostcodeBoundaries } from "./Postcode";
 
 // method naming convention <area>_<xlabel>_<ylabel>_<bars>
 

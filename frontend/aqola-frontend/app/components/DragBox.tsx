@@ -28,6 +28,7 @@ export function Window({ children, closeChart, focusChart, activeChartId }: Wind
       }}
       onMouseDown={() => focusChart && focusChart(activeChartId)} // For focusing element on click
     >
+      {/* Top bar of the window, includes close button */}
       <div style={{ 
         flexShrink: 0, 
         height: "36px", 
@@ -52,6 +53,7 @@ export function Window({ children, closeChart, focusChart, activeChartId }: Wind
           ✕
         </button>
       </div>
+      {/* Window contents */}
       <div 
         style={{ 
           flex: 1, 
