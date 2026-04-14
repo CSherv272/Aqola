@@ -1,69 +1,66 @@
 import { useAppStore } from "@/app/store/appStore";
-import { useState, useEffect, useRef, use } from "react";
-import { getAvailableCharts, fetchChartData } from "../chartConfig";
-import { chartData } from "../types";
-import { StateDefinition } from "@/app/store/stateDefinition";
-import { get, set } from "lodash";
-import { useStore } from "zustand/react";
+import { useState, useEffect, useRef } from "react";
+import { getAvailableCharts } from "../chartConfig";
 
 const useChartOrchestrator = () => {
+  // AppStore Variable Refs
   const selectedDataset = useAppStore((state) => state.selectedDataset);
   const selectedAreas = useAppStore((state) => state.selectedAreas);
+  const charts = useAppStore((state) => state.openGraphs);
+
+  // AppStore Method Refs
   const clearAreas = useAppStore((state) => state.clearAreas);
   const addGraph = useAppStore((state) => state.addGraph);
   const addAreas = useAppStore((state) => state.addAreas);
-  const getCharts = useAppStore((state) => state.getCharts);
   const findChartFromName = useAppStore((state) => state.findChartFromName);
   const focusChart = useAppStore((state) => state.focusChart);
   const removeChart = useAppStore((state) => state.removeChart);
   const getFocusedChart = useAppStore((state) => state.getFocusedChart);
   const updateChartState = useAppStore((state) => state.updateChartState);
   const setDataset = useAppStore((state) => state.setDataset);
-  const charts = useAppStore((state) => state.openGraphs);
- 
-  const [activeChartId, setActiveChartId] = useState("");
-  // const [currentChartData, setCurrentChartData] = useState<chartData>(null);
+  
+  const [activeChartId, setActiveChartId] = useState(""); // determines if chart is active
+                                                          // mainly used for determining if the user has changed dataset
   const isDatasetChanging = useRef(false);
   const availableCharts = getAvailableCharts(selectedDataset);
 
+// Terminology:
+//      Active chart and focused chart - mean the same thing. The chart that is to be interacted with
+
+
 // Update current chart and selected areas when dataset changes
   useEffect(() => {
+    // Checks if the user has changed the dataset via the dropdown
     if (selectedDataset !== getFocusedChart()?.selectedDataset){
-      isDatasetChanging.current = true;
       clearAreas();
-      // setCurrentChartData(null);
       setActiveChartId("");
-      isDatasetChanging.current = false;
     }
   }, [selectedDataset]);
 
   // Update activeChart ID when stack changes
+  // Keeps local ref up to date
   useEffect(() => {
-    console.log("Charts in stack changed, current stack: ", charts);
     setActiveChartId(getFocusedChart()?.graphName ?? "");
   }, [charts]);
 
-  // Update selected areas when active chart updates
+  // Update selected areas and dataset when active chart updates
   useEffect(() => {
-    setDataset(findChartFromName(activeChartId)?.selectedDataset ?? "crime");
-    console.log("Dataset set to: ", selectedDataset);
+    // If there is an active chart, change the dataset match
+    const ds = findChartFromName(activeChartId)?.selectedDataset
+    if (ds){
+      setDataset(ds);
+    }
     addAreas(findChartFromName(activeChartId)?.selectedAreas ?? []);
   }, [activeChartId]);
 
-    // Updates the currently active chart when selectedAreas changes
-  const updateLiveChart = async () => {
-    console.log("Updating live chart for: " + activeChartId);
-    // const data = await fetchChartData(activeChartId, selectedAreas);
-    // setCurrentChartData(data);
+  // Update chart state if the active chart's dataset is the same as the user selected dataset
+  const updateLiveChart = async () => {    
     if(findChartFromName(activeChartId)?.selectedDataset == selectedDataset){
       updateChartState(activeChartId);
     }
   };
-
-  // Live update of the currently active chart whenever selected areas change
+  // Updates the currently active chart when selectedAreas changes
   useEffect(() => {
-    if (isDatasetChanging.current) {console.log("skipping live update"); return;} // skip live update if we're in the middle of a dataset change, to avoid conflicts
-    console.log(getCharts());
     if (activeChartId === getFocusedChart()?.graphName) {
       updateLiveChart();
     }
@@ -71,7 +68,6 @@ const useChartOrchestrator = () => {
 
   // Removes chart from stack, and refocuses, clears currently selected areas
   const closeChart = (chartId: string) => {
-    // setCurrentChartData(null);
     removeChart(chartId);
     setActiveChartId(getFocusedChart()?.graphName ?? "");
     clearAreas();
@@ -79,17 +75,13 @@ const useChartOrchestrator = () => {
 
   // Create/Focus chart based on ID
   const triggerChart = async (chartId: string) => {
-    // if not in the stack, add the graph
-    // else, focus graph
+    // if not in the stack, add the graph and set it as activeChartId
     if (findChartFromName(chartId) === undefined){ addGraph(chartId); setActiveChartId(chartId);}
+    // else, focus graph in stack and set as activeChartId
     else { 
       focusChart(chartId);
       setActiveChartId(chartId);
-      // set appstore selected areas to match the chart's
-    } 
-    
-    // const data = await fetchChartData(chartId, selectedAreas);
-    // setCurrentChartData(data);
+    }
     setActiveChartId(chartId);
   };
 
@@ -97,13 +89,10 @@ const useChartOrchestrator = () => {
     availableCharts,
     activeChartId,
     setActiveChartId,
-    // chartData: currentChartData,
     triggerChart,
     closeChart,
     updateLiveChart,
   };
-
-
 };
 
 export { useChartOrchestrator };

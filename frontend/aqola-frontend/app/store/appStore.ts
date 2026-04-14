@@ -33,6 +33,7 @@ const useAppStore = create<AppStore>((set, get) => ({
         : [...state.selectedAreas, area],
     })),
 
+  // Add an array of areas, only the ones that aren't in the selectedAreas already
   addAreas: (areas)=>
     set((state) => ({
       selectedAreas: [...state.selectedAreas, ...areas.filter((a) => !state.selectedAreas.includes(a))],
@@ -91,10 +92,12 @@ const useAppStore = create<AppStore>((set, get) => ({
         } : g),
   })),
 
+  // Returns the top chart in the stack
   getFocusedChart: () => {
     return get().openGraphs[0];
   },
 
+  // Returns the full chart stack
   getCharts: () => {
     return get().openGraphs;
   }
