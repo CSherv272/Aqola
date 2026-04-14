@@ -2,7 +2,7 @@ import datasetConfig from "../store/datasetConfig.json";
 import chartDefinitions from "../store/chartDefinitions.json";
 import { crime_rate_by_type_and_area, crime_rate_by_area } from "./LineGraph";
 import { ofsted_frequency_by_band, flood_risk_frequency_by_postcode } from "./BarGraph";
-import { chartData } from "./DataModels";
+import { ChartData } from "./ChartModels";
 import { get_school_ofsted_history } from "./LineGraph";
 
 type DatasetKey = keyof typeof datasetConfig;
@@ -12,7 +12,7 @@ type DatasetKey = keyof typeof datasetConfig;
 
 // apiCall (in the json) : (params) => actual_function_in_frontend(params);
 
-const apiCallMap: Record<string, (areas: string[]) => Promise<chartData>> = {
+const apiCallMap: Record<string, (areas: string[]) => Promise<ChartData>> = {
   // Allow this to be selected
   crime_rate_by_type_and_area: (areas) =>
     crime_rate_by_type_and_area("E01023987", ["Anti-social behaviour","Bicycle theft","Burglary","Criminal damage and arson","Other theft","Robbery","Shoplifting","Theft from the person","Violence and sexual offences"]), // areas[0]

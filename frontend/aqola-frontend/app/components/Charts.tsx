@@ -1,11 +1,11 @@
-import { useAppStore } from "../store/AppStore2";
-import { fetchChartData, getChartDefinition } from "../lib/ChartConfi";
-import { StateDefinition } from "../store/StateDefinitions";
+import { useAppStore } from "../store/AppStore";
+import { fetchChartData, getChartDefinition } from "../lib/ChartConfig";
+import { StateDefinition } from "../store/ChartStateModel";
 import LineChart from "./LineChart"
 import BarChart from "./BarChart"
 import { useEffect, useState } from "react";
 import { useChartOrchestrator } from "../lib/hooks/chartOrchestrator";
-import { Window } from "./DragBox2";
+import { Window } from "./DragBox";
 
 const handleLineHover = (newValue: string) => {
     console.log("rahh");

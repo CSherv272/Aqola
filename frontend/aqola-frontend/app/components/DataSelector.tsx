@@ -1,4 +1,4 @@
-import { useAppStore } from "../store/AppStore2";
+import { useAppStore } from "../store/AppStore";
 
 export default function DataSelector() {
   // Read the value from Zustand directly — no useState needed

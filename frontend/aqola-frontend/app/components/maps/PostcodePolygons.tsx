@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { debounce } from "lodash";
 import { Feature, FeatureCollection } from "geojson";
 import { Layer, DomEvent } from "leaflet";
-import { useAppStore } from "@/app/store/AppStore2";
+import { useAppStore } from "@/app/store/AppStore";
 
 const MIN_ZOOM = 13; // Only show postcodes when zoomed in enough
 
