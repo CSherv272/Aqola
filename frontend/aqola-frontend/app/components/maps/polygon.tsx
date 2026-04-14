@@ -1,5 +1,5 @@
 import { GeoJSON } from "react-leaflet";
-import { PostcodeGeoJson } from "@/app/lib/types";
+import { PostcodeGeoJson } from "@/app/lib/DataModels";
 
 interface PolygonProps {
   postcode_name: string;

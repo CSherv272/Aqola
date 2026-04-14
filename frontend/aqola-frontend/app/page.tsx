@@ -9,14 +9,14 @@ import DataSelector from "./components/DataSelector";
 import { useState, useEffect, useRef } from "react";
 import { ChartControls } from "./components/ChartControls";
 import { useChartOrchestrator } from "./lib/hooks/chartOrchestrator";
-import { getChartDefinition } from "./lib/chartConfig";
-import { Window } from "./components/DragBox";
-import { useAppStore } from "./store/appStore";
+import { getChartDefinition } from "./lib/ChartConfi";
+import { Window } from "./components/DragBox2";
+import { useAppStore } from "./store/AppStore2";
 import renderCharts from "./components/Charts"
 import Charts from "./components/Charts"
 
 //dynamically import of the leaflet map from a map component
-const LeafletMap = dynamic(() => import("./components/maps/maps"), {
+const LeafletMap = dynamic(() => import("./components/maps/Map2"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });

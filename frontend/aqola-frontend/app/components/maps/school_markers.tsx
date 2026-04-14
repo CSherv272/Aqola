@@ -2,8 +2,8 @@
 
 import L from "leaflet";
 import { Marker, Popup } from "react-leaflet";
-import { School } from "../../lib/api_models";
-import { useAppStore } from "../../store/appStore";
+import { School } from "../../lib/ApiModels";
+import { useAppStore } from "../../store/AppStore2";
 
 // Marker icon colour red state when selected
 const redIcon = new L.Icon({
