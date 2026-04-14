@@ -3,14 +3,12 @@ import { useState, ReactNode } from 'react';
 
 interface WindowProps {
   children: ReactNode
-  triggerChart: (chartId: string) => void;
+  closeChart: (chartId: string) => void;
   activeChartId: string;
+  focusChart?: (chartId: string) => void;
 }
 
-export function Window({ children, triggerChart, activeChartId }: WindowProps) {
-  const [visible, setVisible] = useState(true);
-
-  if (!visible) return null;
+export function Window({ children, closeChart, focusChart, activeChartId }: WindowProps) {
 
   return (
     <Rnd
@@ -28,6 +26,7 @@ export function Window({ children, triggerChart, activeChartId }: WindowProps) {
         width: "100%",
         height: "100%"
       }}
+      onMouseDown={() => focusChart && focusChart(activeChartId)} // For focusing element on click
     >
       <div style={{ 
         flexShrink: 0, 
@@ -39,13 +38,31 @@ export function Window({ children, triggerChart, activeChartId }: WindowProps) {
         borderBottom: "1px solid rgba(255,255,255,0.1)",
         cursor: "grab",
         width: "100%",
-      }}>
-        <button onClick={() => triggerChart(activeChartId)} style={{
-          background: "none", border: "none", color: "white", 
-          cursor: "pointer", fontSize: "16px"
-        }}>✕</button>
+        }}>
+        <button
+          onClick={() => closeChart(activeChartId)} 
+          style={{
+            background: "none",
+            border: "none",
+            color: "white", 
+            cursor: "pointer", 
+            fontSize: "16px" 
+          }}
+        >
+          ✕
+        </button>
       </div>
-      <div style={{ flex: 1, overflow: "auto", zIndex: 2000, width:"99%", height:"95%", marginTop: "5%", position: "absolute" }}>
+      <div 
+        style={{ 
+          flex: 1, 
+          overflow: "auto", 
+          zIndex: 2000, 
+          width:"99%", 
+          height:"95%", 
+          marginTop: "5%", 
+          position: "absolute" 
+        }}
+      >
         {children}
       </div>
     </Rnd>
