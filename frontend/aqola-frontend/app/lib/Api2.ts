@@ -1,5 +1,5 @@
 import axios from "axios";
-import { School } from "./api_models";
+import { School } from "./ApiModels";
 
 export const api = axios.create({
   baseURL: "http://localhost:8000",

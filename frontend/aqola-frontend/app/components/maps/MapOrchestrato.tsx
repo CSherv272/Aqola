@@ -1,10 +1,10 @@
-import { useAppStore } from "@/app/store/appStore";
+import { useAppStore } from "@/app/store/AppStore2";
 // import datasetCofig from "../../store/datasetConfig";
 import { PostcodePolygons } from "./postcode_polygons";
 import { SchoolMarkers } from "./school_markers";
-import { getSchools } from "../../lib/api";
+import { getSchools } from "../../lib/Api2";
 import { useState, useEffect } from "react";
-import { School } from "../../lib/api_models";
+import { School } from "../../lib/ApiModels";
 
 const MapOrchestrator = () => {
     const selectedDataset = useAppStore((state) => state.selectedDataset);

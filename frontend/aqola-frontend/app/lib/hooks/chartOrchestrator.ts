@@ -1,6 +1,6 @@
-import { useAppStore } from "@/app/store/appStore";
+import { useAppStore } from "@/app/store/AppStore2";
 import { useState, useEffect, useRef } from "react";
-import { getAvailableCharts } from "../chartConfig";
+import { getAvailableCharts } from "../ChartConfi";
 
 const useChartOrchestrator = () => {
   // AppStore Variable Refs

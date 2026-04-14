@@ -1,9 +1,9 @@
-import { api } from "./api";
+import { api } from "./Api2";
 import {
   PostcodeGeoJson,
   PostcodePolygonResponse,
   PostcodeResponse,
-} from "./types";
+} from "./DataModels";
 
 export const getPostcode = async (
   postcode: string,

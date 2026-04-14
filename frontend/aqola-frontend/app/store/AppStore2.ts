@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { StateDefinition } from "./stateDefinition";
+import { StateDefinition } from "./StateDefinitions";
 
 type AppStore = {
   openGraphs: StateDefinition[],

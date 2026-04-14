@@ -1,10 +1,10 @@
 import { GeoJSON, useMapEvents } from "react-leaflet";
-import { getPostcodeBoundaries } from "@/app/lib/postcodes";
+import { getPostcodeBoundaries } from "@/app/lib/Postcode";
 import { useState, useEffect, useRef } from "react";
 import { debounce } from "lodash";
 import { Feature, FeatureCollection } from "geojson";
 import { Layer, DomEvent } from "leaflet";
-import { useAppStore } from "@/app/store/appStore";
+import { useAppStore } from "@/app/store/AppStore2";
 
 const MIN_ZOOM = 13; // Only show postcodes when zoomed in enough
 
