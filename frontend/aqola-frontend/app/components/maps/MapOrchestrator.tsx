@@ -1,8 +1,8 @@
-import { useAppStore } from "@/app/store/AppStore2";
+import { useAppStore } from "@/app/store/AppStore";
 // import datasetCofig from "../../store/datasetConfig";
-import { PostcodePolygons } from "./postcode_polygons";
-import { SchoolMarkers } from "./school_markers";
-import { getSchools } from "../../lib/Api2";
+import { PostcodePolygons } from "./PostcodePolygons";
+import { SchoolMarkers } from "./SchoolMarkers";
+import { getSchools } from "../../lib/Api";
 import { useState, useEffect } from "react";
 import { School } from "../../lib/ApiModels";
 

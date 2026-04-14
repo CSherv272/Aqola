@@ -8,7 +8,7 @@ import { MapContainer, TileLayer } from "react-leaflet";
 // import "../leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import MapOrchestrator from "./MapOrchestrato"
+import MapOrchestrator from "./MapOrchestrator"
 
 export default function Map() {
   // default center for the Kent/Canterbury area

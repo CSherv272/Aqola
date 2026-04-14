@@ -17,11 +17,8 @@ type PostcodePolygonResponse = {
   boundary: Polygon | MultiPolygon;
 };
 
-type chartData = BarChartResponse | LineChartResponse | null;
-
 export {
   type PostcodeGeoJson,
   type PostcodeResponse,
   type PostcodePolygonResponse,
-  type chartData,
 };
