@@ -19,7 +19,7 @@ export default function BarChart({
   const innerWidth = width - marginLeft - marginRight;
   const innerHeight = height - marginTop - marginBottom;
 
-  // subgroups are the labels of the bars IN the bar graph groups (i.e. high {data.chart.title}risk, low risk)
+  // subgroups are the labels of the bars IN the bar graph groups (i.e. high risk, low risk)
   const subgroups = d3.map(data.groups[0].bars, (bar) => bar.bar_name);
   // groups are the labels of bar groups (in this case postcodes)
   const groups = d3.map(data.groups, (group) => group.name);
