@@ -14,6 +14,7 @@ const handleLineHover = (newValue: string) => {
 
 export default function Charts() {
     const getCharts = useAppStore((state) => state.getCharts);
+    const focusChart = useAppStore((state) => state.focusChart);
     const selectedAreas = useAppStore((state) => state.selectedAreas);
     const charts = getCharts() as StateDefinition[];
     const [chartElements, setChartElements] = useState<React.ReactNode[]>([]);
@@ -29,11 +30,11 @@ export default function Charts() {
                     const chartDef = getChartDefinition(chart?.graphName);
 
                     if (chartDef?.chartComponent === "line") {
-                        return <Window triggerChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName}>
+                        return <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart}>
                                     <LineChart key={chart.graphName} data={data} get_line_name={handleLineHover} />
                                 </Window>
                     } else if (chartDef?.chartComponent === "bar") {
-                        return <Window triggerChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName}>
+                        return <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart}>
                                     <BarChart key={chart.graphName} data={data?.chart} />
                                 </Window>
                     }

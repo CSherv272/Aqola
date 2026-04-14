@@ -26,7 +26,6 @@ const MapOrchestrator = () => {
         if (selectedDataset === "schools") {
             fetchSchools();
         }
-
     }, [selectedDataset]);
 
     switch(selectedDataset) {

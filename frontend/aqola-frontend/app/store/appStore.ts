@@ -74,6 +74,7 @@ const useAppStore = create<AppStore>((set, get) => ({
 
   // Puts the "focused" graph to the front of the openGraphs array
   focusChart: (graphName) => set((state) => {
+    console.log("Focusing chart: ", graphName);
     const graphToFocus = state.openGraphs.find((g) => g.graphName === graphName);
     if (!graphToFocus) return state;
     return { openGraphs: [graphToFocus, ...state.openGraphs.filter((g) => g.graphName !== graphName)] };
