@@ -10,7 +10,7 @@ import { useState, useEffect, useRef } from "react";
 import { ChartControls } from "./components/ChartControls";
 import { useChartOrchestrator } from "./lib/hooks/chartOrchestrator";
 import { getChartDefinition } from "./lib/chartConfig";
-import { Window } from "./components/dragBox";
+import { Window } from "./components/DragBox";
 import { useAppStore } from "./store/appStore";
 import renderCharts from "./components/Charts"
 import Charts from "./components/Charts"
