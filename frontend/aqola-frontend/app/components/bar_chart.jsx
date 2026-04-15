@@ -34,14 +34,19 @@ export default function BarChart({
     .range([0, innerWidth])
     .padding(0.2);
 
+  // symlog is used instead of log to include 0
+  const isSymlog = data.scaleType === "symlog";
+
   //Create the data scale for the y axis
-  const yScale = d3
-    .scaleSqrt() // changed to sqrt from linear to show non mixed demographics more proportionally
-    .domain([
-      0,
-      d3.max(data.groups, (group) => d3.max(group.bars, (bar) => bar.value)),
-    ])
-    .range([innerHeight, 0]);
+  const yScale = isSymlog
+    ? d3.scaleSymlog().constant(1) 
+    : d3.scaleLinear()
+    yScale
+      .domain([
+        0,
+        d3.max(data.groups, (group) => d3.max(group.bars, (bar) => bar.value)),
+      ])
+      .range([innerHeight, 0]);
 
   //Create the subgroup data scale
   const xSubgroupScale = d3
@@ -68,6 +73,17 @@ export default function BarChart({
     () => void d3.select(subgx.current).call(d3.axisBottom(xSubgroupScale)),
     [subgx, xSubgroupScale],
   );
+
+  useEffect(() => {
+    const axis = d3.axisLeft(yScale);
+    
+    // for the demographics chart, these are the hard coded intervals to make the bar chart look proportional and clear
+    if (isSymlog) {
+      axis.tickValues([0, 10, 100, 500, 1000, 3000, 7000]);
+    }
+
+    d3.select(gy.current).call(axis.tickFormat(d3.format(",.0f")));
+  }, [gy, yScale, isSymlog]);
 
   return (
     <svg

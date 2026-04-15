@@ -189,6 +189,7 @@ export const school_gender_demographics_by_phase = async (
       title: "School Gender Demographics by Phase",
       xlabel: "Education Phase",
       ylabel: "Number of Schools",
+      scaleType: "symlog"
     },
   };
 
