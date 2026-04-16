@@ -1,50 +1,72 @@
 import { useAppStore } from "../store/AppStore";
 import { fetchChartData, getChartDefinition } from "../lib/ChartConfig";
 import { StateDefinition } from "../store/ChartStateModel";
-import LineChart from "./LineChart"
-import BarChart from "./BarChart"
-import { useEffect, useState } from "react";
-import { useChartOrchestrator } from "../lib/hooks/chartOrchestrator";
-import { Window } from "./DragBox";
-
-const handleLineHover = (newValue: string) => {
-    console.log("rahh");
-};
+import { useEffect, useRef, useState, memo } from "react";
+import { useChartOrchestrator } from "../lib/hooks/ChartOrchestrato";
+import ChartWindow from "./ChartWindow";
 
 export default function Charts() {
     const getCharts = useAppStore((state) => state.getCharts);
     const focusChart = useAppStore((state) => state.focusChart);
     const charts = getCharts() as StateDefinition[];
-    const [chartElements, setChartElements] = useState<React.ReactNode[]>([]);
     const { closeChart } = useChartOrchestrator();
 
-    // Whenever the charts in the stack change, rebuild the chart elements
-    useEffect(() => {
-        async function buildCharts() {
-            const elements = await Promise.all(
-                // For each chart in the app state stack
-                charts.map(async (chart) => {
-                    // Get corresponding data
-                    const data = await fetchChartData(chart?.graphName, chart?.selectedAreas);
-                    const chartDef = getChartDefinition(chart?.graphName);
+    // Map of graphName -> fetched data, persists across renders
+    const [chartsData, setChartsData] = useState<Record<string, any>>({});
+    const prevChartNamesRef = useRef<Set<string>>(new Set());
+    let selectedAreas = useAppStore((state) => state.selectedAreas);
 
-                    // Create either line or bar chart
-                    if (chartDef?.chartComponent === "line") {
-                        return <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart}>
-                                    <LineChart key={chart.graphName} data={data} get_line_name={handleLineHover} />
-                                </Window>
-                    } else if (chartDef?.chartComponent === "bar") {
-                        return <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart}>
-                                    <BarChart key={chart.graphName} data={data?.chart} />
-                                </Window>
-                    }
-                })
-            );
-            setChartElements(elements);
+    useEffect(() => {
+        const currentCharts = new Set(charts.map((c) => c.graphName));
+        const prevRenderedCharts = prevChartNamesRef.current;
+
+        // Find new, removed and updated charts
+        const addedCharts = charts.filter((c) => !prevRenderedCharts.has(c.graphName));
+        const changedCharts = charts.filter((chart) => { return chart.selectedAreas != selectedAreas; });
+        const removedCharts = [...prevRenderedCharts].filter((chart) => !currentCharts.has(chart));
+
+        // Drop removed charts from the data map
+        if (removedCharts.length > 0) {
+            let newChartData = { ...chartsData };
+            removedCharts.forEach((name) => delete newChartData[name]);
+            setChartsData(newChartData);
         }
 
-        buildCharts();
-    }, [charts]);
+        // Fetch data only for new charts
+        const chartsToUpdate = new Set([...addedCharts, ...changedCharts]);
+        if (chartsToUpdate.size > 0) {
+            Promise.all(
+                Array.from(chartsToUpdate).map(async (chart) => {
+                    const data = await fetchChartData(chart.graphName, chart.selectedAreas);
+                    return [chart.graphName, data];
+                }))
+            .then((chartDataToAdd) => {
+                setChartsData((prevChartData) => ({ ...prevChartData, ...Object.fromEntries(chartDataToAdd) }));
+            });
+        }
 
-    return <>{chartElements}</>;
+        // Update the ref to the current chart names
+        prevChartNamesRef.current = currentCharts;
+
+    }, [charts]);
+    
+
+    return (
+        <>
+            {charts.map((chart) => {
+                const data = chartsData[chart.graphName];
+                if (data === undefined) return null;
+
+                return (
+                    <ChartWindow
+                        key={chart.graphName}
+                        chart={chart}
+                        data={data}
+                        focusChart={focusChart}
+                        closeChart={closeChart}
+                    />
+                );
+            })}
+        </>
+    );
 }

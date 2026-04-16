@@ -1,5 +1,5 @@
 import { Rnd } from 'react-rnd';
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, memo } from 'react';
 
 interface WindowProps {
   children: ReactNode
@@ -8,7 +8,7 @@ interface WindowProps {
   focusChart?: (chartId: string) => void;
 }
 
-export function Window({ children, closeChart, focusChart, activeChartId }: WindowProps) {
+const Window = ({ children, closeChart, focusChart, activeChartId }: WindowProps) => {
 
   return (
     <Rnd
@@ -69,4 +69,6 @@ export function Window({ children, closeChart, focusChart, activeChartId }: Wind
       </div>
     </Rnd>
   );
-}
+};
+
+export { Window };

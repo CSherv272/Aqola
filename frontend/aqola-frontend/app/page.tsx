@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import DatasetSelector from "./components/DatasetSelector";
 import { ChartControls } from "./components/ChartControls";
-import { useChartOrchestrator } from "./lib/hooks/chartOrchestrator";
+import { useChartOrchestrator } from "./lib/hooks/ChartOrchestrato";
 import Charts from "./components/Charts"
 
 //dynamically import of the leaflet map from a map component
