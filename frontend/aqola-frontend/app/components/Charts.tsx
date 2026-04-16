@@ -10,6 +10,7 @@ export default function Charts() {
     const focusChart = useAppStore((state) => state.focusChart);
     const charts = getCharts() as StateDefinition[];
     const { closeChart } = useChartOrchestrator();
+    let zIndex = 0;
 
     // Dictionary of chart name and corresponding data
     const [chartsData, setChartsData] = useState<Record<string, any>>({});
@@ -19,6 +20,7 @@ export default function Charts() {
     let selectedAreas = useAppStore((state) => state.selectedAreas);
 
     useEffect(() => {
+        const zIndexBase = 1500;
         const currentCharts = new Set(charts.map((c) => c.graphName));
         const prevRenderedCharts = prevChartNamesRef.current;
 
@@ -58,7 +60,7 @@ export default function Charts() {
             {charts.map((chart) => {
                 const data = chartsData[chart.graphName];
                 if (data === undefined) return null;
-
+                zIndex = 1500 + charts.length - charts.findIndex((c) => c.graphName === chart.graphName);
                 return (
                     <ChartWindow
                         key={chart.graphName}
@@ -66,6 +68,7 @@ export default function Charts() {
                         data={data}
                         focusChart={focusChart}
                         closeChart={closeChart}
+                        zIndex={ zIndex }
                     />
                 );
             })}
