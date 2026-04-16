@@ -12,23 +12,24 @@ const handleLineHover = (newValue: string) => {
 };
 
 // memo stops re-renders of chart unless props change
-const ChartWindow = memo(({ chart, data, focusChart, closeChart }: {
+const ChartWindow = memo(({ chart, data, focusChart, closeChart, zIndex }: {
     chart: StateDefinition;
     data: any;
     focusChart: any;
     closeChart: (name: string) => void;
+    zIndex: number;
 }) => {
     const chartDef = getChartDefinition(chart.graphName);
 
     if (chartDef?.chartComponent === "line") {
         return (
-            <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart}>
+            <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart} zIndex={zIndex}>
                 <LineChart data={data} get_line_name={handleLineHover} />
             </Window>
         );
     } else if (chartDef?.chartComponent === "bar") {
         return (
-            <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart}>
+            <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart} zIndex={zIndex}>
                 <BarChart data={data?.chart} />
             </Window>
         );

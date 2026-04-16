@@ -6,16 +6,17 @@ interface WindowProps {
   closeChart: (chartId: string) => void;
   activeChartId: string;
   focusChart?: (chartId: string) => void;
+  zIndex: number;
 }
 
-const Window = ({ children, closeChart, focusChart, activeChartId }: WindowProps) => {
+const Window = ({ children, closeChart, focusChart, activeChartId, zIndex  }: WindowProps) => {
 
   return (
     <Rnd
       default={{ x: 100, y: 100, width: 600, height: 380 }}
       bounds="parent"
       style={{
-        zIndex: 1500,
+        zIndex: zIndex,
         display: "flex",
         flexDirection: "column",
         background: "rgba(15, 30, 40, 0.85)",
