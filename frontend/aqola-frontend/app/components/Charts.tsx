@@ -2,7 +2,7 @@ import { useAppStore } from "../store/AppStore";
 import { fetchChartData, getChartDefinition } from "../lib/ChartConfig";
 import { StateDefinition } from "../store/ChartStateModel";
 import { useEffect, useRef, useState, memo } from "react";
-import { useChartOrchestrator } from "../lib/hooks/ChartOrchestrato";
+import { useChartOrchestrator } from "../lib/hooks/ChartOrchestrator";
 import ChartWindow from "./ChartWindow";
 
 export default function Charts() {
@@ -11,21 +11,23 @@ export default function Charts() {
     const charts = getCharts() as StateDefinition[];
     const { closeChart } = useChartOrchestrator();
 
-    // Map of graphName -> fetched data, persists across renders
+    // Dictionary of chart name and corresponding data
     const [chartsData, setChartsData] = useState<Record<string, any>>({});
+    // Ref to keep track of previously rendered charts
     const prevChartNamesRef = useRef<Set<string>>(new Set());
+    // Ref to selected areas in appstore
     let selectedAreas = useAppStore((state) => state.selectedAreas);
 
     useEffect(() => {
         const currentCharts = new Set(charts.map((c) => c.graphName));
         const prevRenderedCharts = prevChartNamesRef.current;
 
-        // Find new, removed and updated charts
+        // Find new, removed, and updated charts
         const addedCharts = charts.filter((c) => !prevRenderedCharts.has(c.graphName));
         const changedCharts = charts.filter((chart) => { return chart.selectedAreas != selectedAreas; });
         const removedCharts = [...prevRenderedCharts].filter((chart) => !currentCharts.has(chart));
 
-        // Drop removed charts from the data map
+        // Drop removed charts from the data dictionary
         if (removedCharts.length > 0) {
             let newChartData = { ...chartsData };
             removedCharts.forEach((name) => delete newChartData[name]);
