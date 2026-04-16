@@ -4,13 +4,14 @@ import { StateDefinition } from "../store/ChartStateModel";
 import LineChart from "./LineChart"
 import BarChart from "./BarChart"
 import { useEffect, useState, useRef, MutableRefObject, memo } from "react";
-import { useChartOrchestrator } from "../lib/hooks/ChartOrchestrato";
+import { useChartOrchestrator } from "../lib/hooks/ChartOrchestrator";
 import { Window }from "./DragBox";
 
 const handleLineHover = (newValue: string) => {
     console.log("rahh");
 };
 
+// memo stops re-renders of chart unless props change
 const ChartWindow = memo(({ chart, data, focusChart, closeChart }: {
     chart: StateDefinition;
     data: any;
