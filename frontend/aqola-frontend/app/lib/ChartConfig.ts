@@ -1,9 +1,9 @@
 import datasetConfig from "../store/datasetConfig.json";
 import chartDefinitions from "../store/chartDefinitions.json";
-import { crime_rate_by_type_and_area, crime_rate_by_area } from "./LineGraph";
-import { ofsted_frequency_by_band, flood_risk_frequency_by_postcode } from "./BarGraph";
+import { crime_rate_by_type_and_area, crime_rate_by_area } from "./LineChart";
+import { ofsted_frequency_by_band, flood_risk_frequency_by_postcode } from "./BarChart";
 import { ChartData } from "./ChartModels";
-import { get_school_ofsted_history } from "./LineGraph";
+import { get_school_ofsted_history } from "./LineChart";
 
 type DatasetKey = keyof typeof datasetConfig;
 
