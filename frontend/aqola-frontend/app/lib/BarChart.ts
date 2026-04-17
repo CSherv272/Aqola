@@ -151,11 +151,13 @@ export const school_gender_demographics_by_phase = async (
 
   const rawData = apiResponse.data["gender-demographics"];
 
+  // Ordering to make sure x axis education phases are chronological
   const phaseOrder = ["Primary", "Secondary", "16 to 18"];
   const uniquePhases = Array.from(new Set(rawData.map((d) => d.phase))).sort(
     (a, b) => phaseOrder.indexOf(a) - phaseOrder.indexOf(b),
   );
 
+  // Hardcoded UI colours mapped to specific data keys to be representative of gender
   const genderColours: Record<string, string> = {
     Boys: "#3b82f6", // Blue
     Girls: "#ec4899", // Pink
