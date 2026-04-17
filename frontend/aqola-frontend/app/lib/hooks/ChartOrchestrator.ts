@@ -6,7 +6,7 @@ import { chartData } from "../types";
 const useChartOrchestrator = () => {
   const selectedDataset = useAppStore((state) => state.selectedDataset);
   const selectedAreas = useAppStore((state) => state.selectedAreas);
-  const clearAreas = useAppStore((state) => state.clearAreas); // 1. Brought in clearAreas
+  const clearAreas = useAppStore((state) => state.clearAreas);
 
   const [activeChartId, setActiveChartId] = useState("");
   const [currentChartData, setCurrentChartData] = useState<chartData>(null);
