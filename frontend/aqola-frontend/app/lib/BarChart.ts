@@ -13,23 +13,12 @@ export const get_bar_info = async () => {
   return response.data;
 };
 
-// Given an area (postcode, lsoa, or none) find the number of schools in each ofsted band
+// Number of schools in each ofsted band for all of Kent
 export const ofsted_frequency_by_band = async (
   area?: string,
 ): Promise<BarChartResponse> => {
-  let apiResponse;
 
-  if (area && area.length > 7) {
-    apiResponse = await api.get<SchoolCounts>(
-      `/school/ofsted-count/?lsoas=${area}`,
-    );
-  } else if (area) {
-    apiResponse = await api.get<SchoolCounts>(
-      `/school/ofsted-count/?postcodes=${area}`,
-    );
-  } else {
-    apiResponse = await api.get<SchoolCounts>("/school/ofsted-count");
-  }
+  const apiResponse = await api.get<SchoolCounts>("/school/ofsted-count");
 
   const scores = apiResponse.data;
 
@@ -84,20 +73,13 @@ export const ofsted_frequency_by_band = async (
   return response;
 };
 
-// Given an area, find the number of schools in each ofsted band, broken down by year
+// Number of schools in each ofsted band for all of Kent from 2012 - 2025 academic years
 export const ofsted_frequency_yearly = async (
   area?: string,
 ): Promise<BarChartResponse> => {
-  let apiResponse;
 
-  if (area && area.length > 7) {
-    apiResponse = await api.get(`/school/ofsted-count-yearly/?lsoas=${area}`);
-  } else if (area) {
-    apiResponse = await api.get(`/school/ofsted-count-yearly/?postcodes=${area}`);
-  } else {
-    apiResponse = await api.get("/school/ofsted-count-yearly");
-  }
-
+  const apiResponse = await api.get("/school/ofsted-count-yearly");
+  
   const rawData = apiResponse.data.yearly_rankings;
 
   const uniqueYears = Array.from(new Set(rawData.map((d: any) => d.year_range))).sort();
@@ -137,20 +119,12 @@ export const ofsted_frequency_yearly = async (
   return response;
 };
 
-// Given an area, find the demographics of schools broken down by phase and gender
+// Demographics of schools broken down by phase and gender for all of Kent
 export const school_gender_demographics_by_phase = async (
   area?: string,
 ): Promise<BarChartResponse> => {
-  let apiResponse;
-
-  if (area && area.length > 7) {
-    apiResponse = await api.get(`/school/gender-demographics-count/?lsoas=${area}`);
-  } else if (area) {
-    apiResponse = await api.get(`/school/gender-demographics-count/?postcodes=${area}`);
-  } else {
-    apiResponse = await api.get("/school/gender-demographics-count");
-  }
-
+  const apiResponse = await api.get("/school/gender-demographics-count");
+  
   const rawData = apiResponse.data["gender-demographics"];
 
   const phaseOrder = ["Primary", "Secondary", "16 to 18"];
