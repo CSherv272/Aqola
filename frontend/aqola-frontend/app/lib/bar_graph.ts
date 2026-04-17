@@ -16,9 +16,7 @@ export const get_bar_info = async () => {
 };
 
 // Number of schools in each ofsted band for all of Kent
-export const ofsted_frequency_by_band = async (
-  area?: string,
-): Promise<BarChartResponse> => {
+export const ofsted_frequency_by_band = async (): Promise<BarChartResponse> => {
 
   const apiResponse = await api.get<SchoolCounts>("/school/ofsted-count");
 
@@ -125,10 +123,12 @@ export const school_gender_demographics_by_phase = async (): Promise<BarChartRes
   
   const rawData = apiResponse.data["gender-demographics"];
 
+  // Ordering to make sure x axis education phases are chronological
   const phaseOrder = ["Primary", "Secondary", "16 to 18"];
   const uniquePhases = Array.from(new Set(rawData.map(d => d.phase)))
     .sort((a, b) => phaseOrder.indexOf(a) - phaseOrder.indexOf(b));
 
+  // Hardcoded UI colours mapped to specific data keys to be representative of gender
   const genderColours: Record<string, string> = {
     "Boys": "#3b82f6",   // Blue
     "Girls": "#ec4899",  // Pink
