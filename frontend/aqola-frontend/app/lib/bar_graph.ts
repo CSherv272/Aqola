@@ -2,6 +2,7 @@ import axios from "axios";
 import type { School, SchoolCounts } from "./api_models";
 import type { BarChartResponse } from "./frontend_models";
 import { getPostcodeBoundaries } from "./postcodes";
+import type {YearlyOfstedResponse,GenderDemographicsResponse} from "./types";
 
 // method naming convention <area>_<xlabel>_<ylabel>_<bars>
 
@@ -79,22 +80,22 @@ export const ofsted_frequency_yearly = async (
   area?: string,
 ): Promise<BarChartResponse> => {
 
-  const apiResponse = await api.get("/school/ofsted-count-yearly");
+  const apiResponse = await api.get<YearlyOfstedResponse>("/school/ofsted-count-yearly");
   
   const rawData = apiResponse.data.yearly_rankings;
 
-  const uniqueYears = Array.from(new Set(rawData.map((d: any) => d.year_range))).sort();
+  const uniqueYears = Array.from(new Set(rawData.map(d => d.year_range))).sort();
 
-  const groups = uniqueYears.map((year: any) => {
+  const groups = uniqueYears.map(year => {
     
-    const yearData = rawData.filter((d: any) => d.year_range === year);
+    const yearData = rawData.filter(d => d.year_range === year);
 
     const rankingCounts = Object.fromEntries(
-      yearData.map((row: any) => [row.ranking, row.count])
+      yearData.map(row => [row.ranking, row.count])
     );
 
     return {
-      name: year as string, // This becomes the label on the X-axis (e.g., "2012-2013")
+      name: year, // This becomes the label on the X-axis (e.g., "2012-2013")
       bars: [
         { bar_name: "Outstanding", value: rankingCounts[1] ?? 0, color: "green" },
         { bar_name: "Good", value: rankingCounts[2] ?? 0, color: "cyan" },
@@ -108,7 +109,7 @@ export const ofsted_frequency_yearly = async (
   const response: BarChartResponse = {
     chartType: "bar",
     type: "kent_ofsted_yearly", 
-    area: area ? "local" : "county",
+    area: "county",
     chart: {
       groups: groups, // Pass in array of yearly groups
       title: "Ofsted Rankings Over Time",
@@ -124,12 +125,12 @@ export const ofsted_frequency_yearly = async (
 export const school_gender_demographics_by_phase = async (
   area?: string,
 ): Promise<BarChartResponse> => {
-  const apiResponse = await api.get("/school/gender-demographics-count");
+  const apiResponse = await api.get<GenderDemographicsResponse>("/school/gender-demographics-count");
   
   const rawData = apiResponse.data["gender-demographics"];
 
   const phaseOrder = ["Primary", "Secondary", "16 to 18"];
-  const uniquePhases = Array.from(new Set<string>(rawData.map((d: any) => d.phase as string)))
+  const uniquePhases = Array.from(new Set(rawData.map(d => d.phase)))
     .sort((a, b) => phaseOrder.indexOf(a) - phaseOrder.indexOf(b));
 
   const genderColours: Record<string, string> = {
@@ -138,18 +139,18 @@ export const school_gender_demographics_by_phase = async (
     "Mixed": "#a855f7"   // Purple
   };
 
-  const groups = uniquePhases.map((phase: any) => {
+  const groups = uniquePhases.map(phase => {
     
-    const phaseData = rawData.filter((d: any) => d.phase === phase);
+    const phaseData = rawData.filter(d => d.phase === phase);
 
-    const bars = phaseData.map((d: any) => ({
+    const bars = phaseData.map(d => ({
       bar_name: d.gender,
       value: d.count,
       color: genderColours[d.gender] || "grey" 
     }));
 
     return {
-      name: phase as string, 
+      name: phase, 
       bars: bars,            
     };
   });

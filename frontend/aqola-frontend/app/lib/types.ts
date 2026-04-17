@@ -19,9 +19,31 @@ type PostcodePolygonResponse = {
 
 type chartData = BarChartResponse | LineChartResponse | null;
 
+type YearlyRankingRecord = {
+  year_range: string;
+  ranking: number;
+  count: number;
+};
+
+type YearlyOfstedResponse = {
+  yearly_rankings: YearlyRankingRecord[];
+};
+
+type GenderDemographicRecord = {
+  phase: string;
+  gender: string;
+  count: number;
+};
+
+type GenderDemographicsResponse = {
+  "gender-demographics": GenderDemographicRecord[];
+};
+
 export {
   type PostcodeGeoJson,
   type PostcodeResponse,
   type PostcodePolygonResponse,
   type chartData,
+  type YearlyOfstedResponse,
+  type GenderDemographicsResponse,
 };
