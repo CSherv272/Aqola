@@ -36,11 +36,6 @@ const useChartOrchestrator = () => {
       return; 
     }
 
-    // If switching to the Kent-wide Bar Graph, deselect the map pins
-    if (chartId === "school_ofsted_frequency" && selectedAreas.length > 0) {
-      clearAreas(); 
-    }
-
     // Ensure we empty array is passed to the Bar Graph so it fetches all of Kent
     const areasToFetch = chartId === "school_ofsted_frequency" ? [] : selectedAreas;
 
