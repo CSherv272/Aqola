@@ -23,15 +23,16 @@ const apiCallMap: Record<string, (areas: string[]) => Promise<chartData>> = {
     crime_rate_by_type_and_area("E01023987", ["Anti-social behaviour","Bicycle theft","Burglary","Criminal damage and arson","Other theft","Robbery","Shoplifting","Theft from the person","Violence and sexual offences"]), // areas[0]
 
   crime_rate_by_area: (areas) => crime_rate_by_area(areas),
-  ofsted_frequency_by_band: (areas) => ofsted_frequency_by_band(areas[0]),
-  ofsted_frequency_yearly: (areas) => ofsted_frequency_yearly(areas[0]),
-school_gender_demographics_by_phase: (areas) => school_gender_demographics_by_phase(areas[0]),
+
+  ofsted_frequency_by_band: () => ofsted_frequency_by_band(),
+  ofsted_frequency_yearly: () => ofsted_frequency_yearly(),
+  school_gender_demographics_by_phase: () => school_gender_demographics_by_phase(),
+  get_school_ofsted_history: (areas) => get_school_ofsted_history(areas),
 
   //NOTE Only this one works for now!
   flood_risk_frequency_by_postcode: (areas) =>
     flood_risk_frequency_by_postcode(areas),
 
-  get_school_ofsted_history: (areas) => get_school_ofsted_history(areas),
 };
 
 // Gets available charts from datasetConfig.json
