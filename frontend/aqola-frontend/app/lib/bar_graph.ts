@@ -76,9 +76,7 @@ export const ofsted_frequency_by_band = async (
 };
 
 // Number of schools in each ofsted band for all of Kent from 2012 - 2025 academic years
-export const ofsted_frequency_yearly = async (
-  area?: string,
-): Promise<BarChartResponse> => {
+export const ofsted_frequency_yearly = async (): Promise<BarChartResponse> => {
 
   const apiResponse = await api.get<YearlyOfstedResponse>("/school/ofsted-count-yearly");
   
@@ -122,9 +120,7 @@ export const ofsted_frequency_yearly = async (
 };
 
 // Demographics of schools broken down by phase and gender for all of Kent
-export const school_gender_demographics_by_phase = async (
-  area?: string,
-): Promise<BarChartResponse> => {
+export const school_gender_demographics_by_phase = async (): Promise<BarChartResponse> => {
   const apiResponse = await api.get<GenderDemographicsResponse>("/school/gender-demographics-count");
   
   const rawData = apiResponse.data["gender-demographics"];
@@ -158,7 +154,7 @@ export const school_gender_demographics_by_phase = async (
   const response: BarChartResponse = {
     chartType: "bar",
     type: "school_demographics", 
-    area: area ? "local" : "county",
+    area: "county",
     chart: {
       groups: groups, 
       title: "School Gender Demographics by Phase",
