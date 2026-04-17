@@ -14,6 +14,8 @@ const PostcodePolygons = () => {
   const selectedAreas = useAppStore((state) => state.selectedAreas);
   const toggleArea = useAppStore((state) => state.toggleArea);
   const selectedAreasRef = useRef<string[]>([]);
+  const selectedDataset = useAppStore((state) => state.selectedDataset);
+  const isSchoolsDataset = selectedDataset.toLowerCase() === "schools";
 
   // Keep ref in sync with store
   useEffect(() => {
@@ -56,10 +58,13 @@ const PostcodePolygons = () => {
       fillColor: isSelected ? "#000000" : "#b9e0ea",
       fillOpacity: isSelected ? 0.8 : 0.2,
       weight: 0.5,
+      interactive: !isSchoolsDataset,
     };
   };
 
   const onEachFeature = (feature: Feature, layer: Layer) => {
+    if (isSchoolsDataset) return;
+    
     const postcode = feature.properties?.postcode;
 
     if (postcode) {
