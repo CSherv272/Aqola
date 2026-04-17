@@ -1,6 +1,11 @@
 import axios from "axios";
 import type { School, SchoolCounts } from "./ApiModels";
 import type { BarChartResponse } from "./ChartModels";
+import { getPostcodeBoundaries } from "./Postcode";
+import type {
+  YearlyOfstedResponse,
+  GenderDemographicsResponse,
+} from "./PolygonModels";
 
 // method naming convention <area>_<xlabel>_<ylabel>_<bars>
 
@@ -17,7 +22,6 @@ export const get_bar_info = async () => {
 export const ofsted_frequency_by_band = async (
   area?: string,
 ): Promise<BarChartResponse> => {
-
   const apiResponse = await api.get<SchoolCounts>("/school/ofsted-count");
 
   const scores = apiResponse.data;
@@ -77,37 +81,55 @@ export const ofsted_frequency_by_band = async (
 export const ofsted_frequency_yearly = async (
   area?: string,
 ): Promise<BarChartResponse> => {
+  const apiResponse = await api.get<YearlyOfstedResponse>(
+    "/school/ofsted-count-yearly",
+  );
 
-  const apiResponse = await api.get("/school/ofsted-count-yearly");
-  
   const rawData = apiResponse.data.yearly_rankings;
 
-  const uniqueYears = Array.from(new Set(rawData.map((d: any) => d.year_range))).sort();
+  const uniqueYears = Array.from(
+    new Set(rawData.map((d) => d.year_range)),
+  ).sort();
 
-  const groups = uniqueYears.map((year: any) => {
-    
-    const yearData = rawData.filter((d: any) => d.year_range === year);
+  const groups = uniqueYears.map((year) => {
+    const yearData = rawData.filter((d) => d.year_range === year);
 
     const rankingCounts = Object.fromEntries(
-      yearData.map((row: any) => [row.ranking, row.count])
+      yearData.map((row) => [row.ranking, row.count]),
     );
 
     return {
-      name: year as string, // This becomes the label on the X-axis (e.g., "2012-2013")
+      name: year, // This becomes the label on the X-axis (e.g., "2012-2013")
       bars: [
-        { bar_name: "Outstanding", value: rankingCounts[1] ?? 0, color: "green" },
+        {
+          bar_name: "Outstanding",
+          value: rankingCounts[1] ?? 0,
+          color: "green",
+        },
         { bar_name: "Good", value: rankingCounts[2] ?? 0, color: "cyan" },
-        { bar_name: "Needs Improvement", value: rankingCounts[3] ?? 0, color: "blue" },
-        { bar_name: "Inadequate", value: rankingCounts[4] ?? 0, color: "brown" },
-        { bar_name: "Ungraded", value: (rankingCounts[0] ?? 0) + (rankingCounts[-1] ?? 0), color: "grey" },
+        {
+          bar_name: "Needs Improvement",
+          value: rankingCounts[3] ?? 0,
+          color: "blue",
+        },
+        {
+          bar_name: "Inadequate",
+          value: rankingCounts[4] ?? 0,
+          color: "brown",
+        },
+        {
+          bar_name: "Ungraded",
+          value: (rankingCounts[0] ?? 0) + (rankingCounts[-1] ?? 0),
+          color: "grey",
+        },
       ],
     };
   });
 
   const response: BarChartResponse = {
     chartType: "bar",
-    type: "kent_ofsted_yearly", 
-    area: area ? "local" : "county",
+    type: "kent_ofsted_yearly",
+    area: "county",
     chart: {
       groups: groups, // Pass in array of yearly groups
       title: "Ofsted Rankings Over Time",
@@ -123,46 +145,48 @@ export const ofsted_frequency_yearly = async (
 export const school_gender_demographics_by_phase = async (
   area?: string,
 ): Promise<BarChartResponse> => {
-  const apiResponse = await api.get("/school/gender-demographics-count");
-  
+  const apiResponse = await api.get<GenderDemographicsResponse>(
+    "/school/gender-demographics-count",
+  );
+
   const rawData = apiResponse.data["gender-demographics"];
 
   const phaseOrder = ["Primary", "Secondary", "16 to 18"];
-  const uniquePhases = Array.from(new Set<string>(rawData.map((d: any) => d.phase as string)))
-    .sort((a, b) => phaseOrder.indexOf(a) - phaseOrder.indexOf(b));
+  const uniquePhases = Array.from(new Set(rawData.map((d) => d.phase))).sort(
+    (a, b) => phaseOrder.indexOf(a) - phaseOrder.indexOf(b),
+  );
 
   const genderColours: Record<string, string> = {
-    "Boys": "#3b82f6",   // Blue
-    "Girls": "#ec4899",  // Pink
-    "Mixed": "#a855f7"   // Purple
+    Boys: "#3b82f6", // Blue
+    Girls: "#ec4899", // Pink
+    Mixed: "#a855f7", // Purple
   };
 
-  const groups = uniquePhases.map((phase: any) => {
-    
-    const phaseData = rawData.filter((d: any) => d.phase === phase);
+  const groups = uniquePhases.map((phase) => {
+    const phaseData = rawData.filter((d) => d.phase === phase);
 
-    const bars = phaseData.map((d: any) => ({
+    const bars = phaseData.map((d) => ({
       bar_name: d.gender,
       value: d.count,
-      color: genderColours[d.gender] || "grey" 
+      color: genderColours[d.gender] || "grey",
     }));
 
     return {
-      name: phase as string, 
-      bars: bars,            
+      name: phase,
+      bars: bars,
     };
   });
 
   const response: BarChartResponse = {
     chartType: "bar",
-    type: "school_demographics", 
+    type: "school_demographics",
     area: area ? "local" : "county",
     chart: {
-      groups: groups, 
+      groups: groups,
       title: "School Gender Demographics by Phase",
       xlabel: "Education Phase",
       ylabel: "Number of Schools",
-      scaleType: "symlog"
+      scaleType: "symlog",
     },
   };
 
@@ -171,31 +195,31 @@ export const school_gender_demographics_by_phase = async (
 
 export const flood_risk_frequency_by_postcode = async (
   postcodes: string[],
-): 
-
-  Promise<BarChartResponse> => {
-  
-  if (postcodes.length == 0){
-    return (
-    {
+): Promise<BarChartResponse> => {
+  if (postcodes.length == 0) {
+    return {
       chartType: "bar",
       type: "flood_data",
       area: "postcode",
 
       chart: {
-        groups: [{
-          name: "null",
-          bars: [{
-            bar_name: "none",
-            value: 0,
-            color: "black",
-          }]
-        }],
+        groups: [
+          {
+            name: "null",
+            bars: [
+              {
+                bar_name: "none",
+                value: 0,
+                color: "black",
+              },
+            ],
+          },
+        ],
         title: "Kent Postcode Flood Risks",
         xlabel: "Postcodes",
         ylabel: "Frequency",
-      }
-    })
+      },
+    };
   }
 
   const response = await api.get(`/flood`, {

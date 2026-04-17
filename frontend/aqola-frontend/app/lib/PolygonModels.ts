@@ -33,6 +33,26 @@ type LsoaPolygonResponse = {
   boundary: Polygon | MultiPolygon;
 };
 
+type YearlyRankingRecord = {
+  year_range: string;
+  ranking: number;
+  count: number;
+};
+
+type YearlyOfstedResponse = {
+  yearly_rankings: YearlyRankingRecord[];
+};
+
+type GenderDemographicRecord = {
+  phase: string;
+  gender: string;
+  count: number;
+};
+
+type GenderDemographicsResponse = {
+  "gender-demographics": GenderDemographicRecord[];
+};
+
 export {
   type PostcodeGeoJson,
   type PostcodeResponse,
@@ -40,4 +60,6 @@ export {
   type LsoaGeoJson,
   type LsoaResponse,
   type LsoaPolygonResponse,
+  type YearlyOfstedResponse,
+  type GenderDemographicsResponse,
 };
