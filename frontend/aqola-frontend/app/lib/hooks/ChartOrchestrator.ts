@@ -6,7 +6,7 @@ const useChartOrchestrator = () => {
   // AppStore Variable Refs
   const selectedDataset = useAppStore((state) => state.selectedDataset);
   const selectedAreas = useAppStore((state) => state.selectedAreas);
-  const charts = useAppStore((state) => state.openGraphs);
+  const charts = useAppStore((state) => state.openCharts);
 
   // AppStore Method Refs
   const clearAreas = useAppStore((state) => state.clearAreas);
