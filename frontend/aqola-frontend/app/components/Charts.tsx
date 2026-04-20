@@ -11,7 +11,6 @@ export default function Charts() {
     const focusChart = useAppStore((state) => state.focusChart);
     const charts = getCharts() as StateDefinition[];
     const { closeChart } = useChartOrchestrator();
-    let zIndex = 0;
 
     // Dictionary of chart name and corresponding data
     const [chartsData, setChartsData] = useState<Record<string, ChartData>>({});
