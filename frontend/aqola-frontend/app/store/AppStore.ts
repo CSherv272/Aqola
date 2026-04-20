@@ -75,6 +75,8 @@ const useAppStore = create<AppStore>((set, get) => ({
 
   // Puts the "focused" graph to the front of the openGraphs array
   focusChart: (graphName) => set((state) => {
+    // if not already focused
+    if (state.openGraphs[0]?.graphName === graphName) return state;
     console.log("Focusing chart: ", graphName);
     const graphToFocus = state.openGraphs.find((g) => g.graphName === graphName);
     if (!graphToFocus) return state;
@@ -87,7 +89,7 @@ const useAppStore = create<AppStore>((set, get) => ({
       g.graphName === graphName ? { ...g, 
         ...{
           graphName: graphName,
-          selectedAreas: [...get().selectedAreas, ...g.selectedAreas],
+          selectedAreas: [...get().selectedAreas],
           selectedDataset: get().selectedDataset }
         } : g),
   })),
