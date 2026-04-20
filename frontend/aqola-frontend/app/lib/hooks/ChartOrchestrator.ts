@@ -10,7 +10,7 @@ const useChartOrchestrator = () => {
 
   // AppStore Method Refs
   const clearAreas = useAppStore((state) => state.clearAreas);
-  const addGraph = useAppStore((state) => state.addGraph);
+  const addCharts = useAppStore((state) => state.addCharts);
   const addAreas = useAppStore((state) => state.addAreas);
   const findChartFromName = useAppStore((state) => state.findChartFromName);
   const focusChart = useAppStore((state) => state.focusChart);
@@ -75,7 +75,7 @@ const useChartOrchestrator = () => {
   // Create/Focus chart based on ID
   const triggerChart = async (chartId: string) => {
     // if not in the stack, add the graph and set it as activeChartId
-    if (findChartFromName(chartId) === undefined){ addGraph(chartId); setActiveChartId(chartId);}
+    if (findChartFromName(chartId) === undefined){ addCharts(chartId); setActiveChartId(chartId);}
     // else, focus graph in stack and set as activeChartId
     else { 
       focusChart(chartId);
