@@ -24,9 +24,6 @@ export default function BarChart({
   // groups are the labels of bar groups (in this case postcodes)
   const groups = d3.map(data.groups, (group) => group.name);
 
-  console.log(subgroups + " SUBGROUPS");
-  console.log(groups + " GROUPS");
-
   //Create the data scale for the x axis
   const xScale = d3
     .scaleBand()

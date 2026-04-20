@@ -1,8 +1,8 @@
 import { stringify } from "querystring";
-import type { Crime, CrimeTypes, UniqueMonths } from "./api_models"
-import type { LineChartResponse } from "./frontend_models"
+import type { Crime, CrimeTypes, UniqueMonths } from "./ApiModels"
+import type { LineChartResponse } from "./ChartModels"
 import axios from "axios";
-import type { School } from "./api_models"
+import type { School } from "./ApiModels"
 
 // method naming convention <area>_<xlabel>_<ylabel>_<lines>
 

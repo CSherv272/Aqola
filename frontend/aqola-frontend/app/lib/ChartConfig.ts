@@ -1,14 +1,9 @@
 import datasetConfig from "../store/datasetConfig.json";
 import chartDefinitions from "../store/chartDefinitions.json";
-import { crime_rate_by_type_and_area, crime_rate_by_area } from "./line_graph";
-import {
-  ofsted_frequency_by_band,
-  ofsted_frequency_yearly,
-  school_gender_demographics_by_phase,
-  flood_risk_frequency_by_postcode,
-} from "./bar_graph";
-import { chartData } from "./types";
-import { get_school_ofsted_history } from "./line_graph";
+import { crime_rate_by_type_and_area, crime_rate_by_area } from "./LineChart";
+import { ofsted_frequency_by_band, ofsted_frequency_yearly, flood_risk_frequency_by_postcode, school_gender_demographics_by_phase } from "./BarChart";
+import { ChartData } from "./ChartModels";
+import { get_school_ofsted_history } from "./LineChart";
 
 type DatasetKey = keyof typeof datasetConfig;
 
@@ -17,7 +12,7 @@ type DatasetKey = keyof typeof datasetConfig;
 
 // apiCall (in the json) : (params) => actual_function_in_frontend(params);
 
-const apiCallMap: Record<string, (areas: string[]) => Promise<chartData>> = {
+const apiCallMap: Record<string, (areas: string[]) => Promise<ChartData>> = {
   // Allow this to be selected
   crime_rate_by_type_and_area: (areas) =>
     crime_rate_by_type_and_area("E01023987", ["Anti-social behaviour","Bicycle theft","Burglary","Criminal damage and arson","Other theft","Robbery","Shoplifting","Theft from the person","Violence and sexual offences"]), // areas[0]
@@ -40,13 +35,18 @@ const getAvailableCharts = (dataset: string) => {
   dataset = dataset.toLowerCase();
 
   const graphIds =
-    (datasetConfig as Record<DatasetKey, string[]>)[dataset as DatasetKey] ??
-    [];
-  return chartDefinitions.filter((g) => graphIds.includes(g.id));
+    (datasetConfig as Record<DatasetKey, Record< "graphs", string[]>>)[dataset as DatasetKey] ??
+    { graphs: [] };
+  return chartDefinitions.filter((g) => graphIds.graphs.includes(g.id)) ?? null;
 };
 
-// returns data for the specfic chart entered.
-const fetchChartData = async (chartId: string, selectedAreas: string[]) => {
+
+// Runs data fetch for inputted chart id
+const fetchChartData = async (chartId: string | undefined, selectedAreas: string[] | undefined) => {
+  if (chartId === undefined || selectedAreas === undefined){
+    return null
+  }
+  
   //Find relevant chart
   const chart = chartDefinitions.find((c) => c.id === chartId);
   if (!chart) throw new Error(`Unkown Chart id: ${chartId}`);
@@ -59,7 +59,9 @@ const fetchChartData = async (chartId: string, selectedAreas: string[]) => {
   return await apiFn(selectedAreas);
 };
 
-const getChartDefinition = (chartId: string) => {
+// Retrieve the chart definition given an ID, from the chartDefinition JSON
+const getChartDefinition = (chartId: string | undefined) => {
+  if (chartId === undefined) return null;
   const chart = chartDefinitions.find((c) => c.id === chartId);
   if (!chart) return null;
   return chart;
