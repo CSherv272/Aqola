@@ -1,5 +1,5 @@
 import { GeoJSON } from "react-leaflet";
-import { PostcodeGeoJson } from "@/app/lib/types";
+import { PostcodeGeoJson } from "@/app/lib/PolygonModels";
 
 interface PolygonProps {
   postcode_name: string;
@@ -16,7 +16,7 @@ const Polygon = ({
 }: PolygonProps) => {
   return (
     <GeoJSON
-      key={`${postcode_name}-${isSelected}`} // key change forces re-render when style changes
+      key={`${postcode_name}-${isSelected}`} // forces re-render when style changes
       data={postcode_boundary_data}
       style={{
         fillColor: isSelected ? "#66b6bd" : color,

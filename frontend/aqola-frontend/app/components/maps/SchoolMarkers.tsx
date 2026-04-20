@@ -2,9 +2,8 @@
 
 import L from "leaflet";
 import { Marker, Popup } from "react-leaflet";
-import { School } from "../../lib/api_models";
-import { useAppStore } from "../../store/appStore";
-import { remove } from "lodash";
+import { School } from "../../lib/ApiModels";
+import { useAppStore } from "../../store/AppStore";
 
 // Marker icon colour red state when selected
 const redIcon = new L.Icon({
@@ -36,11 +35,9 @@ interface SchoolMarkersProps {
   // To use AppState
   const selectedDataset = useAppStore((state) => state.selectedDataset);
   const selectedAreas = useAppStore((state) => state.selectedAreas);
-  const clearAreas = useAppStore((state) => state.clearAreas);
-  const addArea = useAppStore((state) => state.addArea);
-  const removeArea = useAppStore((state) => state.removeArea);
+  const toggleArea = useAppStore((state) => state.toggleArea);
 
-  if (selectedDataset !== "Schools") return null;
+  if (selectedDataset !== "schools") return null;
 
   const recentSchools = schools.filter(
     (school) => school.year_range === "2024-2025"
@@ -64,16 +61,7 @@ interface SchoolMarkersProps {
             zIndexOffset={isSelected ? 1000 : 0}
             eventHandlers={{
               click: () => {
-                if (isSelected) {
-                  // If it's already red, deselect it and reset the map
-                  // clearAreas();
-                  removeArea(urnString);
-                  // console.log("ares: " + selectedAreas)
-                } else {
-                  // If it's blue, clear any other selections and select this one
-                  // clearAreas();
-                  addArea(urnString); 
-                }
+                toggleArea(urnString);
               },
             }}
           >
