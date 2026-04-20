@@ -11,7 +11,6 @@ export default function Charts() {
     const focusChart = useAppStore((state) => state.focusChart);
     const charts = getCharts() as StateDefinition[];
     const { closeChart } = useChartOrchestrator();
-    let zIndex = 0;
 
     // Dictionary of chart name and corresponding data
     const [chartsData, setChartsData] = useState<Record<string, ChartData>>({});
@@ -19,6 +18,8 @@ export default function Charts() {
     const prevChartNamesRef = useRef<Set<string>>(new Set());
     // Ref to selected areas in appstore
     const selectedAreas = useAppStore((state) => state.selectedAreas);
+    // Ref to previous selected areas
+    const prevSelectedAreasRef = useRef<string[]>(selectedAreas);
 
     useEffect(() => {
         const currentCharts = new Set(charts.map((c) => c.graphName));
@@ -26,9 +27,21 @@ export default function Charts() {
 
         // Find new, removed, and updated charts
         const addedCharts = charts.filter((c) => !prevRenderedCharts.has(c.graphName));
-        const changedCharts = charts.filter((chart) => { return chart.selectedAreas != selectedAreas; });
-        const removedCharts = [...prevRenderedCharts].filter((chart) => !currentCharts.has(chart));
 
+        let changedCharts: StateDefinition[] = [];
+        if (charts.length > 0) {
+            console.log(selectedAreas);
+            console.log("--------------")
+            console.log(charts[0].selectedAreas);
+            changedCharts = JSON.stringify(prevSelectedAreasRef.current) == JSON.stringify(selectedAreas) ? [] : [charts[0]];
+        }
+
+        console.log("changes detected");
+        console.log("renrendered charts: ");
+        console.log([...addedCharts, changedCharts]);
+        
+        const removedCharts = [...prevRenderedCharts].filter((chart) => !currentCharts.has(chart));
+        
         // Drop removed charts from the data dictionary
         if (removedCharts.length > 0) {
             const newChartData = { ...chartsData };
@@ -39,7 +52,8 @@ export default function Charts() {
         console.log(chartsData);
 
         // Fetch data only for new charts
-        const chartsToUpdate = new Set([...addedCharts, ...changedCharts]);
+        const chartsToUpdate = new Set([...addedCharts, ...changedCharts]); // ...changedCharts]);
+        console.log("charts size: ", chartsToUpdate.size);
         if (chartsToUpdate.size > 0) {
             Promise.all(
                 Array.from(chartsToUpdate).map(async (chart) => {
@@ -53,6 +67,7 @@ export default function Charts() {
 
         // Update the ref to the current chart names
         prevChartNamesRef.current = currentCharts;
+        prevSelectedAreasRef.current = selectedAreas;
 
     }, [charts]);
     
