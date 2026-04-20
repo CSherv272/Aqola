@@ -62,7 +62,6 @@ export default function Charts() {
             {charts.map((chart) => {
                 const data = chartsData[chart.graphName];
                 if (data === undefined) return null;
-                zIndex = 1500 + charts.length - charts.findIndex((c) => c.graphName === chart.graphName);
                 return (
                     <ChartWindow
                         key={chart.graphName}
@@ -70,7 +69,7 @@ export default function Charts() {
                         data={data}
                         focusChart={focusChart}
                         closeChart={closeChart}
-                        zIndex={ zIndex }
+                        zIndex={ 400 + charts.length - charts.findIndex((c) => c.graphName === chart.graphName) }
                     />
                 );
             })}
