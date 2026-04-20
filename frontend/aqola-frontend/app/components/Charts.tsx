@@ -43,7 +43,7 @@ export default function Charts() {
         }
 
         // Fetch data only for new charts
-        const chartsToUpdate = new Set([...addedCharts, ...changedCharts]); // ...changedCharts]);
+        const chartsToUpdate = new Set([...addedCharts, ...changedCharts]);
         if (chartsToUpdate.size > 0) {
             Promise.all(
                 Array.from(chartsToUpdate).map(async (chart) => {
