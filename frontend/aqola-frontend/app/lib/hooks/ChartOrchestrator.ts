@@ -40,6 +40,7 @@ const useChartOrchestrator = () => {
   // Keeps local ref up to date
   useEffect(() => {
     setActiveChartId(getFocusedChart()?.chartName ?? "");
+    console.log("stack changed");
   }, [charts]);
 
   // Update selected areas and dataset when active chart updates
@@ -50,6 +51,7 @@ const useChartOrchestrator = () => {
       setDataset(ds);
     }
     addAreas(findChartFromName(activeChartId)?.selectedAreas ?? []);
+    console.log("areas updated");
   }, [activeChartId]);
 
   // Update chart state if the active chart's dataset is the same as the user selected dataset
