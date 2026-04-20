@@ -4,6 +4,7 @@ import { StateDefinition } from "../store/ChartStateModel";
 import { useEffect, useRef, useState, memo } from "react";
 import { useChartOrchestrator } from "../lib/hooks/ChartOrchestrator";
 import ChartWindow from "./ChartWindow";
+import { ChartData } from "../lib/ChartModels";
 
 export default function Charts() {
     const getCharts = useAppStore((state) => state.getCharts);
@@ -13,14 +14,13 @@ export default function Charts() {
     let zIndex = 0;
 
     // Dictionary of chart name and corresponding data
-    const [chartsData, setChartsData] = useState<Record<string, any>>({});
+    const [chartsData, setChartsData] = useState<Record<string, ChartData>>({});
     // Ref to keep track of previously rendered charts
     const prevChartNamesRef = useRef<Set<string>>(new Set());
     // Ref to selected areas in appstore
-    let selectedAreas = useAppStore((state) => state.selectedAreas);
+    const selectedAreas = useAppStore((state) => state.selectedAreas);
 
     useEffect(() => {
-        const zIndexBase = 1500;
         const currentCharts = new Set(charts.map((c) => c.graphName));
         const prevRenderedCharts = prevChartNamesRef.current;
 
@@ -31,10 +31,12 @@ export default function Charts() {
 
         // Drop removed charts from the data dictionary
         if (removedCharts.length > 0) {
-            let newChartData = { ...chartsData };
+            const newChartData = { ...chartsData };
             removedCharts.forEach((name) => delete newChartData[name]);
             setChartsData(newChartData);
         }
+
+        console.log(chartsData);
 
         // Fetch data only for new charts
         const chartsToUpdate = new Set([...addedCharts, ...changedCharts]);
