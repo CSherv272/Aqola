@@ -7,9 +7,6 @@ import { useEffect, useState, useRef, MutableRefObject, memo } from "react";
 import { useChartOrchestrator } from "../lib/hooks/ChartOrchestrator";
 import { Window }from "./DragBox";
 
-const handleLineHover = (newValue: string) => {
-    console.log("rahh");
-};
 
 // memo stops re-renders of chart unless props change
 const ChartWindow = memo(({ chart, data, focusChart, closeChart, zIndex }: {
@@ -24,7 +21,7 @@ const ChartWindow = memo(({ chart, data, focusChart, closeChart, zIndex }: {
     if (chartDef?.chartComponent === "line") {
         return (
             <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart} zIndex={zIndex}>
-                <LineChart data={data} get_line_name={handleLineHover} />
+                <LineChart data={data} />
             </Window>
         );
     } else if (chartDef?.chartComponent === "bar") {
@@ -38,3 +35,5 @@ const ChartWindow = memo(({ chart, data, focusChart, closeChart, zIndex }: {
 });
 
 export default ChartWindow;
+
+ChartWindow.displayName = "ChartWindow";

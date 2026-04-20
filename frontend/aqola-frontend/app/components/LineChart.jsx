@@ -9,7 +9,6 @@ import { useRef, useEffect } from "react";
 
 export default function LineChart({
   data,
-  // colours,
   width = 1000,
   chartWidth = 700,
   height = 400,
@@ -17,7 +16,6 @@ export default function LineChart({
   marginRight = 50,
   marginBottom = 40,
   marginLeft = 50,
-  get_line_name,
 }) {
   // Json passed in with x and y values for line chart
 
@@ -124,7 +122,6 @@ export default function LineChart({
             // add the line's colour from data
             stroke={line.color}
             strokeWidth="4px"
-            onMouseEnter={() => get_line_name(line.line_name)}
           >
             {/* add the line's name on hover */}
             <title>{line.line_name}</title>
@@ -140,7 +137,6 @@ export default function LineChart({
               fill="white"
               // add the circle's colour from data
               stroke={line.color}
-              onMouseEnter={() => get_line_name(line.line_name)}
             >
               {/* add the point's co-ords on hover */}
               <title>{`x: ${d[0]}, y: ${d[1]}`}</title>

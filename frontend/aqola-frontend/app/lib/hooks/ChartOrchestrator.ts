@@ -21,7 +21,6 @@ const useChartOrchestrator = () => {
   
   const [activeChartId, setActiveChartId] = useState(""); // determines if chart is active
                                                           // mainly used for determining if the user has changed dataset
-  const isDatasetChanging = useRef(false);
   const availableCharts = getAvailableCharts(selectedDataset);
 
 // Terminology:
