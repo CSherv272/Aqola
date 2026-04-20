@@ -10,7 +10,7 @@ type AppStore = {
   clearAreas: () => void;
   setDataset: (dataset: string) => void;
   loadChartState: (graphState: StateDefinition) => void;
-  addGraph: (graphName: string) => void;
+  addCharts: (graphName: string) => void;
   removeChart: (graphName: string) => void;
   findChartFromName: (graphName: string) => StateDefinition | undefined;
   focusChart: (graphName: string) => void;
@@ -54,8 +54,8 @@ const useAppStore = create<AppStore>((set, get) => ({
     selectedDataset: graphState.selectedDataset,
   }),
 
-  // Adds a graph to openGraphs with the current app state
-  addGraph: (graphName) => set((state) => ({
+  // Adds a graph to openCharts with the current app state
+  addCharts: (graphName) => set((state) => ({
     openCharts: [{
       graphName: graphName,
       selectedAreas: state.selectedAreas,
@@ -63,17 +63,17 @@ const useAppStore = create<AppStore>((set, get) => ({
     }, ...state.openCharts],
   })),
   
-  // Removes a graph from openGraphs by name
+  // Removes a graph from openCharts by name
   removeChart: (graphName) => set((state) => ({
     openCharts: state.openCharts.filter((g) => g.graphName !== graphName),
   })),
 
-  // Finds a graph in openGraphs by name
+  // Finds a graph in openCharts by name
   findChartFromName: (graphName) => {
     return get().openCharts.find((g) => g.graphName === graphName);
   },
 
-  // Puts the "focused" graph to the front of the openGraphs array
+  // Puts the "focused" graph to the front of the openCharts array
   focusChart: (graphName) => set((state) => {
     // if not already focused
     if (state.openCharts[0]?.graphName === graphName) return state;
@@ -83,7 +83,7 @@ const useAppStore = create<AppStore>((set, get) => ({
     return { openCharts: [graphToFocus, ...state.openCharts.filter((g) => g.graphName !== graphName)] };
   }),
 
-  // Updates the state of a graph in openGraphs by name
+  // Updates the state of a graph in openCharts by name
   updateChartState: (graphName) => set((state) => ({
     openCharts: state.openCharts.map((g) =>
       g.graphName === graphName ? { ...g, 
