@@ -1,5 +1,5 @@
 export type StateDefinition = {
-    graphName: string;
+    chartName: string;
     selectedAreas: string[];
     selectedDataset: string;
 }
