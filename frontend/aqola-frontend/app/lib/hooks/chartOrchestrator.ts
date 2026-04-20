@@ -10,7 +10,7 @@ const useChartOrchestrator = () => {
 
   // AppStore Method Refs
   const clearAreas = useAppStore((state) => state.clearAreas);
-  const addCharts = useAppStore((state) => state.addCharts);
+  const addCharts = useAppStore((state) => state.addChart);
   const addAreas = useAppStore((state) => state.addAreas);
   const findChartFromName = useAppStore((state) => state.findChartFromName);
   const focusChart = useAppStore((state) => state.focusChart);
