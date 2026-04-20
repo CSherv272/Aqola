@@ -10,7 +10,7 @@ const useChartOrchestrator = () => {
 
   // AppStore Method Refs
   const clearAreas = useAppStore((state) => state.clearAreas);
-  const addCharts = useAppStore((state) => state.addCharts);
+  const addChart = useAppStore((state) => state.addChart);
   const addAreas = useAppStore((state) => state.addAreas);
   const findChartFromName = useAppStore((state) => state.findChartFromName);
   const focusChart = useAppStore((state) => state.focusChart);
@@ -39,7 +39,7 @@ const useChartOrchestrator = () => {
   // Update activeChart ID when stack changes
   // Keeps local ref up to date
   useEffect(() => {
-    setActiveChartId(getFocusedChart()?.graphName ?? "");
+    setActiveChartId(getFocusedChart()?.chartName ?? "");
   }, [charts]);
 
   // Update selected areas and dataset when active chart updates
@@ -60,7 +60,7 @@ const useChartOrchestrator = () => {
   };
   // Updates the currently active chart when selectedAreas changes
   useEffect(() => {
-    if (activeChartId === getFocusedChart()?.graphName) {
+    if (activeChartId === getFocusedChart()?.chartName) {
       updateLiveChart();
     }
   }, [selectedAreas]);
@@ -68,15 +68,15 @@ const useChartOrchestrator = () => {
   // Removes chart from stack, and refocuses, clears currently selected areas
   const closeChart = (chartId: string) => {
     removeChart(chartId);
-    setActiveChartId(getFocusedChart()?.graphName ?? "");
+    setActiveChartId(getFocusedChart()?.chartName ?? "");
     clearAreas();
   }
 
   // Create/Focus chart based on ID
   const triggerChart = async (chartId: string) => {
-    // if not in the stack, add the graph and set it as activeChartId
-    if (findChartFromName(chartId) === undefined){ addCharts(chartId); setActiveChartId(chartId);}
-    // else, focus graph in stack and set as activeChartId
+    // if not in the stack, add the chart and set it as activeChartId
+    if (findChartFromName(chartId) === undefined){ addChart(chartId); setActiveChartId(chartId);}
+    // else, focus chart in stack and set as activeChartId
     else { 
       focusChart(chartId);
       setActiveChartId(chartId);

@@ -1,10 +1,8 @@
-import { useAppStore } from "../store/AppStore";
-import { fetchChartData, getChartDefinition } from "../lib/ChartConfig";
+import { getChartDefinition } from "../lib/ChartConfig";
 import { StateDefinition } from "../store/ChartStateModel";
 import LineChart from "./LineChart"
 import BarChart from "./BarChart"
-import { useEffect, useState, useRef, MutableRefObject, memo } from "react";
-import { useChartOrchestrator } from "../lib/hooks/ChartOrchestrator";
+import { memo } from "react";
 import { Window }from "./DragBox";
 
 
@@ -16,17 +14,17 @@ const ChartWindow = memo(({ chart, data, focusChart, closeChart, zIndex }: {
     closeChart: (name: string) => void;
     zIndex: number;
 }) => {
-    const chartDef = getChartDefinition(chart.graphName);
+    const chartDef = getChartDefinition(chart.chartName);
 
     if (chartDef?.chartComponent === "line") {
         return (
-            <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart} zIndex={zIndex}>
+            <Window closeChart={() => closeChart(chart.chartName)} activeChartId={chart.chartName} focusChart={focusChart} zIndex={zIndex}>
                 <LineChart data={data} />
             </Window>
         );
     } else if (chartDef?.chartComponent === "bar") {
         return (
-            <Window closeChart={() => closeChart(chart.graphName)} activeChartId={chart.graphName} focusChart={focusChart} zIndex={zIndex}>
+            <Window closeChart={() => closeChart(chart.chartName)} activeChartId={chart.chartName} focusChart={focusChart} zIndex={zIndex}>
                 <BarChart data={data?.chart} />
             </Window>
         );

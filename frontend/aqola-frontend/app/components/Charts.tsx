@@ -22,23 +22,16 @@ export default function Charts() {
     const prevSelectedAreasRef = useRef<string[]>(selectedAreas);
 
     useEffect(() => {
-        const currentCharts = new Set(charts.map((c) => c.graphName));
+        const currentCharts = new Set(charts.map((c) => c.chartName));
         const prevRenderedCharts = prevChartNamesRef.current;
 
         // Find new, removed, and updated charts
-        const addedCharts = charts.filter((c) => !prevRenderedCharts.has(c.graphName));
+        const addedCharts = charts.filter((c) => !prevRenderedCharts.has(c.chartName));
 
         let changedCharts: StateDefinition[] = [];
         if (charts.length > 0) {
-            console.log(selectedAreas);
-            console.log("--------------")
-            console.log(charts[0].selectedAreas);
             changedCharts = JSON.stringify(prevSelectedAreasRef.current) == JSON.stringify(selectedAreas) ? [] : [charts[0]];
         }
-
-        console.log("changes detected");
-        console.log("renrendered charts: ");
-        console.log([...addedCharts, changedCharts]);
         
         const removedCharts = [...prevRenderedCharts].filter((chart) => !currentCharts.has(chart));
         
@@ -49,16 +42,13 @@ export default function Charts() {
             setChartsData(newChartData);
         }
 
-        console.log(chartsData);
-
         // Fetch data only for new charts
         const chartsToUpdate = new Set([...addedCharts, ...changedCharts]); // ...changedCharts]);
-        console.log("charts size: ", chartsToUpdate.size);
         if (chartsToUpdate.size > 0) {
             Promise.all(
                 Array.from(chartsToUpdate).map(async (chart) => {
-                    const data = await fetchChartData(chart.graphName, chart.selectedAreas);
-                    return [chart.graphName, data];
+                    const data = await fetchChartData(chart.chartName, chart.selectedAreas);
+                    return [chart.chartName, data];
                 }))
             .then((chartDataToAdd) => {
                 setChartsData((prevChartData) => ({ ...prevChartData, ...Object.fromEntries(chartDataToAdd) }));
@@ -75,16 +65,16 @@ export default function Charts() {
     return (
         <>
             {charts.map((chart) => {
-                const data = chartsData[chart.graphName];
+                const data = chartsData[chart.chartName];
                 if (data === undefined) return null;
                 return (
                     <ChartWindow
-                        key={chart.graphName}
+                        key={chart.chartName}
                         chart={chart}
                         data={data}
                         focusChart={focusChart}
                         closeChart={closeChart}
-                        zIndex={ 400 + charts.length - charts.findIndex((c) => c.graphName === chart.graphName) }
+                        zIndex={ 400 + charts.length - charts.findIndex((c) => c.chartName === chart.chartName) }
                     />
                 );
             })}

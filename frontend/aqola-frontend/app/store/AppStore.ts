@@ -9,12 +9,12 @@ type AppStore = {
   toggleArea: (area: string) => void;
   clearAreas: () => void;
   setDataset: (dataset: string) => void;
-  loadChartState: (graphState: StateDefinition) => void;
-  addCharts: (graphName: string) => void;
-  removeChart: (graphName: string) => void;
-  findChartFromName: (graphName: string) => StateDefinition | undefined;
-  focusChart: (graphName: string) => void;
-  updateChartState: (graphName: string) => void;
+  loadChartState: (chartState: StateDefinition) => void;
+  addChart: (chartName: string) => void;
+  removeChart: (chartName: string) => void;
+  findChartFromName: (chartName: string) => StateDefinition | undefined;
+  focusChart: (chartName: string) => void;
+  updateChartState: (chartName: string) => void;
   getFocusedChart: () => StateDefinition | undefined;
   getCharts: () => StateDefinition[];
   addAreas: (areas: string[]) => void;
@@ -48,47 +48,47 @@ const useAppStore = create<AppStore>((set, get) => ({
     selectedAreas: [],
   }),
 
-  // Loads a graph state from openGraphs into the main app state
-  loadChartState: (graphState) => set({
-    selectedAreas: graphState.selectedAreas,
-    selectedDataset: graphState.selectedDataset,
+  // Loads a chart state from openCharts into the main app state
+  loadChartState: (chartState) => set({
+    selectedAreas: chartState.selectedAreas,
+    selectedDataset: chartState.selectedDataset,
   }),
 
-  // Adds a graph to openCharts with the current app state
-  addCharts: (graphName) => set((state) => ({
+  // Adds a chart to openCharts with the current app state
+  addChart: (chartName) => set((state) => ({
     openCharts: [{
-      graphName: graphName,
+      chartName: chartName,
       selectedAreas: state.selectedAreas,
       selectedDataset: state.selectedDataset,
     }, ...state.openCharts],
   })),
   
-  // Removes a graph from openCharts by name
-  removeChart: (graphName) => set((state) => ({
-    openCharts: state.openCharts.filter((g) => g.graphName !== graphName),
+  // Removes a chart from openCharts by name
+  removeChart: (chartName) => set((state) => ({
+    openCharts: state.openCharts.filter((g) => g.chartName !== chartName),
   })),
 
-  // Finds a graph in openCharts by name
-  findChartFromName: (graphName) => {
-    return get().openCharts.find((g) => g.graphName === graphName);
+  // Finds a chart in openCharts by name
+  findChartFromName: (chartName) => {
+    return get().openCharts.find((g) => g.chartName === chartName);
   },
 
-  // Puts the "focused" graph to the front of the openCharts array
-  focusChart: (graphName) => set((state) => {
+  // Puts the "focused" chart to the front of the openCharts array
+  focusChart: (chartName) => set((state) => {
     // if not already focused
-    if (state.openCharts[0]?.graphName === graphName) return state;
-    console.log("Focusing chart: ", graphName);
-    const graphToFocus = state.openCharts.find((g) => g.graphName === graphName);
-    if (!graphToFocus) return state;
-    return { openCharts: [graphToFocus, ...state.openCharts.filter((g) => g.graphName !== graphName)] };
+    if (state.openCharts[0]?.chartName === chartName) return state;
+    console.log("Focusing chart: ", chartName);
+    const chartToFocus = state.openCharts.find((g) => g.chartName === chartName);
+    if (!chartToFocus) return state;
+    return { openCharts: [chartToFocus, ...state.openCharts.filter((g) => g.chartName !== chartName)] };
   }),
 
-  // Updates the state of a graph in openCharts by name
-  updateChartState: (graphName) => set((state) => ({
+  // Updates the state of a chart in openCharts by name
+  updateChartState: (chartName) => set((state) => ({
     openCharts: state.openCharts.map((g) =>
-      g.graphName === graphName ? { ...g, 
+      g.chartName === chartName ? { ...g, 
         ...{
-          graphName: graphName,
+          chartName: chartName,
           selectedAreas: [...get().selectedAreas],
           selectedDataset: get().selectedDataset }
         } : g),
