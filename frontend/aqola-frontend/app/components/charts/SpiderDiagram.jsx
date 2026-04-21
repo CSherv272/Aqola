@@ -4,6 +4,7 @@
 ////////////////// VisualCinnamon.com ///////////////////
 /////////// Inspired by the code of alangrafu ///////////
 /////////////////////////////////////////////////////////
+// https://d3-graph-gallery.com/spider
 
 import * as d3 from "d3";
 
@@ -37,9 +38,13 @@ import * as d3 from "d3";
 //             {axis:"Price Of Device",value:0.41},
 //             {axis:"To Be A Smartphone",value:0.30}
 //             ]
-//         ];
-	
-function RadarChart(id, data, options) {
+//         ];	
+
+function RadarChart({id, data}) {
+
+	console.log("Rendering RadarChart with data:");
+	console.log(data.chart.groups);
+
 	var cfg = {
 	 w: 600,				//Width of the circle
 	 h: 600,				//Height of the circle
@@ -53,27 +58,27 @@ function RadarChart(id, data, options) {
 	 opacityCircles: 0.1, 	//The opacity of the circles of each blob
 	 strokeWidth: 2, 		//The width of the stroke around each blob
 	 roundStrokes: false,	//If true the area and stroke will follow a round path (cardinal-closed)
-	 color: d3.scale.category10()	//Color function
+	 color: d3.scaleOrdinal(d3.schemeCategory10)	//Color function
 	};
 	
 	//Put all of the options into a variable called cfg
-	if('undefined' !== typeof options){
-	  for(var i in options){
-		if('undefined' !== typeof options[i]){ cfg[i] = options[i]; }
-	  }//for i
-	}//if
+	// if('undefined' !== typeof options){
+	//   for(var i in options){
+	// 	if('undefined' !== typeof options[i]){ cfg[i] = options[i]; }
+	//   }//for i
+	// }//if
 	
 	//If the supplied maxValue is smaller than the actual one, replace by the max in the data
-	var maxValue = Math.max(cfg.maxValue, d3.max(data, function(i){return d3.max(i.map(function(o){return o.value;}))}));
+	var maxValue = Math.max(cfg.maxValue, d3.max(data.chart.groups.flat(), (i) => i.value));
 		
-	var allAxis = (data[0].map(function(i, j){return i.axis})),	//Names of each axis
+	var allAxis = (data.chart.groups[0].map(function(i, j){return i.axis})),	//Names of each axis
 		total = allAxis.length,					//The number of different axes
 		radius = Math.min(cfg.w/2, cfg.h/2), 	//Radius of the outermost circle
-		Format = d3.format('%'),			 	//Percentage formatting
+		Format = d3.format('.0%'),			 	//Percentage formatting
 		angleSlice = Math.PI * 2 / total;		//The width in radians of each "slice"
 	
 	//Scale for the radius
-	var rScale = d3.scale.linear()
+	var rScale = d3.scaleLinear()
 		.range([0, radius])
 		.domain([0, maxValue]);
 		
@@ -171,18 +176,18 @@ function RadarChart(id, data, options) {
 	/////////////////////////////////////////////////////////
 	
 	//The radial line function
-	var radarLine = d3.svg.line.radial()
-		.interpolate("linear-closed")
+	var radarLine = d3.lineRadial()
+		.curve(d3.curveLinearClosed)
 		.radius(function(d) { return rScale(d.value); })
 		.angle(function(d,i) {	return i*angleSlice; });
 		
 	if(cfg.roundStrokes) {
-		radarLine.interpolate("cardinal-closed");
+		radarLine.curve(d3.curveCardinalClosed);
 	}
 				
 	//Create a wrapper for the blobs	
 	var blobWrapper = g.selectAll(".radarWrapper")
-		.data(data)
+		.data(data.chart.groups)
 		.enter().append("g")
 		.attr("class", "radarWrapper");
 			
@@ -236,7 +241,7 @@ function RadarChart(id, data, options) {
 	
 	//Wrapper for the invisible circles on top
 	var blobCircleWrapper = g.selectAll(".radarCircleWrapper")
-		.data(data)
+		.data(data.chart.groups)
 		.enter().append("g")
 		.attr("class", "radarCircleWrapper");
 		
@@ -302,7 +307,9 @@ function RadarChart(id, data, options) {
 		}
 	  });
 	}//wrap	
-	return svg;
+	console.log(svg.node());
+	console.log("Finished rendering RadarChart");
+	return <svg ref={svg.node()} />;
 }//RadarChart
 
 export default RadarChart;

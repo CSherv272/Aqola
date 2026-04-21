@@ -33,24 +33,21 @@ export type LineChartResponse = {
   };
 };
 
-// export type SpiderChartResponse = {
-//   chartType: "spider";
-//   type: string,
-//   area: string;
-//   chart: {
-//     groups: [
-//       [
-//         {
-//           axis: string;
-//           value: number;
-//         }
-//       ]
-//     ]
-//     title: string,
-//   };
-// };
+export type SpiderChartResponse = {
+  chartType: "spider";
+  type: string,
+  area: string;
+  chart: {
+    groups:
+        {
+          axis: string;
+          value: number;
+        }[][]
+    title: string,
+  };
+};
 
-export type SpiderChartResponse = { axis: string; value: number; }[][];
+// export type SpiderChartResponse = { axis: string; value: number; }[][];
 
 export type ChartData = BarChartResponse | LineChartResponse | SpiderChartResponse | null;
 // type for determining which chart button is clicked
