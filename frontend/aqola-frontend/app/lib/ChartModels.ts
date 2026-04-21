@@ -33,6 +33,25 @@ export type LineChartResponse = {
   };
 };
 
-export type ChartData = BarChartResponse | LineChartResponse | null;
+// export type SpiderChartResponse = {
+//   chartType: "spider";
+//   type: string,
+//   area: string;
+//   chart: {
+//     groups: [
+//       [
+//         {
+//           axis: string;
+//           value: number;
+//         }
+//       ]
+//     ]
+//     title: string,
+//   };
+// };
+
+export type SpiderChartResponse = { axis: string; value: number; }[][];
+
+export type ChartData = BarChartResponse | LineChartResponse | SpiderChartResponse | null;
 // type for determining which chart button is clicked
 export type ChartType = "line_over_time" | "bar_frequency" | "api_bar" | "line_over_time_by_lsoa";

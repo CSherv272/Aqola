@@ -1,9 +1,12 @@
 import datasetConfig from "../store/datasetConfig.json";
 import chartDefinitions from "../store/chartDefinitions.json";
 import { crime_rate_by_type_and_area, crime_rate_by_area } from "./LineChart";
-import { ofsted_frequency_by_band, flood_risk_frequency_by_postcode } from "./BarChart";
+import { ofsted_frequency_by_band, flood_risk_frequency_by_postcode  } from "./BarChart";
 import { ChartData } from "./ChartModels";
 import { get_school_ofsted_history } from "./LineChart";
+
+import { SpiderChartResponse } from "./ChartModels";
+import BarChart from "../components/charts/BarChart";
 
 type DatasetKey = keyof typeof datasetConfig;
 
@@ -11,6 +14,44 @@ type DatasetKey = keyof typeof datasetConfig;
 // Every chart will need a new line here to get the data needed to populate the chart.
 
 // apiCall (in the json) : (params) => actual_function_in_frontend(params);
+
+const temp = () => {
+  console.log("temp spider chart api call");
+  const tempSpiderChartResponse: SpiderChartResponse = [
+    [//iPhone
+      {axis:"Battery Life",value:0.22},
+      {axis:"Brand",value:0.28},
+      {axis:"Contract Cost",value:0.29},
+      {axis:"Design And Quality",value:0.17},
+      {axis:"Have Internet Connectivity",value:0.22},
+      {axis:"Large Screen",value:0.02},
+      {axis:"Price Of Device",value:0.21},
+      {axis:"To Be A Smartphone",value:0.50}			
+    ],
+    [//Samsung
+      {axis:"Battery Life",value:0.27},
+      {axis:"Brand",value:0.16},
+      {axis:"Contract Cost",value:0.35},
+      {axis:"Design And Quality",value:0.13},
+      {axis:"Have Internet Connectivity",value:0.20},
+      {axis:"Large Screen",value:0.13},
+      {axis:"Price Of Device",value:0.35},
+      {axis:"To Be A Smartphone",value:0.38}
+    ],
+    [//Nokia Smartphone
+      {axis:"Battery Life",value:0.26},
+      {axis:"Brand",value:0.10},
+      {axis:"Contract Cost",value:0.30},
+      {axis:"Design And Quality",value:0.14},
+      {axis:"Have Internet Connectivity",value:0.22},
+      {axis:"Large Screen",value:0.04},
+      {axis:"Price Of Device",value:0.41},
+      {axis:"To Be A Smartphone",value:0.30}
+      ]
+  ]
+  
+  return Promise.resolve(tempSpiderChartResponse);
+}
 
 const apiCallMap: Record<string, (areas: string[]) => Promise<ChartData>> = {
   // Allow this to be selected
@@ -20,9 +61,8 @@ const apiCallMap: Record<string, (areas: string[]) => Promise<ChartData>> = {
   crime_rate_by_area: (areas) => crime_rate_by_area(areas),
   ofsted_frequency_by_band: (areas) => ofsted_frequency_by_band(areas[0]),
 
-  //NOTE Only this one works for now!
-  flood_risk_frequency_by_postcode: (areas) =>
-    flood_risk_frequency_by_postcode(areas),
+  flood_risk_frequency_by_postcode: (areas) => flood_risk_frequency_by_postcode(areas),
+  flood_risk_frequency_by_postcode_spider: () => temp(),
 
   get_school_ofsted_history: (areas) => get_school_ofsted_history(areas),
 };

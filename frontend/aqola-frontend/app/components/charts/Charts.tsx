@@ -1,10 +1,10 @@
-import { useAppStore } from "../store/AppStore";
-import { fetchChartData, getChartDefinition } from "../lib/ChartConfig";
-import { StateDefinition } from "../store/ChartStateModel";
+import { useAppStore } from "../../store/AppStore";
+import { fetchChartData, getChartDefinition } from "../../lib/ChartConfig";
+import { StateDefinition } from "../../store/ChartStateModel";
 import { useEffect, useRef, useState, memo } from "react";
-import { useChartOrchestrator } from "../lib/hooks/ChartOrchestrator";
+import { useChartOrchestrator } from "../../lib/hooks/ChartOrchestrator";
 import ChartWindow from "./ChartWindow";
-import { ChartData } from "../lib/ChartModels";
+import { ChartData } from "../../lib/ChartModels";
 
 export default function Charts() {
     const getCharts = useAppStore((state) => state.getCharts);

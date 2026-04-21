@@ -1,9 +1,10 @@
-import { getChartDefinition } from "../lib/ChartConfig";
-import { StateDefinition } from "../store/ChartStateModel";
+import { getChartDefinition } from "../../lib/ChartConfig";
+import { StateDefinition } from "../../store/ChartStateModel";
 import LineChart from "./LineChart"
 import BarChart from "./BarChart"
+import RadarChart from "./SpiderDiagram";
 import { memo } from "react";
-import { Window }from "./DragBox";
+import { Window } from "../DragBox"
 
 
 // memo stops re-renders of chart unless props change
@@ -26,6 +27,12 @@ const ChartWindow = memo(({ chart, data, focusChart, closeChart, zIndex }: {
         return (
             <Window closeChart={() => closeChart(chart.chartName)} activeChartId={chart.chartName} focusChart={focusChart} zIndex={zIndex}>
                 <BarChart data={data?.chart} />
+            </Window>
+        );
+    } else if (chartDef?.chartComponent === "spider") {
+        return (
+            <Window closeChart={() => closeChart(chart.chartName)} activeChartId={chart.chartName} focusChart={focusChart} zIndex={zIndex}>
+                <RadarChart data={data} />
             </Window>
         );
     }
