@@ -17,8 +17,27 @@ type PostcodePolygonResponse = {
   boundary: Polygon | MultiPolygon;
 };
 
+type LsoaProperties = {
+  lsoa: string;
+};
+
+type LsoaGeoJson = Feature<Polygon | MultiPolygon, LsoaProperties>;
+
+type LsoaResponse = {
+  lsoa: string;
+  boundary: LsoaGeoJson;
+};
+
+type LsoaPolygonResponse = {
+  lsoa: string;
+  boundary: Polygon | MultiPolygon;
+};
+
 export {
   type PostcodeGeoJson,
   type PostcodeResponse,
   type PostcodePolygonResponse,
+  type LsoaGeoJson,
+  type LsoaResponse,
+  type LsoaPolygonResponse,
 };
