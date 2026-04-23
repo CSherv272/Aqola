@@ -1,7 +1,7 @@
 import datasetConfig from "../store/datasetConfig.json";
 import chartDefinitions from "../store/chartDefinitions.json";
 import { crime_rate_by_type_and_area, crime_rate_by_area } from "./LineChart";
-import { ofsted_frequency_by_band, flood_risk_frequency_by_postcode } from "./BarChart";
+import { ofsted_frequency_by_band, ofsted_frequency_yearly, flood_risk_frequency_by_postcode, school_gender_demographics_by_phase } from "./BarChart";
 import { ChartData } from "./ChartModels";
 import { get_school_ofsted_history } from "./LineChart";
 
@@ -18,13 +18,16 @@ const apiCallMap: Record<string, (areas: string[]) => Promise<ChartData>> = {
     crime_rate_by_type_and_area("E01023987", ["Anti-social behaviour","Bicycle theft","Burglary","Criminal damage and arson","Other theft","Robbery","Shoplifting","Theft from the person","Violence and sexual offences"]), // areas[0]
 
   crime_rate_by_area: (areas) => crime_rate_by_area(areas),
-  ofsted_frequency_by_band: (areas) => ofsted_frequency_by_band(areas[0]),
+
+  ofsted_frequency_by_band: () => ofsted_frequency_by_band(),
+  ofsted_frequency_yearly: () => ofsted_frequency_yearly(),
+  school_gender_demographics_by_phase: () => school_gender_demographics_by_phase(),
+  get_school_ofsted_history: (areas) => get_school_ofsted_history(areas),
 
   //NOTE Only this one works for now!
   flood_risk_frequency_by_postcode: (areas) =>
     flood_risk_frequency_by_postcode(areas),
 
-  get_school_ofsted_history: (areas) => get_school_ofsted_history(areas),
 };
 
 // Gets available charts from datasetConfig.json

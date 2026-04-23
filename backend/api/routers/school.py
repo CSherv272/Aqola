@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from api.database import get_db
 from api.models.db_models import School
 from api.models.response_models.school import SchoolResponse
-from sqlalchemy import func
+from sqlalchemy import func, case
 from typing import List, Optional
 
 router = APIRouter()
@@ -85,3 +85,89 @@ async def get_school_ofsted_counts(
         }
         for ranking, count in results
     ]}
+    
+@router.get("/ofsted-count-yearly")
+async def get_school_ofsted_counts_yearly(
+    lsoas: Optional[List[str]] = Query(default=None),
+    postcodes: Optional[List[str]] = Query(default=None),
+    db: Session = Depends(get_db)):
+    """Lists counts of schools by Ofsted ranking, broken down by academic year"""
+    
+    # Group by BOTH year_range and ofsted_ranking
+    query = (
+        db.query(
+            School.year_range, 
+            School.ofsted_ranking, 
+            func.count(School.ofsted_ranking)
+        )
+        .group_by(School.year_range, School.ofsted_ranking)
+        .order_by(School.year_range) # Sort chronologically
+    )
+
+    if lsoas:
+        query = query.filter(School.lsoa_id.in_(lsoas))
+
+    if postcodes:
+        query = query.filter(School.postcode.in_(postcodes)) 
+
+    results = query.all()
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No records found.")
+    return {
+        "yearly_rankings": [
+            {
+                "year_range": year,
+                "ranking": ranking,
+                "count": count
+            }
+            for year, ranking, count in results
+        ]
+    }
+    
+@router.get("/gender-demographics-count")
+async def get_school_gender_demographics(
+    lsoas: Optional[List[str]] = Query(default=None),
+    postcodes: Optional[List[str]] = Query(default=None),
+    db: Session = Depends(get_db)):
+    """Lists count of schools by gender across primary, secondary and post16"""
+    
+    school_phase = case(
+        (School.is_primary == True, "Primary"),
+        (School.is_secondary == True, "Secondary"),
+        (School.is_post16 == True, "16 to 18"),
+        else_="Other"
+    ).label("phase")
+    
+    query = (
+        db.query(
+            school_phase,
+            School.gender, 
+            func.count(School.urn).label("count")
+        )
+        .group_by(school_phase, School.gender)
+        .order_by(school_phase, School.gender) # Sort chronologically
+    )
+    
+    if lsoas:
+        query = query.filter(School.lsoa_id.in_(lsoas))
+
+    if postcodes:
+        query = query.filter(School.postcode.in_(postcodes))
+        
+    
+    results = query.all()
+    
+    if not results:
+        raise HTTPException(status_code=404, detail="No records found.")
+    
+    return {
+            "gender-demographics": [
+                {
+                    "phase": row.phase,
+                    "gender": row.gender,
+                    "count": row.count
+                }
+                for row in results
+            ]
+        }
