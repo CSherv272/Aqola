@@ -56,7 +56,7 @@ function RadarChart({ data }) {
 			.attr("dy", "0.4em")
 			.style("font-size", "10px")
 			.attr("fill", "#fff")
-			.text((d) => d3.format(".0%")(maxValue * (d / levels)));
+			.text((d) => Math.round((maxValue * (d / levels))));
 
 		// Create axis plot
 		const axis = chart.selectAll(".axis")
