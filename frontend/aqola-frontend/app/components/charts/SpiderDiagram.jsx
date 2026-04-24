@@ -10,7 +10,6 @@ function RadarChart({ data }) {
 	const height = 600;
 	const margin = { top: 80, right: 80, bottom: 80, left: 80 };
 	const levels = 5;
-	const labelFactor = 1.25;
 	const color = d3.scaleOrdinal(d3.schemeCategory10);
 
 	// Calculate the radius of the radar chart
@@ -56,7 +55,7 @@ function RadarChart({ data }) {
 			.attr("y", (d) => (-d * radius) / levels)
 			.attr("dy", "0.4em")
 			.style("font-size", "10px")
-			.attr("fill", "#737373")
+			.attr("fill", "#fff")
 			.text((d) => d3.format(".0%")(maxValue * (d / levels)));
 
 		// Create axis plot
@@ -70,8 +69,8 @@ function RadarChart({ data }) {
 		// Add each axis line for the features
 		axis.append("line")
 			.attr("x1", 0).attr("y1", 0)
-			.attr("x2", (_, i) => attributeScale(maxValue * 1.1) * Math.cos(sectionAngle * i - Math.PI / 2))
-			.attr("y2", (_, i) => attributeScale(maxValue * 1.1) * Math.sin(sectionAngle * i - Math.PI / 2))
+			.attr("x2", (_, i) => attributeScale(maxValue * 1.05) * Math.cos(sectionAngle * i - Math.PI / 2))
+			.attr("y2", (_, i) => attributeScale(maxValue * 1.05) * Math.sin(sectionAngle * i - Math.PI / 2))
 			.style("stroke", "white")
 			.style("stroke-width", "2px");
 		
@@ -80,8 +79,9 @@ function RadarChart({ data }) {
 			.style("font-size", "11px")
 			.attr("text-anchor", "middle")
 			.attr("dy", "0.35em")
-			.attr("x", (_, i) => attributeScale(maxValue * 1.35) * Math.cos(sectionAngle * i - Math.PI / 2))
-			.attr("y", (_, i) => attributeScale(maxValue * 1.35) * Math.sin(sectionAngle * i - Math.PI / 2))
+			.attr("x", (_, i) => attributeScale(maxValue * 1.1) * Math.cos(sectionAngle * i - Math.PI / 2))
+			.attr("y", (_, i) => attributeScale(maxValue * 1.1) * Math.sin(sectionAngle * i - Math.PI / 2))
+			.attr("fill", "#78b4b9d9")
 			.text((d) => d);
 	}, [data]);
 
