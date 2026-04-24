@@ -1,4 +1,3 @@
-import { stringify } from "querystring";
 import type { SpiderDiagramResponse } from "./ChartModels"
 import axios from "axios";
 
@@ -58,26 +57,21 @@ export const flood_risk_frequency_by_postcode_spider = async (
 
   Promise<SpiderDiagramResponse> => {
   
-//   if (postcodes.length == 0){
-//     return (
-//     {
-//       chartType: "spider",
-//       type: "flood_data",
-//       area: "postcode",
-
-//       chart: {
-//         groups: [{
-//           name: "null",
-//           bars: [{
-//             bar_name: "none",
-//             value: 0,
-//             color: "black",
-//           }]
-//         }],
-//         title: "Kent Postcode Flood Risks",
-//       }
-//     })
-//   }
+  if (postcodes.length == 0){
+    return (
+    {
+      chartType: "spider",
+      type: "flood_data",
+      area: "postcode",
+      chart: {
+        groups: [[{
+          axis: "",
+          value: 0
+          }]],
+          title: "Kent Postcode Flood Risks",
+        },
+    })
+  }
 
   const response = await api.get(`/flood`, {
     params: {
