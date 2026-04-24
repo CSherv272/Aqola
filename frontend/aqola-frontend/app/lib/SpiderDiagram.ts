@@ -56,7 +56,7 @@ export const flood_risk_frequency_by_postcode_spider = async (
 ): 
 
   Promise<SpiderDiagramResponse> => {
-  
+  // When there are no postcodes selected, return an empty object
   if (postcodes.length == 0){
     return (
     {
@@ -92,7 +92,7 @@ export const flood_risk_frequency_by_postcode_spider = async (
     return vals;
   });
 
-  const bar_return: SpiderDiagramResponse = {
+  const spider_return: SpiderDiagramResponse = {
     chartType: "spider",
     type: "flood_data",
     area: "postcode",
@@ -101,6 +101,5 @@ export const flood_risk_frequency_by_postcode_spider = async (
       title: "Kent Postcode Flood Risks",
     },
   };
-  console.log(bar_return);
-  return bar_return;
+  return spider_return;
 };
