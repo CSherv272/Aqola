@@ -5,6 +5,7 @@ import { SchoolMarkers } from "./SchoolMarkers";
 import { getSchools } from "../../lib/Api";
 import { useState, useEffect } from "react";
 import { School } from "../../lib/ApiModels";
+import { Polygons } from "./Polygons";
 
 const MapOrchestrator = () => {
   const selectedDataset = useAppStore((state) => state.selectedDataset);
@@ -32,9 +33,9 @@ const MapOrchestrator = () => {
     case "schools":
       return <SchoolMarkers schools={schools} />;
     case "crime":
-      return <LsoaPolygons />; // needs to be lsoa polygons
+      return <Polygons dataset="crime" />;
     case "flood":
-      return <PostcodePolygons />;
+      return <Polygons dataset="flood" />;
     default:
       return null;
   }
