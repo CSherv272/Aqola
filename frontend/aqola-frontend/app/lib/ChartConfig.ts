@@ -4,6 +4,7 @@ import { crime_rate_by_type_and_area, crime_rate_by_area } from "./LineChart";
 import { ofsted_frequency_by_band, flood_risk_frequency_by_postcode  } from "./BarChart";
 import { ChartData } from "./ChartModels";
 import { get_school_ofsted_history } from "./LineChart";
+import { crime_distribution_by_type_and_area } from "./PieChart";
 
 import { SpiderChartResponse } from "./ChartModels";
 import BarChart from "../components/charts/BarChart";

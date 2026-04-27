@@ -33,6 +33,27 @@ export type LineChartResponse = {
   };
 };
 
+export type PieChartResponse = {
+  chart_type: "pie";
+  type: string,
+  area: string
+  chart: {
+    groups : [
+      {
+        name: string,
+        sections: [
+            {
+              section_name: string;
+              value: string;
+              color: string;
+            }
+        ],
+      }
+    ],
+    title: string;
+  }
+};
+
 // export type SpiderChartResponse = {
 //   chartType: "spider";
 //   type: string,
@@ -52,6 +73,6 @@ export type LineChartResponse = {
 
 export type SpiderChartResponse = { axis: string; value: number; }[][];
 
-export type ChartData = BarChartResponse | LineChartResponse | SpiderChartResponse | null;
+export type ChartData = BarChartResponse | LineChartResponse | SpiderChartResponse | PieChartResponse | null;
 // type for determining which chart button is clicked
 export type ChartType = "line_over_time" | "bar_frequency" | "api_bar" | "line_over_time_by_lsoa";
