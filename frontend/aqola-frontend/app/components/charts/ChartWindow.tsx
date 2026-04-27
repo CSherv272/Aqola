@@ -34,7 +34,7 @@ const ChartWindow = memo(({ chart, data, focusChart, closeChart, zIndex }: {
     } else if (chartDef?.chartComponent === "spider") {
         return (
             <Window closeChart={() => closeChart(chart.chartName)} activeChartId={chart.chartName} focusChart={focusChart} zIndex={zIndex}>
-                <RadarChart id={chart.chartName} data={data}/>
+                <RadarChart data={data}/>
                 {/* <div>Spider chart coming soon!</div> */}
             </Window>
         );
