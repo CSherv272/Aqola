@@ -16,6 +16,22 @@
     "icon": "fi fi-rs-chart-line-up"
   },
   {
+    "id": "crime_rate_by_lsoa",
+    "label": "Crime Rate by LSOA",
+    "chartComponent": "bar",
+    "dataset": "crime",
+    "apiCall": "crime_rate_by_lsoa",
+    "icon": "fi fi-rs-stats"
+  },
+  {
+    "id": "crime_rate_by_lsoa_cumulative",
+    "label": "Cumulative Crime per Type",
+    "chartComponent": "bar",
+    "dataset": "crime",
+    "apiCall": "crime_rate_by_lsoa_cumulative",
+    "icon": "fi fi-rs-stats"
+  },
+  {
     "id": "school_ofsted_frequency",
     "label": "Ofsted Ratings",
     "chartComponent": "bar",

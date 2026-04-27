@@ -237,3 +237,137 @@ export const flood_risk_frequency_by_postcode = async (
   };
   return bar_return;
 };
+
+export const crime_rate_by_lsoa = async(lsoas: string[]): Promise<BarChartResponse> => {
+  // Check if postcodes is empty
+  if (lsoas.length == 0){
+    return (
+    {
+      chartType: "bar",
+      type: "crime",
+      area: "lsoa",
+
+      chart: {
+        groups: [{
+          name: "null",
+          bars: [{
+            bar_name: "none",
+            value: 0,
+            color: "black",
+          }]
+        }],
+        title: "Crime Rate by LSOA",
+        xlabel: "Crime Type per LSOA",
+        ylabel: "Frequency",
+      }
+    })
+  }
+
+  const response = await api.get("/crime/crime-rate-by-type", {
+    params: {
+      lsoas: lsoas,
+    },
+    paramsSerializer: (params) => {
+      return params.lsoas.map((p: string) => `lsoas=${p}`).join("&");
+    },
+  });
+
+  const color = ["red", "orange", "yellow", "green", "blue", "purple", "pink", "teal", "indigo", "cyan","lime", "magenta"];
+
+  const groups = Object.entries(response.data).map(([lsoa, crime]) => ({
+    name: lsoa,
+    bars: (crime as [string, number][]).map(([crime_type, count], i) => ({
+      bar_name: crime_type,
+      value: count,
+      color: color[i % color.length]
+    }))
+  }))
+
+  const bar_return: BarChartResponse = {
+    chartType: "bar",
+    type: "crime",
+    area: "lsoa",
+
+    chart: {
+      groups,
+      title: "Crime Rate by LSOA",
+      xlabel: "LSOAs",
+      ylabel: "Frequency",
+    },
+  };
+
+  return bar_return;
+}
+
+export const crime_rate_by_lsoa_cumulative = async(lsoas: string[]): Promise<BarChartResponse> => {
+  // Check if postcodes is empty
+  if (lsoas.length == 0){
+    return (
+    {
+      chartType: "bar",
+      type: "crime",
+      area: "lsoa",
+
+      chart: {
+        groups: [{
+          name: "null",
+          bars: [{
+            bar_name: "none",
+            value: 0,
+            color: "black",
+          }]
+        }],
+        title: "Cumulative Crime Rate Across LSOAs",
+        xlabel: "Crime Types",
+        ylabel: "Frequency",
+      }
+    })
+  }
+
+  const response = await api.get("/crime/crime-rate-by-type", {
+    params: {
+      lsoas: lsoas,
+    },
+    paramsSerializer: (params) => {
+      return params.lsoas.map((p: string) => `lsoas=${p}`).join("&");
+    },
+  });
+
+  const color = ["red", "orange", "yellow", "green", "blue", "purple", "pink", "teal", "indigo", "cyan","lime", "magenta"];
+
+  const crime_totals: Record<string, number> = {}
+
+  Object.entries(response.data).map(([_, crime]) => (
+    (crime as [string, number][]).map(([crime_type, count]) => {
+      if(crime_totals[crime_type]){
+        crime_totals[crime_type] += count
+      }
+      else {
+        crime_totals[crime_type] = count
+      }
+  })))
+
+  const groups = [{
+    name: "Cumulative Crime Rate",
+    bars: Object.entries(crime_totals).map(([crime_type, value], i) => ({
+      bar_name: crime_type,
+      value: value,
+      color: color[i % color.length],
+    })),
+  }];
+
+  const bar_return: BarChartResponse = {
+    chartType: "bar",
+    type: "crime",
+    area: "lsoa",
+
+    chart: {
+      groups,
+      title: "Cumulative Crime Rate Across LSOAs",
+      xlabel: "Crime Types",
+      ylabel: "Frequency",
+    },
+  };
+
+  return bar_return;
+}
