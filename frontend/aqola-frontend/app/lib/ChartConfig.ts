@@ -71,7 +71,9 @@ const fetchChartData = async (chartId: string | undefined, selectedAreas: string
   if (!apiFn) throw new Error(`No API function mapped for: ${chart.apiCall}`);
 
   //Run function
-  return await apiFn(selectedAreas);
+  const data = await apiFn(selectedAreas)
+  console.log(data)
+  return data;
 };
 
 // Retrieve the chart definition given an ID, from the chartDefinition JSON
