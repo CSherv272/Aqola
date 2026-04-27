@@ -71,6 +71,6 @@ export type SpiderDiagramResponse = {
 
 // export type SpiderDiagramResponse = { axis: string; value: number; }[][];
 
-export type ChartData = BarChartResponse | LineChartResponse | SpiderChartResponse | PieChartResponse | null;
+export type ChartData = BarChartResponse | LineChartResponse | SpiderDiagramResponse | PieChartResponse | null;
 // type for determining which chart button is clicked
 export type ChartType = "line_over_time" | "bar_frequency" | "api_bar" | "line_over_time_by_lsoa";
