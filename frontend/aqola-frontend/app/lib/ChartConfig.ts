@@ -21,7 +21,7 @@ const apiCallMap: Record<string, (areas: string[]) => Promise<ChartData>> = {
 // =============================================================================================
     // Line Graphs
   crime_rate_by_type_and_area: (areas) =>
-    crime_rate_by_type_and_area("E01023987", ["Anti-social behaviour","Bicycle theft","Burglary","Criminal damage and arson","Other theft","Robbery","Shoplifting","Theft from the person","Violence and sexual offences"]), // areas[0]
+    crime_rate_by_type_and_area((areas[areas.length-1]), ["Anti-social behaviour","Bicycle theft","Burglary","Criminal damage and arson","Other theft","Robbery","Shoplifting","Theft from the person","Violence and sexual offences"]), // areas[0]
   crime_rate_by_area: (areas) => crime_rate_by_area(areas),
   
   //Bar Graphs

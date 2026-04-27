@@ -35,7 +35,21 @@ export const crime_rate_by_type_and_area = async (lsoa: string, crimeTypes? : st
     "Vehicle crime": "green",
     "Violence and sexual offences": "teal",
   };
-  
+
+  if (!lsoa) {
+    return {
+      chartType: "line",
+      type: "crime_data",
+      area: "postcode",
+      chart: {
+        lines: [],
+        title: "Crime Rate by Area",
+        xlabel: "Months",
+        ylabel: "Frequency",
+      }
+    } as LineChartResponse;
+  }
+
   if (crimeTypes){
     crimeTypeSlug = "?"
     for (let type of crimeTypes){

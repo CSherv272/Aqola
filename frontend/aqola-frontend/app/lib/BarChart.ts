@@ -258,7 +258,7 @@ export const crime_rate_by_lsoa = async(lsoas: string[]): Promise<BarChartRespon
             color: "black",
           }]
         }],
-        title: "Crime Rate by LSOA",
+        title: "Crime Rate by LSOA (over all time)",
         xlabel: "Crime Type per LSOA",
         ylabel: "Frequency",
       }
@@ -308,7 +308,7 @@ export const crime_rate_by_lsoa = async(lsoas: string[]): Promise<BarChartRespon
     area: "lsoa",
     chart: {
       groups,
-      title: "Crime Rate by LSOA",
+      title: "Crime Rate by LSOA (over all time)",
       xlabel: "LSOAs",
       ylabel: "Frequency",
     },
@@ -336,7 +336,7 @@ export const crime_rate_by_lsoa_cumulative = async(lsoas: string[]): Promise<Bar
             color: "black",
           }]
         }],
-        title: "Cumulative Crime Rate Across LSOAs",
+        title: "Cumulative Crime Rate Across LSOAs (over all time)",
         xlabel: "Crime Types",
         ylabel: "Frequency",
       }
@@ -380,7 +380,7 @@ export const crime_rate_by_lsoa_cumulative = async(lsoas: string[]): Promise<Bar
 
     chart: {
       groups,
-      title: "Cumulative Crime Rate Across LSOAs",
+      title: "Cumulative Crime Rate Across LSOAs (over all time)",
       xlabel: "Crime Types",
       ylabel: "Frequency",
     },
