@@ -54,24 +54,22 @@ export type PieChartResponse = {
   }
 };
 
-// export type SpiderChartResponse = {
-//   chartType: "spider";
-//   type: string,
-//   area: string;
-//   chart: {
-//     groups: [
-//       [
-//         {
-//           axis: string;
-//           value: number;
-//         }
-//       ]
-//     ]
-//     title: string,
-//   };
-// };
 
-export type SpiderChartResponse = { axis: string; value: number; }[][];
+export type SpiderDiagramResponse = {
+  chartType: "spider";
+  type: string,
+  area: string;
+  chart: {
+    groups:
+        {
+          axis: string;
+          value: number;
+        }[][]
+    title: string,
+  };
+};
+
+// export type SpiderDiagramResponse = { axis: string; value: number; }[][];
 
 export type ChartData = BarChartResponse | LineChartResponse | SpiderChartResponse | PieChartResponse | null;
 // type for determining which chart button is clicked

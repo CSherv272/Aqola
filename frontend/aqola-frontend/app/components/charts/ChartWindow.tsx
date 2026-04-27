@@ -17,6 +17,8 @@ const ChartWindow = memo(({ chart, data, focusChart, closeChart, zIndex }: {
 }) => {
     const chartDef = getChartDefinition(chart.chartName);
 
+    // console.log(`Rendering chart window for ${chart.chartName} with data:`, data);
+
     if (chartDef?.chartComponent === "line") {
         return (
             <Window closeChart={() => closeChart(chart.chartName)} activeChartId={chart.chartName} focusChart={focusChart} zIndex={zIndex}>
@@ -32,7 +34,8 @@ const ChartWindow = memo(({ chart, data, focusChart, closeChart, zIndex }: {
     } else if (chartDef?.chartComponent === "spider") {
         return (
             <Window closeChart={() => closeChart(chart.chartName)} activeChartId={chart.chartName} focusChart={focusChart} zIndex={zIndex}>
-                <RadarChart data={data} />
+                <RadarChart id={chart.chartName} data={data}/>
+                {/* <div>Spider chart coming soon!</div> */}
             </Window>
         );
     }

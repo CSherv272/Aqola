@@ -32,7 +32,6 @@ export default function LineChart({
 
   // create the x and y scales for the chart, using the max x and y values from the data input
   const isDate = xVals[0] instanceof Date;
-  console.log(isDate)
   const isSchoolData = data.type === "school_data";
   const x = isDate
     ? d3.scaleTime(
