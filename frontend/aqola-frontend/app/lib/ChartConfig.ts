@@ -82,4 +82,17 @@ const getChartDefinition = (chartId: string | undefined) => {
   return chart;
 };
 
-export { getAvailableCharts, fetchChartData, getChartDefinition };
+const getDatasetAreaType = (dataset: string) => {
+  dataset = dataset.toLowerCase();
+  return (datasetConfig as Record<DatasetKey, Record<"areaType", string>>)[
+    dataset as DatasetKey
+  ]?.areaType;
+};
+
+export {
+  getAvailableCharts,
+  fetchChartData,
+  getChartDefinition,
+  getDatasetAreaType,
+  type DatasetKey,
+};
