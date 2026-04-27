@@ -4,7 +4,7 @@
     "areaType": "lsoa"
   },
   "schools": {
-    "graphs": ["school_ofsted_frequency", "individual_school_ofsted_timeline"],
+    "graphs": ["school_ofsted_frequency", "school_ofsted_frequency_yearly", "individual_school_ofsted_timeline", "school_gender_demographics"],
     "areaType": "urn"
   },
   "flood": {
