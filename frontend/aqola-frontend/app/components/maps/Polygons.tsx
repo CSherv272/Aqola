@@ -2,8 +2,7 @@ import { GeoJSON, useMapEvents } from "react-leaflet";
 import { PostcodeGeoJson } from "@/app/lib/PolygonModels";
 import { useEffect, useRef, useState } from "react";
 import { Feature, FeatureCollection } from "geojson";
-import { useAppStore } from "@/app/store/AppStore";
-import { getDatasetAreaType } from "@/app/lib/ChartConfig";
+import { useActiveAreaLayer, useAppStore } from "@/app/store/AppStore";
 import { debounce, min } from "lodash";
 import { getPostcodeBoundaries } from "@/app/lib/Postcode";
 import { getLsoaBoundaries } from "@/app/lib/Lsoa";
@@ -40,40 +39,27 @@ const Polygon = ({
   );
 };
 
-const Polygons = ({ dataset }: PolygonsProps) => {
+const Polygons = () => {
   const [boundaries, setBoundaries] = useState<FeatureCollection | null>(null);
   const [updateCount, setUpdateCount] = useState(0);
+
   const selectedAreas = useAppStore((state) => state.selectedAreas);
   const toggleArea = useAppStore((state) => state.toggleArea);
+  const setZoom = useAppStore((state) => state.setZoom);
   const selectedAreasRef = useRef<string[]>([]);
+  const activeLayer = useActiveAreaLayer();
 
   useEffect(() => {
     selectedAreasRef.current = selectedAreas;
   }, [selectedAreas]);
 
-  const areaType = getDatasetAreaType(dataset);
-
-  const MIN_POSTCODE_ZOOM = 13; // Only show postcodes when zoomed in enough
-  const MIN_LSOA_ZOOM = 8; // Only show LSOAs when zoomed in enough
-  const MIN_ZOOM = areaType === "postcode" ? MIN_POSTCODE_ZOOM : MIN_LSOA_ZOOM;
-
   const fetchBoundaries = useRef(
-    debounce((bounds, currentZoom, areaType, minZoom) => {
-      console.log("current zoom: " + currentZoom);
-      if (currentZoom < minZoom) {
-        console.log(
-          "zoomed out too far current zoom: " +
-            currentZoom +
-            ", min zoom: " +
-            minZoom +
-            ", clearing boundaries",
-        );
-        // Handle zoom level
+    debounce((bounds, areaType) => {
+      if (!areaType) {
         setBoundaries(null);
         return;
       }
-      let boundaries = null;
-      // Fetch boundaries based on area type
+      let boundaries;
       if (areaType === "postcode") {
         boundaries = getPostcodeBoundaries({
           min_lat: bounds.getSouth(),
@@ -89,10 +75,13 @@ const Polygons = ({ dataset }: PolygonsProps) => {
           max_lng: bounds.getEast(),
         });
       }
+
       if (!boundaries) {
         console.error("Unsupported area type: " + areaType);
+        setBoundaries(null);
         return;
       }
+
       boundaries.then((data) => {
         setBoundaries({
           type: "FeatureCollection",
@@ -104,15 +93,21 @@ const Polygons = ({ dataset }: PolygonsProps) => {
   ).current;
 
   const map = useMapEvents({
-    moveend: () =>
-      fetchBoundaries(map.getBounds(), map.getZoom(), areaType, MIN_ZOOM),
-    zoomend: () =>
-      fetchBoundaries(map.getBounds(), map.getZoom(), areaType, MIN_ZOOM),
+    moveend: () => {
+      const zoom = map.getZoom();
+      setZoom(zoom);
+      fetchBoundaries(map.getBounds(), activeLayer?.areaType ?? null);
+    },
+    zoomend: () => {
+      const zoom = map.getZoom();
+      setZoom(zoom);
+      fetchBoundaries(map.getBounds(), activeLayer?.areaType ?? null);
+    },
   });
 
   useEffect(() => {
-    fetchBoundaries(map.getBounds(), map.getZoom(), areaType, MIN_ZOOM);
-  }, [areaType]);
+    fetchBoundaries(map.getBounds(), activeLayer?.areaType ?? null);
+  }, [activeLayer?.areaType]);
 
   const getStyle = (areaName: string) => {
     const isSelected = selectedAreas.includes(areaName);

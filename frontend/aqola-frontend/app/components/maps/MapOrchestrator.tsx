@@ -3,7 +3,7 @@ import { PostcodePolygons } from "./PostcodePolygons";
 import { LsoaPolygons } from "./LsoaPolygons";
 import { SchoolMarkers } from "./SchoolMarkers";
 import { getSchools } from "../../lib/Api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useActionState } from "react";
 import { School } from "../../lib/ApiModels";
 import { Polygons } from "./Polygons";
 
@@ -29,15 +29,12 @@ const MapOrchestrator = () => {
   }, [selectedDataset]);
 
   // Return polygon/marker components based on the selected dataset
-  switch (selectedDataset) {
-    case "schools":
-      return <SchoolMarkers schools={schools} />;
-    case "crime":
-      return <Polygons dataset="crime" />;
-    case "flood":
-      return <Polygons dataset="flood" />;
-    default:
-      return null;
+  if (selectedDataset == "schools") {
+    return <SchoolMarkers schools={schools} />;
+  }
+
+  if (selectedDataset) {
+    return <Polygons />;
   }
 };
 
