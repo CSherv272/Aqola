@@ -282,7 +282,7 @@ export const crime_rate_by_lsoa = async(lsoas: string[]): Promise<BarChartRespon
   const crime_counts: Record<string, Record<string, number>> = {};
 
   Object.entries(response.data).forEach(([lsoa, crimes]) => {
-    // for each lsoa, add teh crime types and set their counts to 0
+    // for each lsoa, add the crime types and set their counts to 0
     crime_counts[lsoa] = Object.fromEntries(all_types.map((type) => [type, 0]));
 
     // All crime types found in the response overwrite the 0 value with actual count

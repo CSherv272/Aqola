@@ -3,7 +3,6 @@ import type { Crime, CrimeTypes, UniqueMonths } from "./ApiModels"
 import type { LineChartResponse } from "./ChartModels"
 import axios from "axios";
 import type { School } from "./ApiModels"
-
 // method naming convention <area>_<xlabel>_<ylabel>_<lines>
 
 
@@ -94,12 +93,28 @@ export const crime_rate_by_area = async (lsoas : string[]) : Promise<LineChartRe
   const colours = ["brown", "white", "blue", "pink", "cyan", "purple", "grey", "lime", "orange", "red", "yellow", "maroon", "green", "teal"]
   let lsoaSlug : string = "";
 
-    if (lsoas){
+  if (lsoas.length >= 1){
     lsoaSlug = "?"
     for (let lsoa of lsoas){
       lsoaSlug += `lsoas=${lsoa}&`
     }
     lsoaSlug = lsoaSlug.substring(0, lsoaSlug.length-1)
+  }
+  else{
+    console.log("yerp")
+    return (
+      {
+        chartType: "line",
+        type: "crime_data",
+        area: "postcode",
+        chart: {
+          lines: [],
+          title: "Crime Rate by Area",
+          xlabel: "Months",
+          ylabel: "Frequency",
+        },
+      }
+    )
   }
 
   const apiResponse = await api.get(`/crime/crime-rate-total/${lsoaSlug}`);
