@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import DatasetSelector from "./components/DatasetSelector";
 import { ChartControls } from "./components/ChartControls";
 import { useChartOrchestrator } from "./lib/hooks/ChartOrchestrator";
-import Charts from "./components/Charts"
+import Charts from "./components/charts/Charts"
 
 //dynamically import of the leaflet map from a map component
 const LeafletMap = dynamic(() => import("./components/maps/Map"), {
