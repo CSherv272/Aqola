@@ -7,7 +7,7 @@ import {
   school_gender_demographics_by_phase,
   flood_risk_frequency_by_postcode,
 } from "./BarChart";
-import { chartData } from "./types";
+import { ChartData } from "./ChartModels";
 import { get_school_ofsted_history } from "./LineChart";
 
 type DatasetKey = keyof typeof datasetConfig;
@@ -53,7 +53,7 @@ const resolveAreaType = (
 
 // apiCall (in the json) : (params) => actual_function_in_frontend(params);
 
-const apiCallMap: Record<string, (areas: string[]) => Promise<chartData>> = {
+const apiCallMap: Record<string, (areas: string[]) => Promise<ChartData>> = {
   // Allow this to be selected
   crime_rate_by_type_and_area: (areas) =>
     crime_rate_by_type_and_area("E01023987", [
