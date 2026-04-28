@@ -3,6 +3,7 @@ import type { Crime, CrimeTypes, UniqueMonths } from "./ApiModels"
 import type { LineChartResponse } from "./ChartModels"
 import axios from "axios";
 import type { School } from "./ApiModels"
+import { COLOR } from "./constants"
 
 // method naming convention <area>_<xlabel>_<ylabel>_<lines>
 
@@ -135,8 +136,6 @@ export const get_school_ofsted_history = async (urn: string[]): Promise<LineChar
     };
   }
 
-  const colours = ["#dc2626", "#2563eb", "#16a34a", "#d97706", "#9333ea", "#0891b2", "#db2777"];
-
   const urnSlug = "?" + validUrns.map(u => `urns=${u}`).join("&");
   const apiResponse = await api.get(`/school/${urnSlug}`);
 
@@ -164,7 +163,7 @@ export const get_school_ofsted_history = async (urn: string[]): Promise<LineChar
     return {
       line_name: records[0]?.school_name || "Unknown School",
       coords,
-      color: colours[i % colours.length],
+      color: COLOR[i % COLOR.length],
     };
   });
 

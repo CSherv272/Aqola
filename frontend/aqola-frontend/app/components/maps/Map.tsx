@@ -1,7 +1,3 @@
-// // Source - https://stackoverflow.com/a
-// // Posted by ffrosch, modified by community. See post 'Timeline' for change history
-// // Retrieved 2026-01-15, License - CC BY-SA 4.0
-
 "use client";
 
 import { MapContainer, TileLayer } from "react-leaflet";
