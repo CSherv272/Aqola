@@ -61,10 +61,6 @@ export default function Charts() {
         prevChartNamesRef.current = currentCharts;
         prevSelectedAreasRef.current = selectedAreas;
     }, [charts]);
-    
-    useEffect(() => {
-        console.log("Charts data updated:", chartsData);
-    }, [chartsData]);
 
     return (
         <>
