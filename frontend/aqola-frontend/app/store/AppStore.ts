@@ -23,7 +23,7 @@ type AppStore = {
 const useAppStore = create<AppStore>((set, get) => ({
   openCharts: [],
   selectedAreas: [],
-  selectedDataset: "",
+  selectedDataset: "crime",
 
   // Toggles an area in the selectedAreas array
   toggleArea: (area) =>
