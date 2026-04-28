@@ -5,12 +5,12 @@ import { useRef, useEffect } from "react";
 
 export default function BarChart({
   data,
-  marginTop = 20,
-  marginRight = 20,
-  marginBottom = 30,
+  marginTop = 60,
+  marginRight = 120,
+  marginBottom = 40,
   marginLeft = 60,
   width = 700,
-  height =400,
+  height = 400,
 }) {
   const gx = useRef();
   const gy = useRef();
@@ -31,9 +31,12 @@ export default function BarChart({
     .range([0, innerWidth])
     .padding(0.2);
 
+  // symlog is used instead of log to include 0
+  const isSymlog = data.scaleType === "symlog";
+
   //Create the data scale for the y axis
-  const yScale = d3
-    .scaleLinear()
+  const yScale = isSymlog ? d3.scaleSymlog().constant(1) : d3.scaleLinear();
+  yScale
     .domain([
       0,
       d3.max(data.groups, (group) => d3.max(group.bars, (bar) => bar.value)),
@@ -66,14 +69,79 @@ export default function BarChart({
     [subgx, xSubgroupScale],
   );
 
+  const maxVal = d3.max(data.groups, (g) => d3.max(g.bars, (b) => b.value));
+  const logTicks = [
+    0,
+    ...d3
+      .ticks(1, Math.log10(maxVal), 6)
+      .map((d) => Math.round(Math.pow(10, d))),
+  ];
+
+  // Pull the tick values into a shared constant
+  const yTickValues = isSymlog ? logTicks : yScale.ticks();
+
+  useEffect(() => {
+    const axis = d3.axisLeft(yScale);
+    if (isSymlog) {
+      axis.tickValues(yTickValues);
+    }
+    d3.select(gy.current).call(axis.tickFormat(d3.format(",.0f")));
+  }, [gy, yScale, isSymlog]);
+
   return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      preserveAspectRatio="xMidYMid meet"
-    >
+    <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
+      {/* Chart Title */}
+      <text
+        x={width / 2}
+        y={marginTop / 2 + 5}
+        textAnchor="middle"
+        fontSize="18px"
+        fill="white"
+        fontWeight="bold"
+      >
+        {data.title}
+      </text>
+
+      {/*  X-Axis Label */}
+      <text
+        x={width / 2}
+        y={height - 5}
+        textAnchor="middle"
+        fontSize="14px"
+        fill="lightgrey"
+      >
+        {data.xlabel}
+      </text>
+
+      {/*  Y-Axis Label */}
+      <text
+        transform="rotate(-90)"
+        x={-(height / 2)}
+        y={15}
+        textAnchor="middle"
+        fontSize="14px"
+        fill="lightgrey"
+      >
+        {data.ylabel}
+      </text>
+
+      {/* Colour Legend */}
+      <g
+        transform={`translate(${width - marginRight + 100}, ${marginTop - 10})`}
+      >
+        {subgroups.map((name, i) => (
+          <g key={name} transform={`translate(${0}, ${i * 20})`}>
+            <rect width={14} height={14} fill={colourScale(name)} rx={2} />
+            <text x={-8} y={12} textAnchor="end" fontSize="12px" fill="white">
+              {name}
+            </text>
+          </g>
+        ))}
+      </g>
+
       <g transform={`translate(${marginLeft}, ${marginTop})`}>
         {/* Create the lines going across the background */}
-        {yScale.ticks().map((tickValue) => (
+        {yTickValues.map((tickValue) => (
           <line
             x1={0}
             y1={yScale(tickValue)}
@@ -89,17 +157,34 @@ export default function BarChart({
           <g transform={`translate(${xScale(group.name)}, 0)`} key={group.name}>
             {/* For every bar in subgroup, scale across starting from  */}
             {group.bars.map((bar, key) => (
-              <rect
-                x={xSubgroupScale(bar.bar_name)}
-                y={yScale(bar.value)}
-                width={xSubgroupScale.bandwidth()}
-                height={innerHeight - yScale(bar.value)}
-                key={key}
-                id=""
-                fill={bar.color}
-                className="hover:saturate-300 focus:outline-2 transition-transform duration-300">
-                <title>{bar.bar_name}</title>
-              </rect>
+              <>
+                <rect
+                  x={xSubgroupScale(bar.bar_name)}
+                  y={yScale(bar.value)}
+                  width={xSubgroupScale.bandwidth()}
+                  height={innerHeight - yScale(bar.value)}
+                  key={key}
+                  id=""
+                  fill={bar.color}
+                  className="hover:saturate-300 focus:outline-2 transition-transform duration-300"
+                >
+                  <title>{bar.bar_name}</title>
+                </rect>
+                {bar.value != 0 && (
+                  <text
+                    x={
+                      xSubgroupScale(bar.bar_name) +
+                      xSubgroupScale.bandwidth() / 2
+                    }
+                    y={innerHeight - 16}
+                    textAnchor="middle"
+                    fontSize="10px"
+                    fill="white"
+                  >
+                    {bar.value.toLocaleString()}
+                  </text>
+                )}
+              </>
             ))}
           </g>
         ))}

@@ -118,7 +118,10 @@ for (const [index, [lsoa, coords]] of Object.entries(crimeCountData).entries()) 
 }
 
 export const get_school_ofsted_history = async (urn: string[]): Promise<LineChartResponse> => {
-  if (!urn || urn.length === 0) {
+  // regex filter to remove anything that isn't exactly a 6-digit number (URN)
+  const validUrns = urn ? urn.filter(id => /^\d{6}$/.test(String(id))) : [];
+
+  if (validUrns.length === 0) {
     return {
       chartType: "line",
       type: "school_data",
@@ -134,7 +137,7 @@ export const get_school_ofsted_history = async (urn: string[]): Promise<LineChar
 
   const colours = ["#dc2626", "#2563eb", "#16a34a", "#d97706", "#9333ea", "#0891b2", "#db2777"];
 
-  const urnSlug = "?" + urn.map(u => `urns=${u}`).join("&");
+  const urnSlug = "?" + validUrns.map(u => `urns=${u}`).join("&");
   const apiResponse = await api.get(`/school/${urnSlug}`);
 
   console.log("unr: " + urn)

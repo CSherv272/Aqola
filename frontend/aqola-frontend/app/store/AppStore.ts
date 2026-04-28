@@ -1,10 +1,12 @@
-import { create } from "zustand";
+import { create, useStore } from "zustand";
 import { StateDefinition } from "./ChartStateModel";
+import { AreaLayer, resolveAreaType } from "../lib/ChartConfig";
 
 type AppStore = {
   openCharts: StateDefinition[];
   selectedAreas: string[];
   selectedDataset: string;
+  currentZoom: number;
 
   toggleArea: (area: string) => void;
   clearAreas: () => void;
@@ -18,12 +20,14 @@ type AppStore = {
   getFocusedChart: () => StateDefinition | undefined;
   getCharts: () => StateDefinition[];
   addAreas: (areas: string[]) => void;
+  setZoom: (zoom: number) => void;
 };
 
 const useAppStore = create<AppStore>((set, get) => ({
   openCharts: [],
   selectedAreas: [],
   selectedDataset: "crime",
+  currentZoom: 7, // Decently zoomed out
 
   // Toggles an area in the selectedAreas array
   toggleArea: (area) =>
@@ -131,6 +135,15 @@ const useAppStore = create<AppStore>((set, get) => ({
   getCharts: () => {
     return get().openCharts;
   },
+
+  setZoom: (zoom) => set({ currentZoom: zoom }),
 }));
 
-export { useAppStore };
+// gets the areaLayer for a given zoom and dataset.
+const useActiveAreaLayer = (): AreaLayer | null => {
+  const dataset = useAppStore((s) => s.selectedDataset);
+  const zoom = useAppStore((s) => s.currentZoom);
+  return resolveAreaType(dataset, zoom);
+};
+
+export { useAppStore, useActiveAreaLayer };

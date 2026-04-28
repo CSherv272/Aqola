@@ -33,10 +33,51 @@ type LsoaPolygonResponse = {
   boundary: Polygon | MultiPolygon;
 };
 
+type YearlyRankingRecord = {
+  year_range: string;
+  ranking: number;
+  count: number;
+};
+
+type YearlyOfstedResponse = {
+  yearly_rankings: YearlyRankingRecord[];
+};
+
+type GenderDemographicRecord = {
+  phase: string;
+  gender: string;
+  count: number;
+};
+
+type GenderDemographicsResponse = {
+  "gender-demographics": GenderDemographicRecord[];
+};
+
+type LsoaProperties = {
+  lsoa: string;
+};
+
+type LsoaGeoJson = Feature<Polygon | MultiPolygon, LsoaProperties>;
+
+type LsoaResponse = {
+  lsoa: string;
+  boundary: LsoaGeoJson;
+};
+
+type LsoaPolygonResponse = {
+  lsoa: string;
+  boundary: Polygon | MultiPolygon;
+};
+
 export {
   type PostcodeGeoJson,
   type PostcodeResponse,
   type PostcodePolygonResponse,
+  type LsoaGeoJson,
+  type LsoaResponse,
+  type LsoaPolygonResponse,
+  type YearlyOfstedResponse,
+  type GenderDemographicsResponse,
   type LsoaGeoJson,
   type LsoaResponse,
   type LsoaPolygonResponse,
