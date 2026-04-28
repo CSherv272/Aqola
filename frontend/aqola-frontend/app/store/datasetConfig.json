@@ -8,7 +8,7 @@
     "areaType": "urn"
   },
   "flood": {
-    "graphs": ["flood_risk_frequency"],
+    "graphs": ["flood_risk_frequency", "flood_risk_frequency_spider"],
     "areaType": "postcode"
   }
 }
