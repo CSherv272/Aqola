@@ -2,6 +2,7 @@
 
 import * as d3 from "d3";
 import { useRef, useEffect } from "react";
+import { COLOR } from "../../lib/constants"
 
 export default function BarChart({
   data,
@@ -9,7 +10,7 @@ export default function BarChart({
   marginRight = 120,
   marginBottom = 40,
   marginLeft = 60,
-  width = 700,
+  width = 800,
   height = 400,
 }) {
   const gx = useRef();
@@ -54,7 +55,7 @@ export default function BarChart({
   const colourScale = d3
     .scaleOrdinal()
     .domain(subgroups)
-    .range(["#dc0000", "#e7b416", "#fff500", "#2dc937"]);
+    .range(COLOR);
 
   useEffect(
     () => void d3.select(gx.current).call(d3.axisBottom(xScale)),
@@ -89,7 +90,7 @@ export default function BarChart({
   }, [gy, yScale, isSymlog]);
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
+    <svg viewBox={`0 0 ${width + 75} ${height}`} preserveAspectRatio="xMidYMid meet">
       {/* Chart Title */}
       <text
         x={width / 2}
@@ -127,13 +128,13 @@ export default function BarChart({
 
       {/* Colour Legend */}
       <g
-        transform={`translate(${width - marginRight + 100}, ${marginTop - 10})`}
+        transform={`translate(${width - marginRight + 170}, ${marginTop - 10})`}
       >
-        {subgroups.map((name, i) => (
-          <g key={name} transform={`translate(${0}, ${i * 20})`}>
-            <rect width={14} height={14} fill={colourScale(name)} rx={2} />
+        {data.groups[0].bars.map((bar, i) => (
+          <g key={bar.name} transform={`translate(${0}, ${i * 20})`}>
+            <rect width={14} height={14} fill={bar.color} rx={2} />
             <text x={-8} y={12} textAnchor="end" fontSize="12px" fill="white">
-              {name}
+              {bar.bar_name}
             </text>
           </g>
         ))}
@@ -176,10 +177,11 @@ export default function BarChart({
                       xSubgroupScale(bar.bar_name) +
                       xSubgroupScale.bandwidth() / 2
                     }
-                    y={innerHeight - 16}
+                    y={yScale(bar.value)}
                     textAnchor="middle"
                     fontSize="10px"
                     fill="white"
+                    fontWeight="bold"
                   >
                     {bar.value.toLocaleString()}
                   </text>
@@ -189,18 +191,6 @@ export default function BarChart({
           </g>
         ))}
       </g>
-
-      {/* group.bars.map((bar, index) => [
-            <rect
-              x={xSubgroupScale(group.name)}
-              y={yScale(bar.value)}
-              width={xSubgroupScale.bandwidth()}
-              height={innerHeight - yScale(bar.value)}
-              key={key}
-              fill="red"
-            />,
-          ]), */}
-
       <g
         ref={gx}
         transform={`translate(${marginLeft},${height - marginBottom})`}

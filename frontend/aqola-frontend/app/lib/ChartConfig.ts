@@ -2,7 +2,7 @@ import datasetConfig from "../store/datasetConfig.json";
 import chartDefinitions from "../store/chartDefinitions.json";
 import { crime_rate_by_type_and_area, crime_rate_by_area } from "./LineChart";
 import { flood_risk_frequency_by_postcode_spider } from "./SpiderDiagram";
-import { ofsted_frequency_by_band, ofsted_frequency_yearly, flood_risk_frequency_by_postcode, school_gender_demographics_by_phase } from "./BarChart";
+import { ofsted_frequency_by_band, ofsted_frequency_yearly, flood_risk_frequency_by_postcode, school_gender_demographics_by_phase, crime_rate_by_lsoa, crime_rate_by_lsoa_cumulative } from "./BarChart";
 import { ChartData } from "./ChartModels";
 import { get_school_ofsted_history } from "./LineChart";
 

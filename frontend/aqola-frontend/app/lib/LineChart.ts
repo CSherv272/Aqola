@@ -20,22 +20,22 @@ export const api = axios.create({
 export const crime_rate_by_type_and_area = async (lsoa: string, crimeTypes? : string[]): Promise<LineChartResponse> => {
   let crimeTypeSlug: string = "";
 
-  let colours: Record<string, string> = {
-    "Anti-social behaviour": "brown",
-    "Bicycle theft": "white",
-    "Burglary": "blue",
-    "Criminal damage and arson": "pink",
-    "Drugs": "cyan",
-    "Other crime": "purple",
-    "Other theft": "grey",
-    "Possession of weapons": "lime",
-    "Public order": "orange",
-    "Robbery": "red",
-    "Shoplifting": "yellow",
-    "Theft from the person": "maroon",
-    "Vehicle crime": "green",
-    "Violence and sexual offences": "teal",
-  };
+let colorMap: Record<string, string> = {
+  "Anti-social behaviour": COLOR[0],
+  "Bicycle theft": COLOR[1],
+  "Burglary": COLOR[2],
+  "Criminal damage and arson": COLOR[3],
+  "Drugs": COLOR[4],
+  "Other crime": COLOR[5],
+  "Other theft": COLOR[6],
+  "Possession of weapons": COLOR[7],
+  "Public order": COLOR[8],
+  "Robbery": COLOR[9],
+  "Shoplifting": COLOR[10],
+  "Theft from the person": COLOR[11],
+  "Vehicle crime": COLOR[12],
+  "Violence and sexual offences": COLOR[13],
+};
 
   if (!lsoa) {
     return {
@@ -68,7 +68,7 @@ export const crime_rate_by_type_and_area = async (lsoa: string, crimeTypes? : st
     lines.push({
       line_name: crimeType,
       coords: (coords as [Date, number][]).map(([date, count]) => [new Date(date), count]),
-      color: colours[crimeType]
+      color: colorMap[crimeType]
     });
   }
 
@@ -91,8 +91,6 @@ export const crime_rate_by_type_and_area = async (lsoa: string, crimeTypes? : st
 // Returns a graph of total crime rate over time
 // Each line is an lsoa
 export const crime_rate_by_area = async (lsoas : string[]) : Promise<LineChartResponse> => {
-
-  const colours = ["brown", "white", "blue", "pink", "cyan", "purple", "grey", "lime", "orange", "red", "yellow", "maroon", "green", "teal"]
   let lsoaSlug : string = "";
 
   if (lsoas.length >= 1){
@@ -125,11 +123,10 @@ export const crime_rate_by_area = async (lsoas : string[]) : Promise<LineChartRe
   let lines: { line_name: string; coords: [Date, number][]; color: string }[] = [];
 
 for (const [index, [lsoa, coords]] of Object.entries(crimeCountData).entries()) {
-  console.log("Color" + colours[index % colours.length])  
   lines.push({
       line_name: lsoa,
       coords: (coords as [Date, number][]).map(([date, count]) => [new Date(date), count]),
-      color: colours[index % colours.length]
+      color: COLOR[index % COLOR.length]
     });
   }
 
@@ -168,8 +165,6 @@ export const get_school_ofsted_history = async (urn: string[]): Promise<LineChar
 
   const urnSlug = "?" + validUrns.map(u => `urns=${u}`).join("&");
   const apiResponse = await api.get(`/school/${urnSlug}`);
-
-  console.log("unr: " + urn)
 
   const schoolRecords: School[] = apiResponse.data;
 

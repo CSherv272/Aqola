@@ -2,9 +2,9 @@ import axios from "axios";
 import type {YearlyOfstedResponse,GenderDemographicsResponse} from "./PolygonModels";
 import type { SchoolCounts } from "./ApiModels";
 import type { BarChartResponse } from "./ChartModels";
+import { COLOR } from "./constants"
 
 // method naming convention <area>_<xlabel>_<ylabel>_<bars>
-const color = ["red", "orange", "yellow", "green", "blue", "purple", "pink", "teal", "indigo", "cyan","lime", "magenta"];
 
 export const api = axios.create({
   baseURL: "http://localhost:8000",
@@ -44,17 +44,17 @@ export const ofsted_frequency_by_band = async (): Promise<BarChartResponse> => {
             {
               bar_name: "Good",
               value: rankingCounts[2] ?? 0,
-              color: "cyan",
+              color: "blue",
             },
             {
               bar_name: "Needs Improvement",
               value: rankingCounts[3] ?? 0,
-              color: "blue",
+              color: "orange",
             },
             {
               bar_name: "Inadequate",
               value: rankingCounts[4] ?? 0,
-              color: "brown",
+              color: "red",
             },
             {
               bar_name: "Ungraded",
@@ -296,7 +296,7 @@ export const crime_rate_by_lsoa = async(lsoas: string[]): Promise<BarChartRespon
     bars: Object.entries(crime).map(([crime_type, _], i) => ({
       bar_name: crime_type,
       value: crime_counts[lsoa][crime_type],
-      color: color[i % color.length]
+      color: COLOR[i % COLOR.length]
     }))
   }))
 
@@ -368,7 +368,7 @@ export const crime_rate_by_lsoa_cumulative = async(lsoas: string[]): Promise<Bar
     bars: Object.entries(crime_totals).map(([crime_type, value], i) => ({
       bar_name: crime_type,
       value: value,
-      color: color[i % color.length],
+      color: COLOR[i % COLOR.length],
     })),
   }];
 
