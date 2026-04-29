@@ -116,6 +116,7 @@ const Polygons = () => {
     },
   });
 
+  // When the active layer changes (e.g. from postcode to lsoa), fetch the new boundaries.
   useEffect(() => {
     fetchBoundaries(map.getBounds(), activeLayer?.areaType ?? null);
   }, [activeLayer?.areaType]);
@@ -129,6 +130,7 @@ const Polygons = () => {
     };
   };
 
+  // For each polygon, bind a tooltip and click/hover events.
   const onEachFeature = (feature: Feature, layer: Layer) => {
     const areaName =
       feature.properties?.postcode || feature.properties?.lsoa || "Unknown";
@@ -141,6 +143,7 @@ const Polygons = () => {
       });
     }
     layer.on({
+      // On hover, if not selected, change style to highlight. On mouse out, revert style if not selected.
       mouseover: (e) => {
         if (selectedAreasRef.current.includes(areaName)) return;
         e.target.setStyle({
@@ -157,6 +160,8 @@ const Polygons = () => {
           weight: 0.5,
         });
       },
+
+      // On click, toggle selection and update style accordingly.
       click: (e) => {
         DomEvent.stopPropagation(e);
         const isSelected = selectedAreasRef.current.includes(areaName);
@@ -170,6 +175,7 @@ const Polygons = () => {
     });
   };
 
+  // If no boundaries, don't render anything.
   if (!boundaries) {
     return null;
   }

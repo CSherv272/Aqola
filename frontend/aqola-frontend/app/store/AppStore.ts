@@ -1,6 +1,6 @@
 import { create, useStore } from "zustand";
 import { StateDefinition } from "./ChartStateModel";
-import { AreaLayer, resolveAreaType } from "../lib/ChartConfig";
+import { AreaLayer, resolveAreaType } from "../lib/DatasetConfig";
 
 type AppStore = {
   openCharts: StateDefinition[];

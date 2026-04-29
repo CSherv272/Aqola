@@ -1,7 +1,7 @@
 import { useAppStore } from "@/app/store/AppStore";
 import { SchoolMarkers } from "./SchoolMarkers";
 import { getSchools } from "../../lib/Api";
-import { useState, useEffect, useActionState } from "react";
+import { useState } from "react";
 import { School } from "../../lib/ApiModels";
 import { Polygons } from "./Polygons";
 import { useMapEvents } from "react-leaflet";
@@ -32,7 +32,6 @@ const MapOrchestrator = () => {
   });
 
   // Return polygon/marker components based on the selected dataset
-
   if (selectedDataset) {
     if (selectedDataset == "schools") {
       fetchSchools();
