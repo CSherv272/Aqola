@@ -1,6 +1,7 @@
 import { useActiveAreaLayer, useAppStore } from "@/app/store/AppStore";
 import { useState, useEffect, useRef } from "react";
 import { getAvailableCharts } from "../ChartConfig";
+import { find } from "lodash";
 
 const useChartOrchestrator = () => {
   // AppStore Variable Refs
@@ -30,7 +31,7 @@ const useChartOrchestrator = () => {
   useEffect(() => {
     // Checks if the user has changed the dataset via the dropdown
     if (selectedDataset !== getFocusedChart()?.selectedDataset) {
-      clearAreas();
+      // clearAreas();
       setActiveChartId("");
     }
   }, [selectedDataset]);
@@ -90,7 +91,10 @@ const useChartOrchestrator = () => {
   const prevAreaType = useRef(activeLayer?.areaType);
 
   useEffect(() => {
-    if (activeLayer?.areaType !== prevAreaType.current) {
+    // If the area type changes and there is no active chart
+    // Then clear the selected areas as they won't be relevant anymore.
+    if (activeLayer?.areaType !== prevAreaType.current && !activeChartId) {
+      console.log("Area type changed, clearing selected areas");
       clearAreas();
       prevAreaType.current = activeLayer?.areaType ?? undefined;
     }
