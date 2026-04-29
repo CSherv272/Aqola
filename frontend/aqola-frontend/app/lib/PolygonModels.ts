@@ -17,22 +17,6 @@ type PostcodePolygonResponse = {
   boundary: Polygon | MultiPolygon;
 };
 
-type LsoaProperties = {
-  lsoa: string;
-};
-
-type LsoaGeoJson = Feature<Polygon | MultiPolygon, LsoaProperties>;
-
-type LsoaResponse = {
-  lsoa: string;
-  boundary: LsoaGeoJson;
-};
-
-type LsoaPolygonResponse = {
-  lsoa: string;
-  boundary: Polygon | MultiPolygon;
-};
-
 type YearlyRankingRecord = {
   year_range: string;
   ranking: number;
@@ -78,7 +62,4 @@ export {
   type LsoaPolygonResponse,
   type YearlyOfstedResponse,
   type GenderDemographicsResponse,
-  type LsoaGeoJson,
-  type LsoaResponse,
-  type LsoaPolygonResponse,
 };

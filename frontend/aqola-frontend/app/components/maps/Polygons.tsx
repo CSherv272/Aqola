@@ -3,7 +3,7 @@ import { PostcodeGeoJson } from "@/app/lib/PolygonModels";
 import { useEffect, useRef, useState } from "react";
 import { Feature, FeatureCollection } from "geojson";
 import { useActiveAreaLayer, useAppStore } from "@/app/store/AppStore";
-import { debounce, min } from "lodash";
+import { debounce } from "lodash";
 import { getPostcodeBoundaries } from "@/app/lib/Postcode";
 import { getLsoaBoundaries } from "@/app/lib/Lsoa";
 import { DomEvent, Layer } from "leaflet";
@@ -13,10 +13,6 @@ interface PolygonProps {
   color: string;
   postcode_boundary_data: PostcodeGeoJson;
   isSelected?: boolean;
-}
-
-interface PolygonsProps {
-  dataset: "crime" | "flood";
 }
 
 const Polygon = ({
@@ -45,8 +41,13 @@ const Polygons = () => {
 
   const selectedAreas = useAppStore((state) => state.selectedAreas);
   const toggleArea = useAppStore((state) => state.toggleArea);
-  const setZoom = useAppStore((state) => state.setZoom);
   const selectedAreasRef = useRef<string[]>([]);
+
+  // This hook updates when zoom or dataset changes in appstore.
+  // Active Layers is a object that has a
+  //  - AreaType - postcode, lsoa, etc.
+  //  - MinZoom - 8, 12, 14, etc.
+  //  - MaxZoom (optional) - 12, 13, 15, etc.
   const activeLayer = useActiveAreaLayer();
 
   useEffect(() => {
@@ -54,11 +55,16 @@ const Polygons = () => {
   }, [selectedAreas]);
 
   const fetchBoundaries = useRef(
+    // Takes in the bounding box around the screen and area type.
     debounce((bounds, areaType) => {
+      // If no area type, then no polygons show
       if (!areaType) {
         setBoundaries(null);
         return;
       }
+
+      // Different API calls based on areaType.
+      // Bounds used to get only the polygons showing on the screen.
       let boundaries;
       if (areaType === "postcode") {
         boundaries = getPostcodeBoundaries({
@@ -76,12 +82,14 @@ const Polygons = () => {
         });
       }
 
+      // If we can't find the boundaries from the API
       if (!boundaries) {
         console.error("Unsupported area type: " + areaType);
         setBoundaries(null);
         return;
       }
 
+      // Make a feature collection, can later map over it to render polygons.
       boundaries.then((data) => {
         setBoundaries({
           type: "FeatureCollection",
@@ -92,15 +100,18 @@ const Polygons = () => {
     }, 300),
   ).current;
 
+  // When map moves or zooms, get the geometries from the API.
+  // Passes in areaType and the
+  // Boundary of the map (I.e. The corners of the map where the screen lies)
   const map = useMapEvents({
     moveend: () => {
-      const zoom = map.getZoom();
-      setZoom(zoom);
+      // const zoom = map.getZoom();
+      // setZoom(zoom);
       fetchBoundaries(map.getBounds(), activeLayer?.areaType ?? null);
     },
     zoomend: () => {
-      const zoom = map.getZoom();
-      setZoom(zoom);
+      // const zoom = map.getZoom();
+      // setZoom(zoom);
       fetchBoundaries(map.getBounds(), activeLayer?.areaType ?? null);
     },
   });
@@ -126,7 +137,7 @@ const Polygons = () => {
       layer.bindTooltip(areaName, {
         permanent: false, // only show on hover
         direction: "center",
-        className: "postcode-tooltip",
+        className: "polygon-tooltip",
       });
     }
     layer.on({
