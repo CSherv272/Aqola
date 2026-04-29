@@ -1,11 +1,10 @@
 import axios from "axios";
-import type { School, SchoolCounts } from "./ApiModels";
-import type { BarChartResponse } from "./ChartModels";
-import { getPostcodeBoundaries } from "./Postcode";
 import type {
   YearlyOfstedResponse,
   GenderDemographicsResponse,
 } from "./PolygonModels";
+import type { SchoolCounts } from "./ApiModels";
+import type { BarChartResponse } from "./ChartModels";
 
 // method naming convention <area>_<xlabel>_<ylabel>_<bars>
 
@@ -19,9 +18,7 @@ export const get_bar_info = async () => {
 };
 
 // Number of schools in each ofsted band for all of Kent
-export const ofsted_frequency_by_band = async (
-  area?: string,
-): Promise<BarChartResponse> => {
+export const ofsted_frequency_by_band = async (): Promise<BarChartResponse> => {
   const apiResponse = await api.get<SchoolCounts>("/school/ofsted-count");
 
   const scores = apiResponse.data;

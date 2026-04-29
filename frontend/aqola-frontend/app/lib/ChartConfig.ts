@@ -9,6 +9,10 @@ import {
 } from "./BarChart";
 import { ChartData } from "./ChartModels";
 import { get_school_ofsted_history } from "./LineChart";
+import { flood_risk_frequency_by_postcode_spider } from "./SpiderDiagram";
+import { SpiderDiagramResponse } from "./ChartModels";
+import BarChart from "../components/charts/BarChart";
+import { api } from "./Api";
 
 type DatasetKey = keyof typeof datasetConfig;
 
@@ -40,9 +44,10 @@ const apiCallMap: Record<string, (areas: string[]) => Promise<ChartData>> = {
     school_gender_demographics_by_phase(),
   get_school_ofsted_history: (areas) => get_school_ofsted_history(areas),
 
-  //NOTE Only this one works for now!
   flood_risk_frequency_by_postcode: (areas) =>
     flood_risk_frequency_by_postcode(areas),
+  flood_risk_frequency_by_postcode_spider: (areas) =>
+    flood_risk_frequency_by_postcode_spider(areas),
 };
 
 // Gets available charts from datasetConfig.json
@@ -76,7 +81,9 @@ const fetchChartData = async (
   return await apiFn(selectedAreas);
 };
 
-const getChartDefinition = (chartId: string) => {
+// Retrieve the chart definition given an ID, from the chartDefinition JSON
+const getChartDefinition = (chartId: string | undefined) => {
+  if (chartId === undefined) return null;
   const chart = chartDefinitions.find((c) => c.id === chartId);
   if (!chart) return null;
   return chart;
