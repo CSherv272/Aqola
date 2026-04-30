@@ -9,6 +9,7 @@ import { ChartData } from "../../lib/ChartModels";
 export default function Charts() {
     const getCharts = useAppStore((state) => state.getCharts);
     const focusChart = useAppStore((state) => state.focusChart);
+    const minimiseChart = useAppStore((state) => state.minimiseChart);
     const charts = getCharts() as StateDefinition[];
     const { closeChart } = useChartOrchestrator();
 
@@ -74,6 +75,7 @@ export default function Charts() {
                         data={data}
                         focusChart={focusChart}
                         closeChart={closeChart}
+                        minimiseChart={minimiseChart}
                         zIndex={ 400 + charts.length - charts.findIndex((c) => c.chartName === chart.chartName) }
                     />
                 );
