@@ -43,13 +43,16 @@ async def list_lsoas(
         for result in results
     ]
 
+# This endpoint retrieves LSOA boundaries that intersect with a given bounding box defined by min/max latitude and longitude. 
+# It returns the LSOA ID and its boundary as GeoJSON.
 @router.get("/geometry", response_model=List[LsoaPolygonResponse])
 async def list_lsoas(min_lat: float, max_lat: float, min_lng: float, max_lng: float, db: Session = Depends(get_db)):
     """List postcodes"""
     
     print(f"Bounds received: min_lat={min_lat}, max_lat={max_lat}, min_lng={min_lng}, max_lng={max_lng}")
 
-
+    # Get all LSOAs that intersect with the bounding box defined by the input coordinates. 
+    # Use ST_AsGeoJSON to convert the geometry to GeoJSON format for easier handling on the frontend.
     lsoas = (
         db.query(
             Lsoa.lsoa_id,
@@ -63,14 +66,17 @@ async def list_lsoas(min_lat: float, max_lat: float, min_lng: float, max_lng: fl
         .all()
     )
 
+    # If no LSOAs are found that intersect with the bounding box, return a 404 error.
     if not lsoas:
         raise HTTPException(status_code=404, detail="No records found. Double check the lsoa(s) entered")
 
     lsoa_polygons = []
 
+    # If no LSOAs are found that intersect with the bounding box, return an empty list instead of a 404 error. 
     if len(lsoas) == 0:
         return lsoa_polygons    
 
+    # Return the LSOA ID and its boundary as GeoJSON for each LSOA that intersects with the bounding box.
     for lsoa_record in lsoas:
         boundary_json = json.loads(lsoa_record.boundary)
         lsoa_polygons.append(LsoaPolygonResponse(boundary=GeometryModel(type=boundary_json["type"], coordinates=boundary_json["coordinates"]), lsoa=lsoa_record.lsoa_id))

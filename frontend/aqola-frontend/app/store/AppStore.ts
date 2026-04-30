@@ -1,10 +1,12 @@
-import { create } from "zustand";
+import { create, useStore } from "zustand";
 import { StateDefinition } from "./ChartStateModel";
+import { AreaLayer, resolveAreaType } from "../lib/DatasetConfig";
 
 type AppStore = {
-  openCharts: StateDefinition[],
+  openCharts: StateDefinition[];
   selectedAreas: string[];
   selectedDataset: string;
+  currentZoom: number;
 
   toggleArea: (area: string) => void;
   clearAreas: () => void;
@@ -18,12 +20,14 @@ type AppStore = {
   getFocusedChart: () => StateDefinition | undefined;
   getCharts: () => StateDefinition[];
   addAreas: (areas: string[]) => void;
+  setZoom: (zoom: number) => void;
 };
 
 const useAppStore = create<AppStore>((set, get) => ({
   openCharts: [],
   selectedAreas: [],
-  selectedDataset: "",
+  selectedDataset: "crime",
+  currentZoom: 7, // Decently zoomed out
 
   // Toggles an area in the selectedAreas array
   toggleArea: (area) =>
@@ -34,39 +38,49 @@ const useAppStore = create<AppStore>((set, get) => ({
     })),
 
   // Add an array of areas, only the ones that aren't in the selectedAreas already
-  addAreas: (areas)=>
+  addAreas: (areas) =>
     set((state) => ({
-      selectedAreas: [...state.selectedAreas, ...areas.filter((a) => !state.selectedAreas.includes(a))],
+      selectedAreas: [
+        ...state.selectedAreas,
+        ...areas.filter((a) => !state.selectedAreas.includes(a)),
+      ],
     })),
 
   // Empties the selectedAreas array
   clearAreas: () => set({ selectedAreas: [] }),
 
   // Sets the selected dataset and clears selected areas
-  setDataset: (dataset) => set({
-    selectedDataset: dataset,
-    selectedAreas: [],
-  }),
+  setDataset: (dataset) =>
+    set({
+      selectedDataset: dataset,
+      selectedAreas: [],
+    }),
 
   // Loads a chart state from openCharts into the main app state
-  loadChartState: (chartState) => set({
-    selectedAreas: chartState.selectedAreas,
-    selectedDataset: chartState.selectedDataset,
-  }),
+  loadChartState: (chartState) =>
+    set({
+      selectedAreas: chartState.selectedAreas,
+      selectedDataset: chartState.selectedDataset,
+    }),
 
   // Adds a chart to openCharts with the current app state
-  addChart: (chartName) => set((state) => ({
-    openCharts: [{
-      chartName: chartName,
-      selectedAreas: state.selectedAreas,
-      selectedDataset: state.selectedDataset,
-    }, ...state.openCharts],
-  })),
-  
+  addChart: (chartName) =>
+    set((state) => ({
+      openCharts: [
+        {
+          chartName: chartName,
+          selectedAreas: state.selectedAreas,
+          selectedDataset: state.selectedDataset,
+        },
+        ...state.openCharts,
+      ],
+    })),
+
   // Removes a chart from openCharts by name
-  removeChart: (chartName) => set((state) => ({
-    openCharts: state.openCharts.filter((g) => g.chartName !== chartName),
-  })),
+  removeChart: (chartName) =>
+    set((state) => ({
+      openCharts: state.openCharts.filter((g) => g.chartName !== chartName),
+    })),
 
   // Finds a chart in openCharts by name
   findChartFromName: (chartName) => {
@@ -74,25 +88,43 @@ const useAppStore = create<AppStore>((set, get) => ({
   },
 
   // Puts the "focused" chart to the front of the openCharts array
-  focusChart: (chartName) => set((state) => {
-    // if not already focused
-    if (state.openCharts[0]?.chartName === chartName && state.selectedDataset === state.openCharts[0]?.selectedDataset) return state; // if already focused, do nothing
-    console.log("Focusing chart: ", chartName);
-    const chartToFocus = state.openCharts.find((g) => g.chartName === chartName);
-    if (!chartToFocus) return state;
-    return { openCharts: [chartToFocus, ...state.openCharts.filter((g) => g.chartName !== chartName)] };
-  }),
+  focusChart: (chartName) =>
+    set((state) => {
+      // if not already focused
+      if (
+        state.openCharts[0]?.chartName === chartName &&
+        state.selectedDataset === state.openCharts[0]?.selectedDataset
+      )
+        return state; // if already focused, do nothing
+      console.log("Focusing chart: ", chartName);
+      const chartToFocus = state.openCharts.find(
+        (g) => g.chartName === chartName,
+      );
+      if (!chartToFocus) return state;
+      return {
+        openCharts: [
+          chartToFocus,
+          ...state.openCharts.filter((g) => g.chartName !== chartName),
+        ],
+      };
+    }),
 
   // Updates the state of a chart in openCharts by name
-  updateChartState: (chartName) => set((state) => ({
-    openCharts: state.openCharts.map((g) =>
-      g.chartName === chartName ? { ...g, 
-        ...{
-          chartName: chartName,
-          selectedAreas: [...get().selectedAreas],
-          selectedDataset: get().selectedDataset }
-        } : g),
-  })),
+  updateChartState: (chartName) =>
+    set((state) => ({
+      openCharts: state.openCharts.map((g) =>
+        g.chartName === chartName
+          ? {
+              ...g,
+              ...{
+                chartName: chartName,
+                selectedAreas: [...get().selectedAreas],
+                selectedDataset: get().selectedDataset,
+              },
+            }
+          : g,
+      ),
+    })),
 
   // Returns the top chart in the stack
   getFocusedChart: () => {
@@ -102,7 +134,16 @@ const useAppStore = create<AppStore>((set, get) => ({
   // Returns the full chart stack
   getCharts: () => {
     return get().openCharts;
-  }
+  },
+
+  setZoom: (zoom) => set({ currentZoom: zoom }),
 }));
 
-export { useAppStore };
+// gets the areaLayer for a given zoom and dataset.
+const useActiveAreaLayer = (): AreaLayer | null => {
+  const dataset = useAppStore((s) => s.selectedDataset);
+  const zoom = useAppStore((s) => s.currentZoom);
+  return resolveAreaType(dataset, zoom);
+};
+
+export { useAppStore, useActiveAreaLayer };

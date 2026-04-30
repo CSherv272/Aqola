@@ -1,6 +1,6 @@
 export type BarChartResponse = {
   chartType: "bar";
-  type: string,
+  type: string;
   area: string;
   chart: {
     groups: {
@@ -14,21 +14,21 @@ export type BarChartResponse = {
     title: string;
     xlabel: string;
     ylabel: string;
-    scaleType ?: string;
+    scaleType?: string;
   };
 };
 
 export type LineChartResponse = {
   chartType: "line";
-  type: string,
+  type: string;
   area: string;
   chart: {
     lines: {
-      line_name: string,
-      coords: [Date, number][],
-      color: string
-    }[],
-    title: string,
+      line_name: string;
+      coords: [Date, number][];
+      color: string;
+    }[];
+    title: string;
     xlabel: string;
     ylabel: string;
   };
@@ -36,20 +36,27 @@ export type LineChartResponse = {
 
 export type SpiderDiagramResponse = {
   chartType: "spider";
-  type: string,
+  type: string;
   area: string;
   chart: {
-    groups:
-        {
-          axis: string;
-          value: number;
-        }[][]
-    title: string,
+    groups: {
+      axis: string;
+      value: number;
+    }[][];
+    title: string;
   };
 };
 
 // export type SpiderDiagramResponse = { axis: string; value: number; }[][];
 
-export type ChartData = BarChartResponse | LineChartResponse | SpiderDiagramResponse | null;
+export type ChartData =
+  | BarChartResponse
+  | LineChartResponse
+  | SpiderDiagramResponse
+  | null;
 // type for determining which chart button is clicked
-export type ChartType = "line_over_time" | "bar_frequency" | "api_bar" | "line_over_time_by_lsoa";
+export type ChartType =
+  | "line_over_time"
+  | "bar_frequency"
+  | "api_bar"
+  | "line_over_time_by_lsoa";

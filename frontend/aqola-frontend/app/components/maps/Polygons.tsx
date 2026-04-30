@@ -2,9 +2,8 @@ import { GeoJSON, useMapEvents } from "react-leaflet";
 import { PostcodeGeoJson } from "@/app/lib/PolygonModels";
 import { useEffect, useRef, useState } from "react";
 import { Feature, FeatureCollection } from "geojson";
-import { useAppStore } from "@/app/store/AppStore";
-import { getDatasetAreaType } from "@/app/lib/ChartConfig";
-import { debounce, min } from "lodash";
+import { useActiveAreaLayer, useAppStore } from "@/app/store/AppStore";
+import { debounce } from "lodash";
 import { getPostcodeBoundaries } from "@/app/lib/Postcode";
 import { getLsoaBoundaries } from "@/app/lib/Lsoa";
 import { DomEvent, Layer } from "leaflet";
@@ -14,10 +13,6 @@ interface PolygonProps {
   color: string;
   postcode_boundary_data: PostcodeGeoJson;
   isSelected?: boolean;
-}
-
-interface PolygonsProps {
-  dataset: "crime" | "flood";
 }
 
 const Polygon = ({
@@ -40,40 +35,37 @@ const Polygon = ({
   );
 };
 
-const Polygons = ({ dataset }: PolygonsProps) => {
+const Polygons = () => {
   const [boundaries, setBoundaries] = useState<FeatureCollection | null>(null);
   const [updateCount, setUpdateCount] = useState(0);
+
   const selectedAreas = useAppStore((state) => state.selectedAreas);
   const toggleArea = useAppStore((state) => state.toggleArea);
   const selectedAreasRef = useRef<string[]>([]);
+
+  // This hook updates when zoom or dataset changes in appstore.
+  // Active Layers is a object that has a
+  //  - AreaType - postcode, lsoa, etc.
+  //  - MinZoom - 8, 12, 14, etc.
+  //  - MaxZoom (optional) - 12, 13, 15, etc.
+  const activeLayer = useActiveAreaLayer();
 
   useEffect(() => {
     selectedAreasRef.current = selectedAreas;
   }, [selectedAreas]);
 
-  const areaType = getDatasetAreaType(dataset);
-
-  const MIN_POSTCODE_ZOOM = 13; // Only show postcodes when zoomed in enough
-  const MIN_LSOA_ZOOM = 8; // Only show LSOAs when zoomed in enough
-  const MIN_ZOOM = areaType === "postcode" ? MIN_POSTCODE_ZOOM : MIN_LSOA_ZOOM;
-
   const fetchBoundaries = useRef(
-    debounce((bounds, currentZoom, areaType, minZoom) => {
-      console.log("current zoom: " + currentZoom);
-      if (currentZoom < minZoom) {
-        console.log(
-          "zoomed out too far current zoom: " +
-            currentZoom +
-            ", min zoom: " +
-            minZoom +
-            ", clearing boundaries",
-        );
-        // Handle zoom level
+    // Takes in the bounding box around the screen and area type.
+    debounce((bounds, areaType) => {
+      // If no area type, then no polygons show
+      if (!areaType) {
         setBoundaries(null);
         return;
       }
-      let boundaries = null;
-      // Fetch boundaries based on area type
+
+      // Different API calls based on areaType.
+      // Bounds used to get only the polygons showing on the screen.
+      let boundaries;
       if (areaType === "postcode") {
         boundaries = getPostcodeBoundaries({
           min_lat: bounds.getSouth(),
@@ -89,10 +81,15 @@ const Polygons = ({ dataset }: PolygonsProps) => {
           max_lng: bounds.getEast(),
         });
       }
+
+      // If we can't find the boundaries from the API
       if (!boundaries) {
         console.error("Unsupported area type: " + areaType);
+        setBoundaries(null);
         return;
       }
+
+      // Make a feature collection, can later map over it to render polygons.
       boundaries.then((data) => {
         setBoundaries({
           type: "FeatureCollection",
@@ -103,16 +100,26 @@ const Polygons = ({ dataset }: PolygonsProps) => {
     }, 300),
   ).current;
 
+  // When map moves or zooms, get the geometries from the API.
+  // Passes in areaType and the
+  // Boundary of the map (I.e. The corners of the map where the screen lies)
   const map = useMapEvents({
-    moveend: () =>
-      fetchBoundaries(map.getBounds(), map.getZoom(), areaType, MIN_ZOOM),
-    zoomend: () =>
-      fetchBoundaries(map.getBounds(), map.getZoom(), areaType, MIN_ZOOM),
+    moveend: () => {
+      // const zoom = map.getZoom();
+      // setZoom(zoom);
+      fetchBoundaries(map.getBounds(), activeLayer?.areaType ?? null);
+    },
+    zoomend: () => {
+      // const zoom = map.getZoom();
+      // setZoom(zoom);
+      fetchBoundaries(map.getBounds(), activeLayer?.areaType ?? null);
+    },
   });
 
+  // When the active layer changes (e.g. from postcode to lsoa), fetch the new boundaries.
   useEffect(() => {
-    fetchBoundaries(map.getBounds(), map.getZoom(), areaType, MIN_ZOOM);
-  }, [areaType]);
+    fetchBoundaries(map.getBounds(), activeLayer?.areaType ?? null);
+  }, [activeLayer?.areaType]);
 
   const getStyle = (areaName: string) => {
     const isSelected = selectedAreas.includes(areaName);
@@ -123,6 +130,7 @@ const Polygons = ({ dataset }: PolygonsProps) => {
     };
   };
 
+  // For each polygon, bind a tooltip and click/hover events.
   const onEachFeature = (feature: Feature, layer: Layer) => {
     const areaName =
       feature.properties?.postcode || feature.properties?.lsoa || "Unknown";
@@ -131,10 +139,11 @@ const Polygons = ({ dataset }: PolygonsProps) => {
       layer.bindTooltip(areaName, {
         permanent: false, // only show on hover
         direction: "center",
-        className: "postcode-tooltip",
+        className: "polygon-tooltip",
       });
     }
     layer.on({
+      // On hover, if not selected, change style to highlight. On mouse out, revert style if not selected.
       mouseover: (e) => {
         if (selectedAreasRef.current.includes(areaName)) return;
         e.target.setStyle({
@@ -151,6 +160,8 @@ const Polygons = ({ dataset }: PolygonsProps) => {
           weight: 0.5,
         });
       },
+
+      // On click, toggle selection and update style accordingly.
       click: (e) => {
         DomEvent.stopPropagation(e);
         const isSelected = selectedAreasRef.current.includes(areaName);
@@ -164,6 +175,7 @@ const Polygons = ({ dataset }: PolygonsProps) => {
     });
   };
 
+  // If no boundaries, don't render anything.
   if (!boundaries) {
     return null;
   }
