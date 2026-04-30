@@ -6,12 +6,12 @@ import {
   ofsted_frequency_yearly,
   school_gender_demographics_by_phase,
   flood_risk_frequency_by_postcode,
+  crime_rate_by_lsoa,
+  crime_rate_by_lsoa_cumulative,
 } from "./BarChart";
 import { ChartData } from "./ChartModels";
 import { get_school_ofsted_history } from "./LineChart";
 import { flood_risk_frequency_by_postcode_spider } from "./SpiderDiagram";
-import { SpiderDiagramResponse } from "./ChartModels";
-import BarChart from "../components/charts/BarChart";
 import { api } from "./Api";
 
 type DatasetKey = keyof typeof datasetConfig;
@@ -22,21 +22,23 @@ type DatasetKey = keyof typeof datasetConfig;
 // apiCall (in the json) : (params) => actual_function_in_frontend(params);
 
 const apiCallMap: Record<string, (areas: string[]) => Promise<ChartData>> = {
-  // Allow this to be selected
+  
+// =============================================================================================
+  // Crime API calls
+// =============================================================================================
+    // Line Graphs
   crime_rate_by_type_and_area: (areas) =>
-    crime_rate_by_type_and_area("E01023987", [
-      "Anti-social behaviour",
-      "Bicycle theft",
-      "Burglary",
-      "Criminal damage and arson",
-      "Other theft",
-      "Robbery",
-      "Shoplifting",
-      "Theft from the person",
-      "Violence and sexual offences",
-    ]), // areas[0]
-
+    crime_rate_by_type_and_area((areas[areas.length-1]), ["Anti-social behaviour","Bicycle theft","Burglary","Criminal damage and arson","Other theft","Robbery","Shoplifting","Theft from the person","Violence and sexual offences"]), // areas[0]
   crime_rate_by_area: (areas) => crime_rate_by_area(areas),
+  
+  //Bar Graphs
+  crime_rate_by_lsoa: (areas) => crime_rate_by_lsoa(areas),
+  crime_rate_by_lsoa_cumulative: (areas) => crime_rate_by_lsoa_cumulative(areas),
+
+
+// =============================================================================================
+  //School API calls
+// =============================================================================================
 
   ofsted_frequency_by_band: () => ofsted_frequency_by_band(),
   ofsted_frequency_yearly: () => ofsted_frequency_yearly(),
@@ -78,7 +80,9 @@ const fetchChartData = async (
   if (!apiFn) throw new Error(`No API function mapped for: ${chart.apiCall}`);
 
   //Run function
-  return await apiFn(selectedAreas);
+  const data = await apiFn(selectedAreas)
+  console.log(data)
+  return data;
 };
 
 // Retrieve the chart definition given an ID, from the chartDefinition JSON

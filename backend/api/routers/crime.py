@@ -77,7 +77,7 @@ async def get_total_crime_rate(
         .order_by(Crime.date)
     )
 
-    if lsoas:  # ← this guard MUST wrap the filter
+    if lsoas:
         query = query.filter(Crime.lsoa_id.in_(lsoas))
 
     results = query.all()

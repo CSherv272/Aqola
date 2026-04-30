@@ -1,6 +1,6 @@
 {
   "crime": {
-    "graphs": ["crime_by_type_over_time", "crime_by_area"],
+    "graphs": ["crime_by_type_over_time", "crime_by_area", "crime_rate_by_lsoa", "crime_rate_by_lsoa_cumulative"],
     "areaLayers": [{ "areaType": "lsoa", "minZoom": 8 }]
   },
   "schools": {
@@ -13,7 +13,7 @@
     "areaLayers": [{ "areaType": "urn", "minZoom": 12 }]
   },
   "flood": {
-    "graphs": ["flood_risk_frequency"],
+    "graphs": ["flood_risk_frequency", "flood_risk_frequency_spider"],
     "areaLayers": [{ "areaType": "postcode", "minZoom": 13 }]
   },
   "housing": {

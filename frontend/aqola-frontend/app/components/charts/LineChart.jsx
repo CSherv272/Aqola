@@ -3,10 +3,6 @@
 import * as d3 from "d3";
 import { useRef, useEffect } from "react";
 
-// type Props = {
-//   onChange: (val: string) => void;
-// };
-
 export default function LineChart({
   data,
   width = 1000,
@@ -72,7 +68,7 @@ export default function LineChart({
       .append("text")
       .attr("x", chartWidth / 2)
       .attr("y", 35)
-      .attr("fill", "teal")
+      .attr("fill", "white")
       .attr("text-anchor", "middle")
       .text(data.chart.xlabel);
 
@@ -83,20 +79,9 @@ export default function LineChart({
       .attr("transform", "rotate(-90)")
       .attr("x", -height / 2)
       .attr("y", -35) 
-      .attr("fill", "teal")
+      .attr("fill", "white")
       .attr("text-anchor", "middle")
       .text(isSchoolData ? "Ofsted Ranking" : data.chart.ylabel);
-
-    // Draw Title
-    d3.select(svg.current)
-      .append("text")
-      .attr("class", "chart-title")
-      .attr("x", chartWidth / 2)
-      .attr("y", marginTop / 2)
-      .attr("fill", "teal")
-      .attr("text-anchor", "middle")
-      .attr("font-size", "20px")
-      .text(data.chart.title);
 
   }, [x, y, data, chartWidth, height, isSchoolData, marginLeft, marginTop]);
 
@@ -106,7 +91,17 @@ export default function LineChart({
       style={{ width: '100%', height: '100%', display: 'block' }}
       preserveAspectRatio="xMidYMid meet"
       >
-      
+
+      {/* add title */}
+        <text 
+          x={chartWidth / 2} 
+          // y={marginTop / 2} 
+          fill="white" 
+          textAnchor="middle" 
+          fontSize="20px">
+            { data.chart.title }
+        </text>
+
       {/* add the axis to the chart */}
       <g ref={xLabel} transform={`translate(0,${height - marginBottom})`} />
       <g ref={yLabel} transform={`translate(${marginLeft},0)`} />
