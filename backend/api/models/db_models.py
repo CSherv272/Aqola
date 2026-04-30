@@ -34,7 +34,7 @@ class Lsoa(Base):
     area_name = Column(String)
     population = Column(Integer)
     area_sq_km = Column(Float)
-    # boundary = 
+    boundary = Column(Geometry('GEOMETRY', srid=4326))
     centroid = Column(Geometry('POINT', srid=4326))
 
 class Crime(Base):

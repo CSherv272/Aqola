@@ -1,14 +1,26 @@
 {
   "crime": {
     "graphs": ["crime_by_type_over_time", "crime_by_area"],
-    "areaType": "lsoa"
+    "areaLayers": [{ "areaType": "lsoa", "minZoom": 8 }]
   },
   "schools": {
-    "graphs": ["school_ofsted_frequency", "school_ofsted_frequency_yearly", "individual_school_ofsted_timeline", "school_gender_demographics"],
-    "areaType": "urn"
+    "graphs": [
+      "school_ofsted_frequency",
+      "school_ofsted_frequency_yearly",
+      "individual_school_ofsted_timeline",
+      "school_gender_demographics"
+    ],
+    "areaLayers": [{ "areaType": "urn", "minZoom": 12 }]
   },
   "flood": {
-    "graphs": ["flood_risk_frequency", "flood_risk_frequency_spider"],
-    "areaType": "postcode"
+    "graphs": ["flood_risk_frequency"],
+    "areaLayers": [{ "areaType": "postcode", "minZoom": 13 }]
+  },
+  "housing": {
+    "graphs": [""],
+    "areaLayers": [
+      { "areaType": "lsoa", "minZoom": 8, "maxZoom": 14 },
+      { "areaType": "postcode", "minZoom": 14 }
+    ]
   }
 }
