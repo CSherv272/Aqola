@@ -13,8 +13,8 @@ type AppStore = {
   clearAreas: () => void;
   setDataset: (dataset: string) => void;
   loadChartState: (chartState: StateDefinition) => void;
-  addChart: (chartName: string) => void;
-  minimiseChart: (chartName: string) => void;
+  addChart: (chartName: string, position: [number, number]) => void;
+  minimiseChart: (chartName: string, position: [number, number]) => void;
   findMinimisedChartFromName: (chartName: string) => StateDefinition | undefined;
   reopenMinimisedChart: (chartName: string) => void;
   removeMinimisedChart: (chartName: string) => void;
@@ -26,6 +26,7 @@ type AppStore = {
   getCharts: () => StateDefinition[];
   addAreas: (areas: string[]) => void;
   setZoom: (zoom: number) => void;
+  updateChartLocation: (chartName: string, pos: [number, number]) => void;
 };
 
 const useAppStore = create<AppStore>((set, get) => ({
@@ -70,20 +71,21 @@ const useAppStore = create<AppStore>((set, get) => ({
     }),
 
   // Adds a chart to openCharts with the current app state
-  addChart: (chartName) =>
+  addChart: (chartName, position) =>
     set((state) => ({
       openCharts: [
         {
           chartName: chartName,
           selectedAreas: state.selectedAreas,
           selectedDataset: state.selectedDataset,
+          position: position,
         },
         ...state.openCharts,
       ],
     })),
 
   // Moves a chart from openCharts to minimisedCharts, keeping its state
-  minimiseChart: (chartName) =>
+  minimiseChart: (chartName, position) =>
     set((state) => ({
       // Add to minimisedCharts
       minimisedCharts: [
@@ -91,6 +93,7 @@ const useAppStore = create<AppStore>((set, get) => ({
           chartName: chartName,
           selectedAreas: state.openCharts.find((g) => g.chartName === chartName)?.selectedAreas || [],
           selectedDataset: state.openCharts.find((g) => g.chartName === chartName)?.selectedDataset || state.selectedDataset,
+          position: position,
         },
         ...state.minimisedCharts,
       ],
@@ -183,6 +186,14 @@ const useAppStore = create<AppStore>((set, get) => ({
   },
 
   setZoom: (zoom) => set({ currentZoom: zoom }),
+
+  updateChartLocation: (chartName: string, pos: [number, number]) => {
+    set((state) => ({
+      openCharts: state.openCharts.map((chart) =>
+        chart.chartName === chartName ? { ...chart, position: pos } : chart
+      ),
+    }));
+  }
 }));
 
 // gets the areaLayer for a given zoom and dataset.
@@ -191,5 +202,6 @@ const useActiveAreaLayer = (): AreaLayer | null => {
   const zoom = useAppStore((s) => s.currentZoom);
   return resolveAreaType(dataset, zoom);
 };
+
 
 export { useAppStore, useActiveAreaLayer };

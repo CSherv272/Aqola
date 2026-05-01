@@ -8,7 +8,7 @@ import { Window } from "../DragBox"
 
 
 // memo stops re-renders of chart unless props change
-const ChartWindow = memo(({ chart, data, focusChart, closeChart, minimiseChart, zIndex }: {
+const ChartWindow = memo(({ chart, data, zIndex }: {
     chart: StateDefinition;
     data: any;
     focusChart: any;
@@ -22,19 +22,19 @@ const ChartWindow = memo(({ chart, data, focusChart, closeChart, minimiseChart, 
 
     if (chartDef?.chartComponent === "line") {
         return (
-            <Window closeChart={() => closeChart(chart.chartName)} minimiseChart={() => minimiseChart(chart.chartName)} activeChartId={chart.chartName} focusChart={focusChart} zIndex={zIndex}>
+            <Window zIndex={zIndex} chartName={chart.chartName} >
                 <LineChart data={data} />
             </Window>
         );
     } else if (chartDef?.chartComponent === "bar") {
         return (
-            <Window closeChart={() => closeChart(chart.chartName)} minimiseChart={() => minimiseChart(chart.chartName)} activeChartId={chart.chartName} focusChart={focusChart} zIndex={zIndex}>
+            <Window zIndex={zIndex} chartName={chart.chartName} >
                 <BarChart data={data?.chart} />
             </Window>
         );
     } else if (chartDef?.chartComponent === "spider") {
         return (
-            <Window closeChart={() => closeChart(chart.chartName)} minimiseChart={() => minimiseChart(chart.chartName)} activeChartId={chart.chartName} focusChart={focusChart} zIndex={zIndex}>
+            <Window zIndex={zIndex} chartName={chart.chartName} >
                 <RadarChart data={data}/>
             </Window>
         );

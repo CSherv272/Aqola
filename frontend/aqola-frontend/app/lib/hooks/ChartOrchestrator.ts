@@ -85,7 +85,8 @@ const useChartOrchestrator = () => {
   const triggerChart = async (chartId: string) => {
     // if not in the stack, add the chart and set it as activeChartId
     if (findChartFromName(chartId) === undefined) {
-      addChart(chartId);
+      const pos = 100 + (10 * charts.length);
+      addChart(chartId, [pos, pos]);
       setActiveChartId(chartId);
     }
     // else, focus chart in stack and set as activeChartId
