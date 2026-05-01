@@ -30,8 +30,11 @@ const useChartOrchestrator = () => {
 
   // testing minimised charts
   useEffect(() => {
-    console.log("Minimised charts: ", minimisedCharts);
-  }, [minimisedCharts]);
+    if (minimisedCharts.length == 0 && charts.length == 0) {
+      clearAreas();
+      setActiveChartId("");
+    }
+  }, [minimisedCharts.length]);
 
   // Update current chart and selected areas when dataset changes
   useEffect(() => {
