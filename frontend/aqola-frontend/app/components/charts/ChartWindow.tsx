@@ -11,9 +11,6 @@ import { Window } from "../DragBox"
 const ChartWindow = memo(({ chart, data, zIndex }: {
     chart: StateDefinition;
     data: any;
-    focusChart: any;
-    closeChart: (name: string) => void;
-    minimiseChart: (name: string) => void;
     zIndex: number;
 }) => {
     const chartDef = getChartDefinition(chart.chartName);

@@ -73,9 +73,6 @@ export default function Charts() {
                         key={chart.chartName}
                         chart={chart}
                         data={data}
-                        focusChart={focusChart}
-                        closeChart={closeChart}
-                        minimiseChart={minimiseChart}
                         zIndex={ 400 + charts.length - charts.findIndex((c) => c.chartName === chart.chartName) }
                     />
                 );
