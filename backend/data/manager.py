@@ -112,6 +112,7 @@ def main():
     missingCsvFolders = check_missing_CSVs(dataPath)
     print("=======================================================================")
     print("Missing CSVs: " + str(missingCsvFolders))
+    flood_process()
     run_csv_creation(missingCsvFolders)
 
     # lsoa_detection()
