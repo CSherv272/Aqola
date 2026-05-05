@@ -136,6 +136,10 @@ const useAppStore = create<AppStore>((set, get) => ({
     return get().openCharts;
   },
 
+  getAllCharts: () => {
+    return [get().openCharts, get().minimisedCharts];
+  },
+
   setZoom: (zoom) => set({ currentZoom: zoom }),
 }));
 
