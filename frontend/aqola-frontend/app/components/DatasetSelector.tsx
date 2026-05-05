@@ -1,5 +1,5 @@
 import { useAppStore } from "../store/AppStore";
-import { stateExport, stateImport } from "../lib/File Handling/FileHandling";
+import { stateExport, stateImport } from "../lib/FileHandling";
 import { Download, Upload, Save } from "lucide-react";
 import React from "react";
 
