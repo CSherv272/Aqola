@@ -30,8 +30,11 @@ const useChartOrchestrator = () => {
 
   // testing minimised charts
   useEffect(() => {
-    console.log("Minimised charts: ", minimisedCharts);
-  }, [minimisedCharts]);
+    if (minimisedCharts.length == 0 && charts.length == 0) {
+      clearAreas();
+      setActiveChartId("");
+    }
+  }, [minimisedCharts.length]);
 
   // Update current chart and selected areas when dataset changes
   useEffect(() => {
@@ -82,7 +85,8 @@ const useChartOrchestrator = () => {
   const triggerChart = async (chartId: string) => {
     // if not in the stack, add the chart and set it as activeChartId
     if (findChartFromName(chartId) === undefined) {
-      addChart(chartId);
+      const pos = 100 + (10 * charts.length);
+      addChart(chartId, [pos, pos]);
       setActiveChartId(chartId);
     }
     // else, focus chart in stack and set as activeChartId

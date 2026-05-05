@@ -14,7 +14,7 @@ type AppStore = {
   setDataset: (dataset: string) => void;
   loadChartState: (chartState: StateDefinition) => void;
   addChart: (chartName: string) => void;
-  minimiseChart: (chartName: string) => void;
+  minimiseChart: (chartName: string, position: [number, number]) => void;
   reopenMinimisedChart: (chartName: string) => void;
   removeMinimisedChart: (chartName: string) => void;
   removeChart: (chartName: string) => void;
@@ -25,6 +25,7 @@ type AppStore = {
   getCharts: () => StateDefinition[];
   addAreas: (areas: string[]) => void;
   setZoom: (zoom: number) => void;
+  updateChartLocation: (chartName: string, pos: [number, number]) => void;
 };
 
 const useAppStore = create<AppStore>((set, get) => ({
@@ -90,7 +91,7 @@ const useAppStore = create<AppStore>((set, get) => ({
     }),
 
   // Moves a chart from openCharts to minimisedCharts, keeping its state
-  minimiseChart: (chartName) =>
+  minimiseChart: (chartName, position) =>
     set((state) => {
       const chartToMinimise = state.openCharts.find((g) => g.chartName === chartName);
       // Add to minimisedCharts
@@ -100,7 +101,8 @@ const useAppStore = create<AppStore>((set, get) => ({
             chartName: chartName,
             selectedAreas: chartToMinimise?.selectedAreas || [],
             selectedDataset: chartToMinimise?.selectedDataset || state.selectedDataset,
-          },
+            position: position,
+        },
           ...state.minimisedCharts,
         ],
         // Remove from openCharts
@@ -188,6 +190,14 @@ const useAppStore = create<AppStore>((set, get) => ({
   },
 
   setZoom: (zoom) => set({ currentZoom: zoom }),
+
+  updateChartLocation: (chartName: string, pos: [number, number]) => {
+    set((state) => ({
+      openCharts: state.openCharts.map((chart) =>
+        chart.chartName === chartName ? { ...chart, position: pos } : chart
+      ),
+    }));
+  }
 }));
 
 // gets the areaLayer for a given zoom and dataset.
@@ -196,5 +206,6 @@ const useActiveAreaLayer = (): AreaLayer | null => {
   const zoom = useAppStore((s) => s.currentZoom);
   return resolveAreaType(dataset, zoom);
 };
+
 
 export { useAppStore, useActiveAreaLayer };

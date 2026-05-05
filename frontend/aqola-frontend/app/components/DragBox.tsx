@@ -1,29 +1,40 @@
 import { Rnd } from 'react-rnd';
 import { useState, ReactNode, memo } from 'react';
+import { useAppStore } from '../store/AppStore';
+import { find } from 'lodash';
 
 interface WindowProps {
   children: ReactNode
-  closeChart: (chartId: string) => void;
-  activeChartId: string;
-  focusChart?: (chartId: string) => void;
-  minimiseChart?: (chartId: string) => void;
+  chartName: string;
   zIndex: number;
 }
 
-const Window = ({ children, closeChart, focusChart, minimiseChart, activeChartId, zIndex  }: WindowProps) => {
+const Window = ({ children, chartName, zIndex  }: WindowProps) => {
+
+  const removeChart = useAppStore((state) => state.removeChart);
+  const focusChart = useAppStore((state) => state.focusChart);
+  const minimiseChart = useAppStore((state) => state.minimiseChart);
+  const updateChartLocation = useAppStore((state) => state.updateChartLocation);
+  const findChartFromName = useAppStore((state) => state.findChartFromName);
+  const openCharts = useAppStore((state) => state.openCharts);
+
+  const chart = findChartFromName(chartName);
+  const [x, y] = chart ? chart.position : [100 + (10 * openCharts.length), 100 + (10 * openCharts.length)];
+  
 
   return (
     <Rnd
-      default={{ x: 100, y: 100, width: 600, height: 380 }}
+      default={{ x: x, y: y, width: 600, height: 380 }}
       bounds="parent"
       style={{ zIndex: zIndex }}
       className="rnd-window"
-      onMouseDown={() => focusChart && focusChart(activeChartId)} // For focusing element on click
+      onMouseDown={() => focusChart && focusChart(chartName)} // For focusing element on click
+      onDragStop={(_, data) => updateChartLocation && updateChartLocation(chartName, [data.x, data.y])} // Update chart location on drag end
     >
       {/* Top bar of the window, includes close button */}
       <div className="window-titlebar">
-        <button onClick={() => minimiseChart && minimiseChart(activeChartId)}> - </button>
-        <button onClick={() => closeChart(activeChartId)}> ✕ </button>
+        <button onClick={() => minimiseChart && minimiseChart(chartName, [x, y])}> - </button>
+        <button onClick={() => removeChart(chartName)}> ✕ </button>
       </div>
 
       {/* Window contents */}
