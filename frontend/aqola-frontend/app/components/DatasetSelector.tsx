@@ -34,9 +34,7 @@ export default function DataSelector() {
       </button>
 
       {/* Temporary upload button */}
-      <button onClick={() => stateImport()} className="upload-btn">
-        Upload Chart State
-      </button>
+      <input type="file" onChange={() =>stateImport()} />
     </div>
   );
 }
