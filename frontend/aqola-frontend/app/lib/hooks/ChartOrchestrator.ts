@@ -31,7 +31,6 @@ const useChartOrchestrator = () => {
   // testing minimised charts
   useEffect(() => {
     if (minimisedCharts.length == 0 && charts.length == 0) {
-      clearAreas();
       setActiveChartId("");
     }
   }, [minimisedCharts.length]);

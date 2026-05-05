@@ -13,7 +13,7 @@ type AppStore = {
   clearAreas: () => void;
   setDataset: (dataset: string) => void;
   loadChartState: (chartState: StateDefinition) => void;
-  addChart: (chartName: string) => void;
+  addChart: (chartName: string, position: [number, number]) => void;
   minimiseChart: (chartName: string, position: [number, number]) => void;
   reopenMinimisedChart: (chartName: string) => void;
   removeMinimisedChart: (chartName: string) => void;
@@ -70,11 +70,11 @@ const useAppStore = create<AppStore>((set, get) => ({
     }),
 
   // Adds a chart to openCharts with the current app state
-  addChart: (chartName) =>
+  addChart: (chartName, position) =>
     set((state) => {
       // If the chart is minimised, do not add a new one to openCharts
       if (state.minimisedCharts.find((g) => g.chartName === chartName)) {
-        return state; // if the chart is minimised, do not add to openCharts
+        return state;
       }
       else {
         return {
@@ -83,6 +83,7 @@ const useAppStore = create<AppStore>((set, get) => ({
               chartName: chartName,
               selectedAreas: state.selectedAreas,
               selectedDataset: state.selectedDataset,
+              position: position,
             },
             ...state.openCharts,
           ],

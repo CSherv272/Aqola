@@ -55,11 +55,6 @@ body {
   align-items: center;
 }
 
-/* .map-wrapper > div,
-.map-wrapper > div > div {
-  height: 100%;
-} */
-
 .data-select-wrapper {
   position: absolute;
   top: 20px;
@@ -122,11 +117,6 @@ body {
   pointer-events: auto;
   white-space: nowrap;
 }
-
-/* 
-    display: flex;
-    align-items: center;
-    justify-content: center; */
 .nav-button {
   width: 60px;
   height: 60px;
@@ -156,15 +146,6 @@ body {
   vertical-align: middle;
 }
 
-/* Buttons 
-.bottom-nav button {
-  background: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-}*/
-
 .postcode-tooltip {
   background: white;
   border: none;
@@ -179,7 +160,6 @@ body {
 .postcode-tooltip::before {
   display: none;
 }
-
 
 .rnd-window {
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -283,4 +263,12 @@ body {
 .minimised-close:hover {
   color: cyan;
   font-weight: bold;
+}
+
+.minimised-text {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
 }
