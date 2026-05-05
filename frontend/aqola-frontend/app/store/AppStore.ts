@@ -14,6 +14,8 @@ type AppStore = {
   setDataset: (dataset: string) => void;
   loadChartState: (chartState: StateDefinition) => void;
   addChart: (chartName: string, position: [number, number]) => void;
+  addOpenCharts: (charts: StateDefinition[]) => void;
+  addMinimisedCharts: (charts: StateDefinition[]) => void;
   minimiseChart: (chartName: string, position: [number, number]) => void;
   reopenMinimisedChart: (chartName: string) => void;
   removeMinimisedChart: (chartName: string) => void;
@@ -90,6 +92,24 @@ const useAppStore = create<AppStore>((set, get) => ({
           ],
         };
       }
+    }),
+
+  addOpenCharts : (charts: StateDefinition[]) =>
+    set((state) => {
+      return {
+        openCharts: [
+          ...state.openCharts, 
+          ...charts.filter(chart => !state.openCharts.some(openChart => openChart.chartName === chart.chartName))]
+      };
+    }),
+
+  addMinimisedCharts : (charts: StateDefinition[]) =>
+    set((state) => {
+      return {
+        minimisedCharts: [
+          ...state.minimisedCharts, 
+          ...charts.filter(chart => !state.minimisedCharts.some(minimisedChart => minimisedChart.chartName === chart.chartName))]
+      };
     }),
 
   // Moves a chart from openCharts to minimisedCharts, keeping its state

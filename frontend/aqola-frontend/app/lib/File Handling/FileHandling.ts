@@ -1,13 +1,18 @@
 import { useAppStore } from "@/app/store/AppStore"
     
 const stateExport = () => {
-    console.log("Exporting state...")
-    const getAllCharts = useAppStore.getState().getAllCharts;
-    const charts = getAllCharts();
+    const minimisedCharts = useAppStore.getState().minimisedCharts;
+    const openCharts = useAppStore.getState().openCharts;
 
-    if(charts.length > 0) {
-        console.log("in the download function")
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(charts));
+    if([...openCharts, ...minimisedCharts].length > 0) {
+    const dataStr = "data:text/json;charset=utf-8," + 
+        encodeURIComponent(
+            JSON.stringify({
+                opened: openCharts,
+                minimised: minimisedCharts
+            })
+        );
+
         const a = document.createElement("a");
         a.href = dataStr;
         a.download = "chart_state.json";
@@ -15,8 +20,21 @@ const stateExport = () => {
     }
 }
 
-const stateImport = () => {
-
+const stateImport = (e: any) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload = (evt) => {
+            const addOpenCharts = useAppStore.getState().addOpenCharts;
+            const addMinimisedCharts = useAppStore.getState().addMinimisedCharts;
+            if (evt.target?.result) {
+                const data = JSON.parse(evt.target?.result as string);
+                addOpenCharts(data.opened);
+                addMinimisedCharts(data.minimised);
+            }
+        }
+    }
 }
 
 export { stateExport, stateImport };
