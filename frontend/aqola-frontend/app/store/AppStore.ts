@@ -15,7 +15,6 @@ type AppStore = {
   loadChartState: (chartState: StateDefinition) => void;
   addChart: (chartName: string) => void;
   minimiseChart: (chartName: string) => void;
-  findMinimisedChartFromName: (chartName: string) => StateDefinition | undefined;
   reopenMinimisedChart: (chartName: string) => void;
   removeMinimisedChart: (chartName: string) => void;
   removeChart: (chartName: string) => void;
@@ -71,37 +70,43 @@ const useAppStore = create<AppStore>((set, get) => ({
 
   // Adds a chart to openCharts with the current app state
   addChart: (chartName) =>
-    set((state) => ({
-      openCharts: [
-        {
-          chartName: chartName,
-          selectedAreas: state.selectedAreas,
-          selectedDataset: state.selectedDataset,
-        },
-        ...state.openCharts,
-      ],
-    })),
+    set((state) => {
+      // If the chart is minimised, do not add a new one to openCharts
+      if (state.minimisedCharts.find((g) => g.chartName === chartName)) {
+        return state; // if the chart is minimised, do not add to openCharts
+      }
+      else {
+        return {
+          openCharts: [
+            {
+              chartName: chartName,
+              selectedAreas: state.selectedAreas,
+              selectedDataset: state.selectedDataset,
+            },
+            ...state.openCharts,
+          ],
+        };
+      }
+    }),
 
   // Moves a chart from openCharts to minimisedCharts, keeping its state
   minimiseChart: (chartName) =>
-    set((state) => ({
+    set((state) => {
+      const chartToMinimise = state.openCharts.find((g) => g.chartName === chartName);
       // Add to minimisedCharts
-      minimisedCharts: [
-        {
-          chartName: chartName,
-          selectedAreas: state.openCharts.find((g) => g.chartName === chartName)?.selectedAreas || [],
-          selectedDataset: state.openCharts.find((g) => g.chartName === chartName)?.selectedDataset || state.selectedDataset,
-        },
-        ...state.minimisedCharts,
-      ],
-      // Remove from openCharts
-      openCharts: state.openCharts.filter((g) => g.chartName !== chartName),
-    })),
-
-  // Finds a chart in minimisedCharts by name
-  findMinimisedChartFromName: (chartName) => {
-    return get().minimisedCharts.find((g) => g.chartName === chartName);
-  },
+      return{
+        minimisedCharts: [
+          {
+            chartName: chartName,
+            selectedAreas: chartToMinimise?.selectedAreas || [],
+            selectedDataset: chartToMinimise?.selectedDataset || state.selectedDataset,
+          },
+          ...state.minimisedCharts,
+        ],
+        // Remove from openCharts
+        openCharts: state.openCharts.filter((g) => g.chartName !== chartName)
+     };
+    }),
 
   // Reopen minimised chart by moving it from minimisedCharts to openCharts
   reopenMinimisedChart: (chartName) =>
