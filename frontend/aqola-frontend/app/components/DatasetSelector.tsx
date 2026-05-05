@@ -1,4 +1,5 @@
 import { useAppStore } from "../store/AppStore";
+import { stateExport, stateImport } from "../lib/File Handling/FileHandling";
 
 export default function DataSelector() {
   // Read the value from Zustand directly — no useState needed
@@ -26,6 +27,16 @@ export default function DataSelector() {
         <option value="schools">Schools</option>
         <option value="flood">Flood Risk</option>
       </select>
+
+      {/* Temporary download button */}
+      <button onClick={() => stateExport()} className="download-btn">
+        Download Chart State
+      </button>
+
+      {/* Temporary upload button */}
+      <button onClick={() => stateImport()} className="upload-btn">
+        Upload Chart State
+      </button>
     </div>
   );
 }

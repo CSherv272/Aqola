@@ -23,6 +23,7 @@ type AppStore = {
   updateChartState: (chartName: string) => void;
   getFocusedChart: () => StateDefinition | undefined;
   getCharts: () => StateDefinition[];
+  getAllCharts: () => StateDefinition[];
   addAreas: (areas: string[]) => void;
   setZoom: (zoom: number) => void;
   updateChartLocation: (chartName: string, pos: [number, number]) => void;
@@ -191,7 +192,7 @@ const useAppStore = create<AppStore>((set, get) => ({
   },
 
   getAllCharts: () => {
-    return [get().openCharts, get().minimisedCharts];
+    return [...get().openCharts, ...get().minimisedCharts];
   },
 
   setZoom: (zoom) => set({ currentZoom: zoom }),
