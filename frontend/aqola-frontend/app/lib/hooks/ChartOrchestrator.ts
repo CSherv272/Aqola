@@ -19,6 +19,7 @@ const useChartOrchestrator = () => {
   const getFocusedChart = useAppStore((state) => state.getFocusedChart);
   const updateChartState = useAppStore((state) => state.updateChartState);
   const setDataset = useAppStore((state) => state.setDataset);
+  const minimisedCharts = useAppStore((state) => state.minimisedCharts);
 
   const [activeChartId, setActiveChartId] = useState(""); // determines if chart is active
   // mainly used for determining if the user has changed dataset
@@ -26,6 +27,13 @@ const useChartOrchestrator = () => {
 
   // Terminology:
   //      Active chart and focused chart - mean the same thing. The chart that is to be interacted with
+
+  // testing minimised charts
+  useEffect(() => {
+    if (minimisedCharts.length == 0 && charts.length == 0) {
+      setActiveChartId("");
+    }
+  }, [minimisedCharts.length]);
 
   // Update current chart and selected areas when dataset changes
   useEffect(() => {
@@ -76,7 +84,8 @@ const useChartOrchestrator = () => {
   const triggerChart = async (chartId: string) => {
     // if not in the stack, add the chart and set it as activeChartId
     if (findChartFromName(chartId) === undefined) {
-      addChart(chartId);
+      const pos = 100 + (10 * charts.length);
+      addChart(chartId, [pos, pos]);
       setActiveChartId(chartId);
     }
     // else, focus chart in stack and set as activeChartId

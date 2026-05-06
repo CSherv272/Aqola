@@ -1,73 +1,44 @@
 import { Rnd } from 'react-rnd';
 import { useState, ReactNode, memo } from 'react';
+import { useAppStore } from '../store/AppStore';
+import { find } from 'lodash';
 
 interface WindowProps {
   children: ReactNode
-  closeChart: (chartId: string) => void;
-  activeChartId: string;
-  focusChart?: (chartId: string) => void;
+  chartName: string;
   zIndex: number;
 }
 
-const Window = ({ children, closeChart, focusChart, activeChartId, zIndex  }: WindowProps) => {
+const Window = ({ children, chartName, zIndex  }: WindowProps) => {
+
+  const removeChart = useAppStore((state) => state.removeChart);
+  const focusChart = useAppStore((state) => state.focusChart);
+  const minimiseChart = useAppStore((state) => state.minimiseChart);
+  const updateChartLocation = useAppStore((state) => state.updateChartLocation);
+  const findChartFromName = useAppStore((state) => state.findChartFromName);
+  const openCharts = useAppStore((state) => state.openCharts);
+
+  const chart = findChartFromName(chartName);
+  const [x, y] = chart ? chart.position : [100 + (10 * openCharts.length), 100 + (10 * openCharts.length)];
+  
 
   return (
     <Rnd
-      default={{ x: 100, y: 100, width: 600, height: 380 }}
+      default={{ x: x, y: y, width: 600, height: 380 }}
       bounds="parent"
-      style={{
-        zIndex: zIndex,
-        display: "flex",
-        flexDirection: "column",
-        background: "rgba(15, 30, 40, 0.85)",
-        border: "1px solid rgba(255, 255, 255, 0.2)",
-        borderRadius: "8px",
-        backdropFilter: "blur(10px)",
-        overflow: "hidden",
-        width: "100%",
-        height: "100%"
-      }}
-      onMouseDown={() => focusChart && focusChart(activeChartId)} // For focusing element on click
+      style={{ zIndex: zIndex }}
+      className="rnd-window"
+      onMouseDown={() => focusChart && focusChart(chartName)} // For focusing element on click
+      onDragStop={(_, data) => updateChartLocation && updateChartLocation(chartName, [data.x, data.y])} // Update chart location on drag end
     >
       {/* Top bar of the window, includes close button */}
-      <div style={{ 
-        flexShrink: 0, 
-        height: "36px", 
-        display: "flex", 
-        alignItems: "center", 
-        justifyContent: "flex-end",
-        padding: "0 8px",
-        borderBottom: "1px solid rgba(255,255,255,0.1)",
-        cursor: "grab",
-        width: "100%",
-        }}>
-        <button
-          onClick={() => closeChart(activeChartId)} 
-          style={{
-            background: "none",
-            border: "none",
-            color: "white", 
-            cursor: "pointer", 
-            fontSize: "16px" 
-          }}
-        >
-          ✕
-        </button>
+      <div className="window-titlebar">
+        <button onClick={() => minimiseChart && minimiseChart(chartName, [x, y])}> - </button>
+        <button onClick={() => removeChart(chartName)}> ✕ </button>
       </div>
+
       {/* Window contents */}
-      <div 
-        style={{ 
-          flex: 1, 
-          overflow: "auto", 
-          zIndex: 2000, 
-          width:"99%", 
-          height:"95%", 
-          marginTop: "5%", 
-          position: "absolute" 
-        }}
-      >
-        {children}
-      </div>
+      <div className="window-content"> { children } </div>
     </Rnd>
   );
 };
