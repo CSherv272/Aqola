@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
-from backend.api.routers.lsoas import router
+from api.routers.lsoas import router
 
 app = FastAPI()
 app.include_router(router, prefix="/lsoas")
@@ -51,3 +51,14 @@ class TestListLsoas:
         response = client.get("/lsoas/?lsoas=E01023983")
         data = response.json()
         assert isinstance(data[0]["area_sq_km"], (int, float))
+
+
+class TestListLsoaGeometry:
+    def test_status_200(self):
+        response = client.get("/lsoas/geometry", params={
+            "min_lat": 51.243876,
+            "max_lat": 51.2469,
+            "min_lng": 1.3500,
+            "max_lng": 1.436652,
+        })
+        assert response.status_code == 200
