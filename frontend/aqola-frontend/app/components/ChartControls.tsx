@@ -1,24 +1,7 @@
-type getAvailableChart = {
-  id: string;
-  label: string;
-  chartComponent: string;
-  dataset: string;
-  apiCall: string;
-  icon: string;
-};
+import { useChartOrchestrator } from "../lib/hooks/ChartOrchestrator";
 
-// ChartControls.tsx
-type ChartControlsProps = {
-  availableCharts: getAvailableChart[];
-  activeChartId: string;
-  triggerChart: (chartId: string) => void;
-};
-
-const ChartControls = ({
-  availableCharts,
-  activeChartId,
-  triggerChart,
-}: ChartControlsProps) => {
+const ChartControls = () => {
+  const { availableCharts, activeChartId, triggerChart } = useChartOrchestrator();
   return (
     <div className="bottom-nav">
       {availableCharts.map((chart) => (
