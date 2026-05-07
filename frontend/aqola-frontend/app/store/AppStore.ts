@@ -14,6 +14,8 @@ type AppStore = {
   setDataset: (dataset: string) => void;
   loadChartState: (chartState: StateDefinition) => void;
   addChart: (chartName: string, position: [number, number]) => void;
+  addOpenCharts: (charts: StateDefinition[]) => void;
+  addMinimisedCharts: (charts: StateDefinition[]) => void;
   minimiseChart: (chartName: string, position: [number, number]) => void;
   reopenMinimisedChart: (chartName: string) => void;
   removeMinimisedChart: (chartName: string) => void;
@@ -23,6 +25,7 @@ type AppStore = {
   updateChartState: (chartName: string) => void;
   getFocusedChart: () => StateDefinition | undefined;
   getCharts: () => StateDefinition[];
+  getAllCharts: () => StateDefinition[];
   addAreas: (areas: string[]) => void;
   setZoom: (zoom: number) => void;
   updateChartLocation: (chartName: string, pos: [number, number]) => void;
@@ -89,6 +92,24 @@ const useAppStore = create<AppStore>((set, get) => ({
           ],
         };
       }
+    }),
+
+  addOpenCharts : (charts: StateDefinition[]) =>
+    set((state) => {
+      return {
+        openCharts: [
+          ...state.openCharts, 
+          ...charts.filter(chart => !state.openCharts.some(openChart => openChart.chartName === chart.chartName))]
+      };
+    }),
+
+  addMinimisedCharts : (charts: StateDefinition[]) =>
+    set((state) => {
+      return {
+        minimisedCharts: [
+          ...state.minimisedCharts, 
+          ...charts.filter(chart => !state.minimisedCharts.some(minimisedChart => minimisedChart.chartName === chart.chartName))]
+      };
     }),
 
   // Moves a chart from openCharts to minimisedCharts, keeping its state
@@ -188,6 +209,10 @@ const useAppStore = create<AppStore>((set, get) => ({
   // Returns the full chart stack
   getCharts: () => {
     return get().openCharts;
+  },
+
+  getAllCharts: () => {
+    return [...get().openCharts, ...get().minimisedCharts];
   },
 
   setZoom: (zoom) => set({ currentZoom: zoom }),
