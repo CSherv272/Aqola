@@ -131,7 +131,7 @@ export default function BarChart({
         transform={`translate(${width - marginRight + 170}, ${marginTop - 10})`}
       >
         {data.groups[0].bars.map((bar, i) => (
-          <g key={bar.name} transform={`translate(${0}, ${i * 20})`}>
+          <g key={bar.bar_name} transform={`translate(${0}, ${i * 20})`}>
             <rect width={14} height={14} fill={bar.color} rx={2} />
             <text x={-8} y={12} textAnchor="end" fontSize="12px" fill="white">
               {bar.bar_name}
@@ -158,7 +158,7 @@ export default function BarChart({
           <g transform={`translate(${xScale(group.name)}, 0)`} key={group.name}>
             {/* For every bar in subgroup, scale across starting from  */}
             {group.bars.map((bar, key) => (
-              <>
+              <g key={bar.bar_name}>
                 <rect
                   x={xSubgroupScale(bar.bar_name)}
                   y={yScale(bar.value)}
@@ -186,7 +186,7 @@ export default function BarChart({
                     {bar.value.toLocaleString()}
                   </text>
                 )}
-              </>
+              </g>
             ))}
           </g>
         ))}
