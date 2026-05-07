@@ -26,14 +26,19 @@ const stateImport = (e: any) => {
         const reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = (evt) => {
-            const addOpenCharts = useAppStore.getState().addOpenCharts;
-            const addMinimisedCharts = useAppStore.getState().addMinimisedCharts;
-            if (evt.target?.result) {
-                const data = JSON.parse(evt.target?.result as string);
-                addOpenCharts(data.opened);
-                addMinimisedCharts(data.minimised);
+            try{
+                const addOpenCharts = useAppStore.getState().addOpenCharts;
+                const addMinimisedCharts = useAppStore.getState().addMinimisedCharts;
+                if (evt.target?.result) {
+                    const data = JSON.parse(evt.target?.result as string);
+                    addOpenCharts(data.opened);
+                    addMinimisedCharts(data.minimised);
+                }
+            } catch (error) {
+               console.error("Error reading file:", error);
+               console.error("Please ensure the file is in the correct format and try again.");
             }
-        }
+        };  
     }
 }
 
