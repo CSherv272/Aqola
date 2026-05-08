@@ -25,6 +25,14 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://84.8.152.6:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
@@ -34,4 +42,5 @@ app.include_router(lsoas.router, prefix="/lsoas")
 app.include_router(crime_full.router, prefix="/crime")
 app.include_router(flood_full.router, prefix="/flood")
 app.include_router(school_full.router, prefix="/school")
+app.include_router(database.router, prefix="/database")
 app.include_router(database.router, prefix="/database")
