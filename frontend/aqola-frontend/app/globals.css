@@ -35,7 +35,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6, th {
-  color: teal;
+  color: cyan;
 }
 
 p, li, ul, ol, span, div, td {
@@ -49,7 +49,7 @@ a {
 }
 a:hover {
   text-decoration: underline;
-  color: teal;
+  color: red;
 }
 
 h1 {
@@ -292,7 +292,7 @@ td, th {
 }
 
 .minimised-element:hover {
-  border: teal solid 1px;
+  border: rgba(15, 30, 40, 0.55) solid 1px;
 }
 
 .minimised-element:hover #minimised-element-text{
@@ -356,4 +356,83 @@ td, th {
 }
 #upload:hover, #download:hover {
   color: cyan;
+}
+
+.docs-page {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.docs-content {
+  /* padding: 20px; */
+  display: flex;
+  flex-direction: row;
+  border-radius: 8px;
+  background: rgba(15, 30, 40, 0.85);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.heading{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(15, 30, 40, 0.55);
+  color: white;
+}
+
+.tag {
+  background-color: white;
+  color: rgba(15, 30, 40, 0.55);
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  margin: 20px;
+  align-self: flex-start;
+}
+
+.contents-text{
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  width: 80%;
+  background-color: rgba(255, 255, 255, 0.1);
+  justify-content: center;
+  align-items: center;
+}
+
+.contents-bar {
+  width: 20%;
+  height: 100%;
+  /* border: 1px solid white; */
+}
+
+.contents-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;;
+}
+
+.warning {
+  background-color: #d45c00;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  margin: 20px;
+  width: fit-content;
+  display: flex;
+  align-items: center;
 }
