@@ -68,7 +68,7 @@ export const ofsted_frequency_by_band = async (): Promise<BarChartResponse> => {
       ],
       title: "Kent Ofsted Performance",
       xlabel: "Ofsted Rating",
-      ylabel: "Frequency",
+      ylabel: "Number of Schools",
     },
   };
 
@@ -130,7 +130,7 @@ export const ofsted_frequency_yearly = async (
     area: "county",
     chart: {
       groups: groups, // Pass in array of yearly groups
-      title: "Ofsted Rankings Over Time",
+      title: "Kent Ofsted Rankings (Over Time)",
       xlabel: "Academic Year",
       ylabel: "Number of Schools",
     },
@@ -217,7 +217,7 @@ export const flood_risk_frequency_by_postcode = async (
         ],
         title: "Kent Postcode Flood Risks",
         xlabel: "Postcodes",
-        ylabel: "Frequency",
+        ylabel: "Number of Houses",
       },
     };
   }
@@ -258,7 +258,7 @@ export const flood_risk_frequency_by_postcode = async (
       groups,
       title: "Kent Postcode Flood Risks",
       xlabel: "Postcodes",
-      ylabel: "Frequency",
+      ylabel: "Number of Houses",
     },
   };
   return bar_return;
@@ -270,7 +270,7 @@ export const crime_rate_by_lsoa = async (
 ): Promise<BarChartResponse> => {
   // Check if postcodes is empty
   if (lsoas.length == 0) {
-    return {
+    return ({
       chartType: "bar",
       type: "crime",
       area: "lsoa",
@@ -290,9 +290,9 @@ export const crime_rate_by_lsoa = async (
         ],
         title: "Crime Rate by LSOA (over all time)",
         xlabel: "Crime Type per LSOA",
-        ylabel: "Frequency",
-      },
-    };
+        ylabel: "Number of Crimes",
+      }
+    });
   }
 
   const response = await api.get("/crime/crime-rate-by-type", {
@@ -340,7 +340,7 @@ export const crime_rate_by_lsoa = async (
       groups,
       title: "Crime Rate by LSOA (over all time)",
       xlabel: "LSOAs",
-      ylabel: "Frequency",
+      ylabel: "Number of Crimes",
     },
   };
 
@@ -353,7 +353,7 @@ export const crime_rate_by_lsoa_cumulative = async (
 ): Promise<BarChartResponse> => {
   // Check if postcodes is empty
   if (lsoas.length == 0) {
-    return {
+    return ({
       chartType: "bar",
       type: "crime",
       area: "lsoa",
@@ -373,9 +373,9 @@ export const crime_rate_by_lsoa_cumulative = async (
         ],
         title: "Cumulative Crime Rate Across LSOAs (over all time)",
         xlabel: "Crime Types",
-        ylabel: "Frequency",
-      },
-    };
+        ylabel: "Number of Crimes",
+      }
+    })
   }
 
   const response = await api.get("/crime/crime-rate-by-type", {
@@ -420,7 +420,7 @@ export const crime_rate_by_lsoa_cumulative = async (
       groups,
       title: "Cumulative Crime Rate Across LSOAs (over all time)",
       xlabel: "Crime Types",
-      ylabel: "Frequency",
+      ylabel: "Number of Crimes",
     },
   };
 

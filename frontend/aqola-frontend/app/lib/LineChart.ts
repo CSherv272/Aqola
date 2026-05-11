@@ -2,13 +2,13 @@ import { stringify } from "querystring";
 import type { Crime, CrimeTypes, UniqueMonths } from "./ApiModels";
 import type { LineChartResponse } from "./ChartModels";
 import axios from "axios";
-import type { School } from "./ApiModels";
-import { COLOR } from "./constants";
+import type { School } from "./ApiModels"
+import { COLOR } from "./constants"
 
 // method naming convention <area>_<xlabel>_<ylabel>_<lines>
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
+  baseURL: "http://localhost:8000",
 });
 
 // Gets crime rate for:
@@ -16,28 +16,32 @@ export const api = axios.create({
 //      crime type (list of strings) - optional
 // returns a graph of crime rate over time in an lsoa
 // Each line represents a crime type
+
+// =============================================================================================
+//       CURRENTLY NOT WORKING CORRECTLY - NEEDS TO BE UPDATED TO TAKE MULTIPLE LSOAs
+// =============================================================================================
 export const crime_rate_by_type_and_area = async (
   lsoa: string,
   crimeTypes?: string[],
 ): Promise<LineChartResponse> => {
   let crimeTypeSlug: string = "";
 
-  let colorMap: Record<string, string> = {
-    "Anti-social behaviour": COLOR[0],
-    "Bicycle theft": COLOR[1],
-    Burglary: COLOR[2],
-    "Criminal damage and arson": COLOR[3],
-    Drugs: COLOR[4],
-    "Other crime": COLOR[5],
-    "Other theft": COLOR[6],
-    "Possession of weapons": COLOR[7],
-    "Public order": COLOR[8],
-    Robbery: COLOR[9],
-    Shoplifting: COLOR[10],
-    "Theft from the person": COLOR[11],
-    "Vehicle crime": COLOR[12],
-    "Violence and sexual offences": COLOR[13],
-  };
+let colorMap: Record<string, string> = {
+  "Anti-social behaviour": COLOR[0],
+  "Bicycle theft": COLOR[1],
+  "Burglary": COLOR[2],
+  "Criminal damage and arson": COLOR[3],
+  "Drugs": COLOR[4],
+  "Other crime": COLOR[5],
+  "Other theft": COLOR[6],
+  "Possession of weapons": COLOR[7],
+  "Public order": COLOR[8],
+  "Robbery": COLOR[9],
+  "Shoplifting": COLOR[10],
+  "Theft from the person": COLOR[11],
+  "Vehicle crime": COLOR[12],
+  "Violence and sexual offences": COLOR[13],
+};
 
   if (!lsoa) {
     return {
@@ -46,17 +50,17 @@ export const crime_rate_by_type_and_area = async (
       area: "postcode",
       chart: {
         lines: [],
-        title: "Crime Rate by Area",
+        title: "Crime Rate by Type (Over Time)",
         xlabel: "Months",
-        ylabel: "Frequency",
-      },
+        ylabel: "Number of Crimes",
+      }
     } as LineChartResponse;
   }
 
-  if (crimeTypes) {
-    crimeTypeSlug = "?";
-    for (let type of crimeTypes) {
-      crimeTypeSlug += `crimeType=${type}&`;
+  if (crimeTypes){
+    crimeTypeSlug = "?"
+    for (let type of crimeTypes){
+      crimeTypeSlug += `crimeType=${type}&`
     }
     crimeTypeSlug = crimeTypeSlug.substring(0, crimeTypeSlug.length - 1);
   }
@@ -72,11 +76,8 @@ export const crime_rate_by_type_and_area = async (
   for (const [crimeType, coords] of Object.entries(crimeCountData)) {
     lines.push({
       line_name: crimeType,
-      coords: (coords as [Date, number][]).map(([date, count]) => [
-        new Date(date),
-        count,
-      ]),
-      color: colorMap[crimeType],
+      coords: (coords as [Date, number][]).map(([date, count]) => [new Date(date), count]),
+      color: colorMap[crimeType]
     });
   }
 
@@ -86,9 +87,9 @@ export const crime_rate_by_type_and_area = async (
     area: "postcode",
     chart: {
       lines,
-      title: "Crime by Crime Type",
+      title: "Crime Rate by Type (Over Time)",
       xlabel: "Months",
-      ylabel: "Frequency",
+      ylabel: "Number of Crimes",
     },
   };
 
@@ -98,30 +99,30 @@ export const crime_rate_by_type_and_area = async (
 // Gets total crime rate over multiple lsoas
 // Returns a graph of total crime rate over time
 // Each line is an lsoa
-export const crime_rate_by_area = async (
-  lsoas: string[],
-): Promise<LineChartResponse> => {
-  let lsoaSlug: string = "";
+export const crime_rate_over_time = async (lsoas : string[]) : Promise<LineChartResponse> => {
+  let lsoaSlug : string = "";
 
-  if (lsoas.length >= 1) {
-    lsoaSlug = "?";
-    for (let lsoa of lsoas) {
-      lsoaSlug += `lsoas=${lsoa}&`;
+  if (lsoas.length >= 1){
+    lsoaSlug = "?"
+    for (let lsoa of lsoas){
+      lsoaSlug += `lsoas=${lsoa}&`
     }
     lsoaSlug = lsoaSlug.substring(0, lsoaSlug.length - 1);
-  } else {
-    console.log("yerp");
-    return {
-      chartType: "line",
-      type: "crime_data",
-      area: "postcode",
-      chart: {
-        lines: [],
-        title: "Crime Rate by Area",
-        xlabel: "Months",
-        ylabel: "Frequency",
-      },
-    };
+  }
+  else{
+    return (
+      {
+        chartType: "line",
+        type: "crime_data",
+        area: "postcode",
+        chart: {
+          lines: [],
+          title: "Crime Rate Over Time",
+          xlabel: "Months",
+          ylabel: "Number of Crimes",
+        },
+      }
+    )
   }
 
   const apiResponse = await api.get(`/crime/crime-rate-total/${lsoaSlug}`);
@@ -130,16 +131,11 @@ export const crime_rate_by_area = async (
   let lines: { line_name: string; coords: [Date, number][]; color: string }[] =
     [];
 
-  for (const [index, [lsoa, coords]] of Object.entries(
-    crimeCountData,
-  ).entries()) {
-    lines.push({
+for (const [index, [lsoa, coords]] of Object.entries(crimeCountData).entries()) {
+  lines.push({
       line_name: lsoa,
-      coords: (coords as [Date, number][]).map(([date, count]) => [
-        new Date(date),
-        count,
-      ]),
-      color: COLOR[index % COLOR.length],
+      coords: (coords as [Date, number][]).map(([date, count]) => [new Date(date), count]),
+      color: COLOR[index % COLOR.length]
     });
   }
 
@@ -149,9 +145,9 @@ export const crime_rate_by_area = async (
     area: "postcode",
     chart: {
       lines,
-      title: "Crime Rate by Area",
+      title: "Crime Rate Over Time",
       xlabel: "Months",
-      ylabel: "Frequency",
+      ylabel: "Number of Crimes",
     },
   };
 
