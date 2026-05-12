@@ -1,13 +1,13 @@
 import pytest
 import os
 
-# --- 1. SETUP PATHS ---
+# --- SETUP PATHS ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SCHEMA_SQL_PATH = os.path.join(BASE_DIR, '..', 'database', 'init', 'schema_integrity_validation.sql')
 DATA_QUALITY_SQL_PATH = os.path.join(BASE_DIR, '..', 'database', 'init', 'data_quality_validation.sql')
 
-# --- 2. DEFINE EXPECTED SCHEMA SPECS ---
-EXPECTED_TABLES = ['lsoas', 'postcodes', 'crime_data', 'school_data']
+# ---  DEFINE EXPECTED SCHEMA SPECS ---
+EXPECTED_TABLES = ['lsoas', 'postcodes', 'crime_data', 'school_data','property_data', 'property_transactions']
 
 # Format: (table, column, type, nullable)
 EXPECTED_COLUMNS = {
@@ -37,9 +37,9 @@ EXPECTED_COLUMNS = {
     ('crime_data', 'crime_type', 'character varying', 'NO'),
     
     ('school_data', 'urn', 'character varying', 'NO'),              # VARCHAR(20)
-    ('school_data', 'lsoa_id', 'character varying', 'YES'),          # VARCHAR(20) (FK) (Nullable)
+    ('school_data', 'lsoa_id', 'character varying', 'NO'),          # VARCHAR(20) (FK) (Nullable)
     ('school_data', 'school_name', 'character varying', 'NO'),      # VARCHAR(255)
-    ('school_data', 'postcode', 'character varying', 'YES'),          # VARCHAR(10) (FK) (Nullable)
+    ('school_data', 'postcode', 'character varying', 'NO'),          # VARCHAR(10) (FK) (Nullable)
     ('school_data', 'is_primary', 'boolean', 'NO'),                 # BOOLEAN
     ('school_data', 'is_secondary', 'boolean', 'NO'),               # BOOLEAN
     ('school_data', 'is_post16', 'boolean', 'NO'),                  # BOOLEAN
@@ -48,7 +48,19 @@ EXPECTED_COLUMNS = {
     ('school_data', 'ofsted_ranking', 'integer', 'YES'),            # INT (Nullable)
     ('school_data', 'centroid', 'USER-DEFINED', 'YES'),             # GEOMETRY (Nullable)
     ('school_data', 'latitude', 'numeric', 'YES'),                  # DECIMAL (Nullable)
-    ('school_data', 'longitude', 'numeric', 'YES')                  # DECIMAL (Nullable)
+    ('school_data', 'longitude', 'numeric', 'YES'),                  # DECIMAL (Nullable)
+    
+    ('property_data', 'property_id', 'integer', 'NO'),                # SERIAL
+    ('property_data', 'full_address', 'text', 'NO'),                  # TEXT
+    ('property_data', 'postcode', 'character varying', 'NO'),       # VARCHAR(10) (FK)
+    ('property_data', 'lsoa_id', 'character varying', 'NO'),       # VARCHAR(20) (FK)
+    ('property_data', 'property_type', 'character', 'NO'),            # CHAR(1)
+    ('property_data', 'property_age', 'character', 'NO'),            # CHAR(1)
+
+    ('property_transactions', 'transaction_id', 'character varying', 'NO'), # VARCHAR(45)
+    ('property_transactions', 'property_id', 'integer', 'NO'),               # INT (FK)
+    ('property_transactions', 'sale_date', 'date', 'NO'),                    # DATE
+    ('property_transactions', 'price', 'integer', 'NO')                     # INT
     }
 
 # Format: (table, type, column)
@@ -64,10 +76,17 @@ EXPECTED_KEYS = {
     ('school_data', 'PRIMARY KEY', 'urn'),
     ('school_data', 'PRIMARY KEY', 'year_range'),
     ('school_data', 'FOREIGN KEY', 'lsoa_id'),
-    ('school_data', 'FOREIGN KEY', 'postcode')
+    ('school_data', 'FOREIGN KEY', 'postcode'),
+    
+    ('property_data', 'PRIMARY KEY', 'property_id'),
+    ('property_data', 'FOREIGN KEY', 'postcode'),
+    ('property_data', 'FOREIGN KEY', 'lsoa_id'),
+
+    ('property_transactions', 'PRIMARY KEY', 'transaction_id'),
+    ('property_transactions', 'FOREIGN KEY', 'property_id')
 }
 
-# --- 3. TEST CLASSES ---
+# ---  TEST CLASSES ---
 
 class TestSchemaIntegrity:
     """
