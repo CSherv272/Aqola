@@ -15,7 +15,7 @@ This means
 
 WITH completeness_failures AS (
 
-    --LSOAs
+    -- LSOAs
     SELECT 'lsoas' AS tbl, 'lsoa_id' AS col, 'Logical Null (Empty/Spaces)' AS issue, lsoa_id::text AS row_id
     FROM lsoas WHERE lsoa_id ~ '^\s*$'
     UNION ALL
@@ -39,7 +39,7 @@ WITH completeness_failures AS (
 
     UNION ALL
 
-    --Postcodes
+    -- Postcodes
     SELECT 'postcodes', 'postcode', 'Logical Null (Empty/Spaces)', postcode::text
     FROM postcodes WHERE postcode ~ '^\s*$'
     UNION ALL
@@ -54,7 +54,6 @@ WITH completeness_failures AS (
     UNION ALL
     SELECT 'postcodes', 'ALL', 'TABLE IS EMPTY', '0'
     WHERE (SELECT COUNT(*) FROM postcodes) = 0
-
     UNION ALL
 
     --Crime data
@@ -108,6 +107,45 @@ WITH completeness_failures AS (
     UNION ALL
     SELECT 'school_data', 'ALL', 'TABLE IS EMPTY', '0'
     WHERE (SELECT COUNT(*) FROM school_data) = 0
+
+    UNION ALL
+
+  -- Property Data
+    SELECT 'property_data', 'full_address', 'Logical Null (Empty/Spaces)', property_id::text
+    FROM property_data WHERE full_address ~ '^\s*$'
+    UNION ALL
+    SELECT 'property_data', 'property_type', 'Invalid Type Code', property_id::text
+    FROM property_data WHERE property_type NOT IN ('D', 'S', 'T', 'F', 'O')
+    UNION ALL
+    SELECT 'property_data', 'latitude', 'Out of Kent Bounds', property_id::text
+    FROM property_data WHERE latitude NOT BETWEEN 50.88 AND 51.52
+    UNION ALL
+    SELECT 'property_data', 'longitude', 'Out of Kent Bounds', property_id::text
+    FROM property_data WHERE longitude NOT BETWEEN 0.01 AND 1.47
+    UNION ALL
+    SELECT 'property_data', 'centroid', 'Empty Geometry', property_id::text
+    FROM property_data WHERE ST_IsEmpty(centroid)
+    UNION ALL
+    SELECT 'property_data', 'ALL', 'TABLE IS EMPTY', '0'
+    WHERE (SELECT COUNT(*) FROM property_data) = 0
+
+    UNION ALL
+
+    -- Property Transactions
+    SELECT 'property_transactions', 'price', 'Negative or Zero Price', transaction_id
+    FROM property_transactions WHERE price <= 0
+    UNION ALL
+    SELECT 'property_transactions', 'price', 'Extreme Outlier (> 20M)', transaction_id
+    FROM property_transactions WHERE price > 20000000
+    UNION ALL
+    SELECT 'property_transactions', 'sale_date', 'Future Date (Logical Error)', transaction_id
+    FROM property_transactions WHERE sale_date > CURRENT_DATE
+    UNION ALL
+    SELECT 'property_transactions', 'sale_date', 'Pre-Data Era (< 1995)', transaction_id
+    FROM property_transactions WHERE sale_date < '1995-01-01'
+    UNION ALL
+    SELECT 'property_transactions', 'ALL', 'TABLE IS EMPTY', '0'
+    WHERE (SELECT COUNT(*) FROM property_transactions) = 0
     
 )
 SELECT tbl, col, issue, COUNT(*) AS issue_count, ARRAY_AGG(row_id) AS failing_ids

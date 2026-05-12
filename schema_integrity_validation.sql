@@ -7,9 +7,7 @@ AND table_name IN (
     'postcodes', 
     'crime_data', 
     'spatial_ref_sys',
-    'school_data',
-    'property_data',
-    'property_transactions'
+    'school_data'
 );
 
 -- Query to check the correct columns, data types are present in each table and NULL constraints enforced
@@ -24,9 +22,7 @@ AND table_name IN (
     'lsoas',
     'postcodes',
     'crime_data',
-    'school_data',
-    'property_data',
-    'property_transactions')
+    'school_data')
 ORDER BY table_name, column_name;
 
 -- Query to check the relational constraints (Primary and Foreign Keys)
@@ -40,12 +36,6 @@ JOIN information_schema.key_column_usage AS kcu
     ON tc.constraint_name = kcu.constraint_name 
     AND tc.table_schema = kcu.table_schema
 WHERE tc.table_schema = 'public' 
-AND tc.table_name IN (
-    'lsoas',
-    'postcodes',
-    'crime_data', 
-    'school_data', 
-    'property_data',
-    'property_transactions')
+AND tc.table_name IN ('lsoas', 'postcodes', 'crime_data', 'school_data')
 AND tc.constraint_type IN ('PRIMARY KEY', 'FOREIGN KEY')
 ORDER BY tc.table_name;
